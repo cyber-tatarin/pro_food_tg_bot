@@ -41,7 +41,7 @@ async def add_ingredient_post(request):
         return web.Response(status=403)
     
     name = data.get('name')
-    
+
     measure = data.get('measure')
     calories = data.get('calories')
     proteins = data.get('proteins')
