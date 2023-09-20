@@ -18,3 +18,11 @@ async def is_admin_by_id(tg_id):
     except Exception as x:
         print(x)
         raise web.HTTPForbidden()
+    
+
+class DuplicateChoice(Exception):
+    pass
+
+
+class WrongPercentage(Exception):
+    pass
