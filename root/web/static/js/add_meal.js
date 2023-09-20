@@ -10,9 +10,7 @@ const renderSelect = () => {
     el.addEventListener(
       "choice",
       function (event) {
-        document
-          .querySelectorAll(".choices__inner")
-          .forEach((el) => (el.style.color = "#303030"));
+        el.parentElement.style.color = "#303030";
       },
       false
     );
@@ -28,7 +26,7 @@ button.addEventListener("click", (event) => {
     "beforebegin",
     `<div class="dish__item dish__item_new">
 <p class="dish__title">Блюдо ${choicesCounter}</p>
-<select class="js-choice_${choicesCounter}">
+<select name="meal_id${choicesCounter}" class="js-choice_${choicesCounter}">
   <option value="" selected>Введите ингридиент</option>
   <option value="1">Кафе</option>
   <option value="2">Финтес клуб</option>
@@ -47,29 +45,51 @@ button.addEventListener("click", (event) => {
 </select>
 <p class="dish__title">% в тарелке</p>
 <input
+name="meal_percentage${choicesCounter}"
   class="input input_grey"
   type="number"
   maxlength="100"
   placeholder="Введите количество на 1 порцию"
   required
 />
-
 </div>`
   );
-  console.log(choicesCounter);
 
-  const elements = document.querySelectorAll(`.js-choice_${choicesCounter++}`);
-  elements.forEach((el) => {
-    const choices = new Choices(el, {
-      itemSelectText: "",
-      noResultsText: "Не найдено",
-    });
-    el.addEventListener(
-      "choice",
-      function (event) {
-        el.parentElement.style.color = "#303030";
-      },
-      false
-    );
-  });
+  renderSelect();
 });
+
+const form = document.getElementById("form");
+
+document
+  .querySelector("form")
+  .addEventListener("submit", async function (event) {
+    event.preventDefault();
+
+    // Collect form data
+    const formData = new FormData(event.target);
+
+    // Convert form data to JSON
+    const data = {};
+    formData.forEach((value, key) => {
+      data[key] = value;
+    });
+    console.log("fetched!!!!!!!!!!!!!!!!!");
+    // Send JSON data to the backend
+    try {
+      const request = await fetch("../api/add_plate", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+      const response = await request.json();
+      if (response.status === 200) {
+        console.log("fetched successfully!");
+      } else {
+        console.log(response.status);
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  });

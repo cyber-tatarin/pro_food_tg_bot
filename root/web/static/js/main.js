@@ -74,40 +74,38 @@ renderSelect();
 //   });
 // });
 
-document.querySelector(".test-button").addEventListener("click", async () => {
-  console.log(123);
-  await addIngredient();
-});
+const form = document.getElementById("form");
 
-async function addIngredient() {
-  console.log("pulled");
-  try {
-    const response = await fetch("../api/add_ingredient", {
-      method: "POST",
-      body: JSON.stringify({
-        tg_id: "1",
-        name: 1,
-        measure: 1,
-        calories: 1,
-        proteins: 1,
-        fats: 1,
-      }),
-      // Другие опции запроса, если необходимо
+document
+  .querySelector("form")
+  .addEventListener("submit", async function (event) {
+    event.preventDefault();
+
+    // Collect form data
+    const formData = new FormData(event.target);
+
+    // Convert form data to JSON
+    const data = {};
+    formData.forEach((value, key) => {
+      data[key] = value;
     });
-
-    if (response.ok) {
-      const data = await response.json();
-      // Здесь вы можете обработать полученные данные, например:
-      if (data.isAdmin) {
-        // Действия, если пользователь администратор
+    console.log("fetched!!!!!!!!!!!!!!!!!");
+    // Send JSON data to the backend
+    try {
+      const request = await fetch("../api/add_ingredient", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+      const response = await request.json();
+      if (response.status === 200) {
+        console.log("fetched successfully!");
       } else {
-        // Действия, если пользователь не администратор
+        console.log(response.status);
       }
-    } else {
-      // Обработка ошибки, если запрос не удался
+    } catch (err) {
+      console.log(err);
     }
-  } catch (error) {
-    // Обработка ошибок, возникших при выполнении запроса
-    console.error("Ошибка при выполнении запроса:", error);
-  }
-}
+  });
