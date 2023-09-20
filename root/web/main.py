@@ -8,6 +8,7 @@ from root.db import setup as db
 from root.db import models
 from root.logger.config import logger
 from root.tg.main import admin_ids
+from . import utils
 
 
 env = jinja2.Environment(
@@ -32,13 +33,12 @@ async def add_ingredient_get(request):
 
 
 async def add_ingredient_post(request):
-    data = await request.post()
-    print(data)
-    tg_id = data.get('tg_id')
-    print(tg_id)
-    
-    if int(tg_id) not in admin_ids:
-        return web.Response(status=403)
+    data = await request.json()
+    try:
+        tg_id = data['tg_id']
+        await utils.is_admin_by_id(tg_id)
+    except KeyError:
+        raise web.HTTPForbidden()
     
     name = data.get('name')
     
@@ -78,10 +78,12 @@ async def add_meal_get(request):
 async def add_meal_post(request):
     print('Got data')
     data = await request.json()
-    tg_id = data.get('tg_id')
+    try:
+        tg_id = data['tg_id']
+        await utils.is_admin_by_id(tg_id)
+    except KeyError:
+        raise web.HTTPForbidden()
 
-    if tg_id not in admin_ids:
-        return web.Response(status=403)
     print(data)
     print('Parsed data')
     
@@ -137,10 +139,19 @@ async def add_meal_post(request):
 
         session2.commit()
     except Exception as x:
+        session2.rollback()
+        meal_to_delete = session2.query(models.Meal).filter(models.Meal.meal_id == new_meal_id).first()
+        try:
+            session2.delete(meal_to_delete)
+            session2.commit()
+        except Exception as x:
+            print(x)
         print('second exception\n\n\n\n')
         print(x)
-        pass
-
+    finally:
+        if session2.is_active:
+            session2.close()
+        
 
 @aiohttp_jinja2.template('add_plate.html')
 async def add_plate_get(request):
@@ -150,10 +161,11 @@ async def add_plate_get(request):
 async def add_plate_post(request):
     print('Got data')
     data = await request.json()
-    tg_id = data.get('tg_id')
-
-    if tg_id not in admin_ids:
-        return web.Response(status=403)
+    try:
+        tg_id = data['tg_id']
+        await utils.is_admin_by_id(tg_id)
+    except KeyError:
+        raise web.HTTPForbidden()
     print(data)
     print('Parsed data')
     
@@ -199,18 +211,20 @@ async def add_plate_post(request):
         
         session2.commit()
     except Exception as x:
+        session2.rollback()
+        plate_to_delete = session2.query(models.Plate).filter(models.Plate.plate_id == new_plate_id).first()
+        try:
+            session2.delete(plate_to_delete)
+            session2.commit()
+        except Exception as x:
+            print(x)
         print('second exception\n\n\n\n')
         print(x)
         pass
 
-
-async def is_admin_post(request):
-    json_data = request.json()
-    tg_id = json_data.get('tg_id')
-    if tg_id in admin_ids:
-        return web.json_response({'is_admin': 'true'})
-    else:
-        return web.json_response({'is_admin': 'false'})
+    
+async def get_ingredient_ids_names_list(request):
+    pass
 
 
 app = web.Application()
@@ -225,12 +239,11 @@ app.add_routes([
                 ])
 
 app.add_routes([
-    web.post('/api/is_admin', is_admin_post),
+    web.post('/api/is_admin', utils.is_admin_post),
     web.post('/api/add_ingredient', add_ingredient_post),
     web.post('/api/add_meal', add_meal_post),
     web.post('/api/add_plate', add_plate_post),
                 ])
-
 
 aiohttp_jinja2.setup(app, loader=env.loader, context_processors=[aiohttp_jinja2.request_processor])
 
