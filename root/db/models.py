@@ -1,5 +1,8 @@
-from sqlalchemy import Column, String, Boolean, Date, Integer
-from sqlalchemy.orm import DeclarativeBase
+from datetime import datetime
+
+from sqlalchemy import Column, String, Boolean, Date, Integer, DateTime, ForeignKey, Float, Text, UniqueConstraint, \
+    Table
+from sqlalchemy.orm import DeclarativeBase, relationship
 
 from dotenv import load_dotenv, find_dotenv
 
@@ -10,39 +13,101 @@ class Base(DeclarativeBase):
     pass
 
 
-# храним состояние о юзере, чтобы восстановить в случае отключения бота
-class State(Base):
-    __tablename__ = "states"
+class User(Base):
+    __tablename__ = "users"
     
-    tg_id = Column("tg_id", String(12), primary_key=True)
-    state = Column("state", String(60))
-
-
-# пользователь, которого интересует программ лояльности
-# храним инфо о том, заполнил ли он форму, чтобы позже дудосить тех, кто не заполнил
-class LoyaltyUser(Base):
-    __tablename__ = "loyalty_users"
+    tg_id = Column(Integer, primary_key=True)
+    username = Column(String)
+    date_registered = Column(DateTime, default=datetime.now)
     
-    tg_id = Column("tg_id", String(12), primary_key=True)
-    direction = Column("direction", String(30), nullable=True)
-    has_project = Column("has_project", Boolean, nullable=False, default=False)
-    phone_number = Column("phone_number", String(14), nullable=True)
-    submitted_plans = Column("submitted_plans", Integer, nullable=True, default=0)
-
-
-# пользователь, который ищет доп. работу на аутсорсе
-# храним инфо о том, отправил ли он план
-class OutsourceUser(Base):
-    __tablename__ = "outsource_users"
+    is_new = Column(Boolean, default=True)
     
-    tg_id = Column("tg_id", String(12), primary_key=True)
-    has_submitted_gform = Column("has_submitted_gform", Boolean, nullable=False, default=False)
-
-
-# таблица с уведомлениями на определенную дату
-class Notification(Base):
-    __tablename__ = "notifications"
+    birth_date = Column(DateTime)
+    height = Column(Integer)
+    gender = Column(String)
+    weight_aim = Column(Float)
     
-    tg_id = Column("tg_id", String(12), primary_key=True)
-    user_role = Column("user_role", String(12), primary_key=True)
-    date = Column("date", Date)
+    plate_diameter = Column(Integer)
+    balance = Column(Integer, default=0)
+    
+    day_calories = Column(Integer)
+    day_proteins = Column(Integer)
+    day_fats = Column(Integer)
+    day_carbohydrates = Column(Integer)
+    
+
+class BodyMeasure(Base):
+    __tablename__ = 'body_measures'
+    
+    tg_id = Column(Integer, primary_key=True)
+    date = Column(Date, default=datetime.now, primary_key=True)
+    
+    weight = Column(Float)
+    chest_volume = Column(Integer)
+    underchest_voume = Column(Integer)
+    waist_volume = Column(Integer)
+    belly_volume = Column(Integer)
+    hips_volume = Column(Integer)
+
+
+meal_ingredients_association = Table(
+    'meal_ingredients_association',
+    Base.metadata,
+    Column('ingredient_id', Integer, ForeignKey('ingredients.ingredient_id')),
+    Column('meal_id', Integer, ForeignKey('meals.meal_id')),
+    Column('amount', Float, nullable=False),
+    UniqueConstraint('ingredient_id', 'meal_id', 'amount', name='unique_meal_ingredients')
+)
+
+plate_meals_association = Table(
+    'plate_meals_association',
+    Base.metadata,
+    Column('plate_id', Integer, ForeignKey('plates.plate_id')),
+    Column('meal_id', Integer, ForeignKey('meals.meal_id')),
+    Column('percentage', Float, nullable=False),
+    UniqueConstraint('plate_id', 'meal_id', 'percentage', name='unique_plate_meals')
+)
+
+    
+class Ingredient(Base):
+    __tablename__ = 'ingredients'
+    
+    ingredient_id = Column(Integer, primary_key=True, autoincrement=True)
+    ingredient_name = Column(String, unique=True)
+    
+    measure = Column(String)
+    calories = Column(Integer)
+    proteins = Column(Integer)
+    fats = Column(Integer)
+    carbohydrates = Column(Integer)
+
+    meals = relationship("Meal", secondary=meal_ingredients_association, back_populates="ingredients")
+    
+    
+class Meal(Base):
+    __tablename__ = 'meals'
+    
+    meal_id = Column(Integer, primary_key=True, autoincrement=True)
+    meal_name = Column(String, unique=True)
+
+    recipe = Column(Text)
+    
+    recipe_active_time = Column(Integer)
+    recipe_time = Column(Integer)
+    
+    recipe_difficulty = Column(Integer)
+    
+    ingredients = relationship("Ingredient", secondary=meal_ingredients_association, back_populates="meals")
+    plates = relationship("Plate", secondary=plate_meals_association, back_populates="meals")
+
+
+class Plate(Base):
+    __tablename__ = "plates"
+    
+    plate_id = Column(Integer, primary_key=True, autoincrement=True)
+    plate_name = Column(String, unique=True)
+    
+    meals = relationship("Meal", secondary=plate_meals_association, back_populates="plates")
+
+    
+    

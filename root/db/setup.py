@@ -16,14 +16,46 @@ engine = create_engine(
 Session = sessionmaker(bind=engine)
 
 if __name__ == '__main__':
-    # models.State.__table__.create(engine)
-    # models.OutsourceUser.__table__.create(engine)
-    # models.LoyaltyUser.__table__.create(engine)
-    # models.Text.__table__.create(engine)
-    models.Notification.__table__.create(engine)
+    # pass
+    # models.Base.metadata.drop_all(bind=engine)
+    # models.Base.metadata.create_all(bind=engine)
     
-    # models.State.__table__.drop(engine)
-    # models.OutsourceUser.__table__.drop(engine)
-    # models.LoyaltyUser.__table__.drop(engine)
-    # models.Notification.__table__.drop(engine)
+    # models.User.__table__.drop(bind=engine)
+    # models.BodyMeasure.__table__.drop(bind=engine)
+    # models.Ingredient.__table__.drop(bind=engine)
+    # models.Meal.__table__.drop(bind=engine)
+    # models.Plate.__table__.drop(bind=engine)
+    # models.ingredient_measure_association.create(bind=engine)
+    #
+    # models.User.__table__.create(bind=engine)
+    # models.BodyMeasure.__table__.create(bind=engine)
+    # models.Ingredient.__table__.create(bind=engine)
+    # models.Meal.__table__.create(bind=engine)
+    # models.Plate.__table__.create(bind=engine)
+    # models.meal_ingredients_association.create(bind=engine)
+    models.plate_meals_association.create(bind=engine)
     
+    # session = Session()
+    # ingredient2 = models.Ingredient(ingredient_name="Ingredient 4", proteins=1)
+    # meal1 = models.Meal(meal_name="Meal 4", recipe='grgrr')
+    #
+    # session.add_all([ingredient2, meal1])
+    #
+    # session.commit()
+    #
+    # association = models.ingredient_measure_association.insert().values(
+    #     amount=2,
+    #     ingredient=ingredient2.ingredient_id,
+    #     meal=meal1.meal_id
+    # )
+    # session.execute(association)
+    # session.commit()
+    # association.ingredient = ingredient2
+    # association.meal = meal1
+    # Create measures with unique nutritional va
+    #
+    # lues
+
+    #
+    # mealss = session.query(models.ingredient_measure_association).filter(models.ingredient_measure_association.c.meal == 3).all()
+    # print(mealss)

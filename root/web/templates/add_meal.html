@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Add Meal</title>
+</head>
+<body>
+    <h1>Add a Meal</h1>
+    <form id="add-meal-form" method="POST">
+        <label for="name">Meal Name:</label>
+        <input type="text" name="name" required><br>
+
+        <label for="recipe">Recipe:</label>
+        <textarea name="recipe" rows="4" required></textarea><br>
+
+        <h2>Ingredients</h2>
+        <div id="ingredients-container">
+            <div class="ingredient">
+                <label for="ingredient2">Ingredient 2:</label>
+                <select name="ingredient_id2">
+                    <option value="1">1</option>
+					<option value="2">2</option>
+                </select>
+                <label for="ingredient_amount2">Amount:</label>
+                <input type="number" name="ingredient_amount2" required><br>
+            </div>
+			 <div class="ingredient">
+                <label for="ingredient2">Ingredient 2:</label>
+                <select name="ingredient_id1">
+                    <option value="1">1</option>
+					<option value="2">2</option>
+                </select>
+                <label for="ingredient_amount2">Amount:</label>
+                <input type="number" name="ingredient_amount1" required><br>
+            </div>
+        </div>
+
+        <button type="button" id="add-ingredient">Add Another Ingredient</button><br>
+
+        <button type="submit">Submit</button>
+    </form>
+
+<script>
+        document.getElementById("add-meal-form").addEventListener("submit", function (event) {
+            event.preventDefault();
+
+            // Collect form data
+            const formData = new FormData(event.target);
+
+            // Convert form data to JSON
+            const data = {};
+            formData.forEach((value, key) => {
+                data[key] = value;
+            });
+			console.log('fetched!!!!!!!!!!!!!!!!!');
+            // Send JSON data to the backend
+            fetch('../api/add_meal', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data),
+            })
+            .then(response => {
+                if (response.ok) {
+                    alert('Data submitted successfully');
+                } else {
+                    alert('Error submitting data');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert(error);
+            });
+        });
+    </script>
+</body>
+</html>

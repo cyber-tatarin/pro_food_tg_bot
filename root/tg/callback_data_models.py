@@ -1,3 +1,11 @@
-from aiogram.utils.callback_data import CallbackData
+from aiogram.filters.callback_data import CallbackData
 
-choose_professional_direction_cb_data = CallbackData('ChooseProfDir', 'prof_direction')
+
+class ActivityLevelCallback(CallbackData, prefix="activity_level"):
+    index: float
+
+
+class ChooseGenderCallback(CallbackData, prefix="choose_gender"):
+    additional_value: int
+    gender: str
+    
