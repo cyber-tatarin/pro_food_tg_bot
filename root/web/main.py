@@ -17,6 +17,7 @@ env = jinja2.Environment(
     keep_trailing_newline=True
 )
 
+
 #
 # @aiohttp_jinja2.template('profile_view.html')
 # async def profile_view(request):
@@ -31,7 +32,13 @@ async def add_ingredient_get(request):
 
 
 async def add_ingredient_post(request):
-    data = await request.json()
+    data = await request.post()
+    print(data)
+    tg_id = data.get('tg_id')
+    print(tg_id)
+    
+    if int(tg_id) not in admin_ids:
+        return web.Response(status=403)
     
     name = data.get('name')
     
@@ -40,7 +47,7 @@ async def add_ingredient_post(request):
     proteins = data.get('proteins')
     fats = data.get('fats')
     carbohydrates = data.get('carbohydrates')
-    
+
     session = db.Session()
     try:
         new_ingredient = models.Ingredient(
@@ -60,7 +67,7 @@ async def add_ingredient_post(request):
             session.close()
     
     print(name, measure, calories, proteins, fats, carbohydrates)
-    return web.Response(status=200)
+    raise web.HTTPFound('/success')
 
 
 @aiohttp_jinja2.template('add_meal.html')
@@ -71,6 +78,10 @@ async def add_meal_get(request):
 async def add_meal_post(request):
     print('Got data')
     data = await request.json()
+    tg_id = data.get('tg_id')
+
+    if tg_id not in admin_ids:
+        return web.Response(status=403)
     print(data)
     print('Parsed data')
     
@@ -139,6 +150,10 @@ async def add_plate_get(request):
 async def add_plate_post(request):
     print('Got data')
     data = await request.json()
+    tg_id = data.get('tg_id')
+
+    if tg_id not in admin_ids:
+        return web.Response(status=403)
     print(data)
     print('Parsed data')
     
@@ -199,6 +214,8 @@ async def is_admin_post(request):
 
 
 app = web.Application()
+
+app.router.add_static('/static/', path='root/web/static', name='static')
 
 app.add_routes([
     # web.get('/profile/{user_id}', profile_view),

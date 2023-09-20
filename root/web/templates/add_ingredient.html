@@ -1,79 +1,109 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-	<script src="https://telegram.org/js/telegram-web-app.js"></script>
-	<meta charset="UTF-8">
-	<title>Title</title>
-</head>
-<body>
-<p id="oo"></p>
-<!DOCTYPE html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/static/css/style.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/choices.js@9.0.1/public/assets/styles/choices.min.css"
+    />
+    <link rel="stylesheet" href="/static/css/reset.css" />
+  </head>
+  <body>
+    <main class="main">
+      <div class="container">
+        <form action="../api/add_ingredient" method="post" enctype="multipart/form-data">
+          <p class="message">Добавить ингридиент</p>
+          <div class="ingredient__info">
+            <p class="dish__title">Название</p>
+            <input
+					name="name"
+              class="input input_grey"
+              type="text"
+              maxlength="100"
+              placeholder="Мясо"
+              required
+            />
+          </div>
 
-    <h1>Ingredient Form</h1>
-    <form id="ingredientForm" method="POST">
-        <label for="name">Name:</label>
-        <input type="text" id="name" name="name" required><br><br>
+          <p class="dish__title">Мера</p>
+          <select name="measure" class="js-choice_1">
+            <option value="" selected>Выберите меру</option>
+            <option value="1">Кафе</option>
+            <option value="2">Финтес клуб</option>
+            <option value="3">Пиццерия</option>
+            <option value="4">Реклама</option>
+            <option value="5">Салон красоты</option>
+            <option value="6">Шаурмичная</option>
+            <option value="7">Бургерная</option>
+            <option value="8">Кальянная</option>
+            <option value="9">Суши-бар</option>
+            <option value="10">Интернет-магазин</option>
+            <option value="11">Рыбалка</option>
+            <option value="12">Пчеловодство</option>
+            <option value="13">Медицина</option>
+            <option value="14">Маркетинг</option>
+          </select>
 
-        <label for="measure">Measure:</label>
-        <input type="text" id="measure" name="measure" required><br><br>
+          <p class="dish__title">Энергетическая ценность</p>
+          <div class="input__relative">
+            <input
+					name="calories"
+              class="input input_grey input_pfc"
+              type="number"
+              maxlength="100"
+              placeholder="Введите количество на 1 порцию"
+              required
+            /><span class="cal">ккал</span>
+          </div>
 
-        <label for="calories">Calories:</label>
-        <input type="number" id="calories" name="calories" required><br><br>
-
-        <label for="proteins">Proteins:</label>
-        <input type="number" id="proteins" name="proteins" required><br><br>
-
-        <label for="fats">Fats:</label>
-        <input type="number" id="fats" name="fats" required><br><br>
-
-        <label for="carbohydrates">Carbohydrates:</label>
-        <input type="number" id="carbohydrates" name="carbohydrates" required><br><br>
-
-        <button type="submit">Submit</button>
-    </form>
-
-    <script>
-        document.getElementById("ingredientForm").addEventListener("submit", function (event) {
-            event.preventDefault();
-
-            // Collect form data
-            const formData = new FormData(event.target);
-
-            // Convert form data to JSON
-            const data = {};
-            formData.forEach((value, key) => {
-                data[key] = value;
-            });
-
-            // Send JSON data to the backend
-            fetch('../api/add_ingredient', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(data),
-            })
-            .then(response => {
-                if (response.ok) {
-                    alert('Data submitted successfully');
-                } else {
-                    alert('Error submitting data');
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert(error);
-            });
-        });
-    </script>
-
-<script>
-	let tg = window.Telegram.WebApp;
-	let tg_id = tg.initDataUnsafe.user.id;
-
-	document.getElementById('oo').innerHTML = tg_id;
-
-</script>
-<p></p>
-</body>
+          <p class="dish__title">Белков</p>
+          <div class="input__relative">
+            <input
+					name="proteins"
+              class="input input_grey input_pfc"
+              type="number"
+              maxlength="100"
+              placeholder="Введите количество на 1 порцию"
+              required
+            /><span class="cal">г</span>
+          </div>
+          <p class="dish__title">Жиров</p>
+          <div class="input__relative">
+            <input
+					name="fats"
+              class="input input_grey input_pfc"
+              type="number"
+              maxlength="100"
+              placeholder="Введите количество на 1 порцию"
+              required
+            /><span class="cal">г</span>
+          </div>
+          <p class="dish__title">Углеводов</p>
+          <div class="input__relative input_relative_last">
+            <input
+					name="carbohydrates"
+              class="input input_grey"
+              type="number"
+              maxlength="100"
+              placeholder="Введите количество на 1 порцию"
+              required
+            /><span class="cal">г</span>
+          </div>
+			<input name="tg_id" type="hidden" value="459471362"/>
+          <button class="button_submit" type="submit">Сохранить</button>
+        </form>
+      </div>
+    </main>
+    <script src="https://cdn.jsdelivr.net/npm/choices.js@9.0.1/public/assets/scripts/choices.min.js"></script>
+    <script src="/static/js/main.js"></script>
+  </body>
 </html>
