@@ -42,20 +42,6 @@
           <p class="dish__title">Мера</p>
           <select required name="measure" class="js-choice_1">
             <option value="" selected>Выберите меру</option>
-            <option value="1">Кафе</option>
-            <option value="2">Финтес клуб</option>
-            <option value="3">Пиццерия</option>
-            <option value="4">Реклама</option>
-            <option value="5">Салон красоты</option>
-            <option value="6">Шаурмичная</option>
-            <option value="7">Бургерная</option>
-            <option value="8">Кальянная</option>
-            <option value="9">Суши-бар</option>
-            <option value="10">Интернет-магазин</option>
-            <option value="11">Рыбалка</option>
-            <option value="12">Пчеловодство</option>
-            <option value="13">Медицина</option>
-            <option value="14">Маркетинг</option>
           </select>
 
           <p class="dish__title">Энергетическая ценность</p>
@@ -108,7 +94,6 @@
             <div class="steps-flex">
               <div class="step__inner">
                 <input
-                  selected
                   type="radio"
                   name="next_step"
                   class="step_radio"
@@ -117,6 +102,7 @@
               </div>
               <div class="step__inner">
                 <input
+                  checked
                   type="radio"
                   name="next_step"
                   class="step_radio"
@@ -145,11 +131,12 @@
           <div class="error">
             Вы ввели данные некорректно, проверьте пожалуйста
           </div>
-          <input name="tg_id" type="hidden" value="459471362" />
+          <input id="tg_id" name="tg_id" type="hidden" value="459471362" />
           <button class="button_submit" type="submit">Сохранить</button>
         </form>
       </div>
     </main>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/choices.js@9.0.1/public/assets/scripts/choices.min.js"></script>
     <script src="/static/js/add_ingredient.js"></script>
   </body>
