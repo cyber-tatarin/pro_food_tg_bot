@@ -31,13 +31,6 @@ def find_row_number(user_id, worksheet):
         logger.exception(x)
 
 
-worksheet_indexes_by_roles = {
-    'loyalty_user': 0,
-    'outsource_user': 1,
-    'newbie': 4
-}
-
-
 def register_user(dict_with_kwargs: dict):
     try:
         user_id = dict_with_kwargs.get('user_id')
@@ -49,10 +42,9 @@ def register_user(dict_with_kwargs: dict):
         gc = pygsheets.authorize(service_file=key_json)
         
         # Open the Google Sheet by name
-        sheet = gc.open('FERC telegram bot overview')
+        sheet = gc.open('pro_food_tg_bot online db')
         # Select the first worksheet in the Google Sheet
-        worksheet_index = worksheet_indexes_by_roles.get(user_role)
-        worksheet = sheet[worksheet_index]
+        worksheet = sheet.worksheet_by_title('ingredients')
         
         now = datetime.now()
         epoch = datetime(1899, 12, 30)
@@ -76,182 +68,19 @@ def register_user(dict_with_kwargs: dict):
     
     except Exception as x:
         logger.exception(x)
+        
 
-
-def set_loayalty_user_direction(dict_with_kwargs: dict):
-    try:
-        user_id = dict_with_kwargs.get('user_id')
-        user_direction = dict_with_kwargs.get('user_direction')
-        
-        # Authenticate using service account credentials
-        gc = pygsheets.authorize(service_file=key_json)
-        
-        # Open the Google Sheet by name
-        sheet = gc.open('FERC telegram bot overview')
-        # Select the first worksheet in the Google Sheet
-        worksheet = sheet[0]
-        
-        row_number = find_row_number(user_id, worksheet)
-        
-        if row_number is not None:
-            col_index = 5
-            worksheet.update_value((row_number, col_index), user_direction)
+def add_to_sheet(sheet_name, list_of_inputs):
+    # Authenticate using service account credentials
+    gc = pygsheets.authorize(service_file=key_json)
+    # Convert the list of links into a single column
     
-    except Exception as x:
-        logger.exception(x)
+    # Open the Google Sheet by name
+    sheet = gc.open('pro_food_tg_bot online db')
+    # Select the first worksheet in the Google Sheet
+    worksheet = sheet.worksheet_by_title(sheet_name)
 
-
-def set_loyalty_user_has_project(dict_with_kwargs: dict):
-    try:
-        user_id = dict_with_kwargs.get('user_id')
-        has_project = dict_with_kwargs.get('has_project')
-        
-        # Authenticate using service account credentials
-        gc = pygsheets.authorize(service_file=key_json)
-        
-        # Open the Google Sheet by name
-        sheet = gc.open('FERC telegram bot overview')
-        # Select the first worksheet in the Google Sheet
-        worksheet = sheet[0]
-        
-        row_number = find_row_number(user_id, worksheet)
-        
-        if row_number is not None:
-            has_project_col_index = 6
-            num_of_projects_col_index = 7
-            if has_project:
-                worksheet.update_value((row_number, has_project_col_index), 'да')
-            else:
-                worksheet.update_value((row_number, has_project_col_index), 'нет')
-            num_of_projects = worksheet.get_value((row_number, num_of_projects_col_index))
-            if num_of_projects is None or num_of_projects == '':
-                worksheet.update_value((row_number, num_of_projects_col_index), 0)
-    
-    except Exception as x:
-        logger.exception(x)
-
-
-def set_loyalty_user_phone_number(dict_with_kwargs: dict):
-    try:
-        user_id = dict_with_kwargs.get('user_id')
-        phone_number = dict_with_kwargs.get('phone_number')
-        
-        # Authenticate using service account credentials
-        gc = pygsheets.authorize(service_file=key_json)
-        
-        # Open the Google Sheet by name
-        sheet = gc.open('FERC telegram bot overview')
-        # Select the first worksheet in the Google Sheet
-        worksheet = sheet[0]
-        
-        row_number = find_row_number(user_id, worksheet)
-        
-        if row_number is not None:
-            col_index = 8
-            worksheet.update_value((row_number, col_index), phone_number)
-    
-    except Exception as x:
-        logger.exception(x)
-
-
-def loyalty_user_submitted_project(dict_with_kwargs: dict):
-    try:
-        user_id = dict_with_kwargs.get('user_id')
-        
-        # Authenticate using service account credentials
-        gc = pygsheets.authorize(service_file=key_json)
-        
-        # Open the Google Sheet by name
-        sheet = gc.open('FERC telegram bot overview')
-        # Select the first worksheet in the Google Sheet
-        worksheet = sheet[0]
-        
-        row_number = find_row_number(user_id, worksheet)
-        
-        if row_number is not None:
-            num_of_projects_col_index = 5
-            
-            num_of_projects = worksheet.get_value((row_number, num_of_projects_col_index))
-            if num_of_projects is not None and num_of_projects != '':
-                worksheet.update_value((row_number, num_of_projects_col_index), int(num_of_projects) + 1)
-            else:
-                worksheet.update_value((row_number, num_of_projects_col_index), 1)
-    
-    except Exception as x:
-        logger.exception(x)
-
-
-def outsourse_user_submitted_gform(dict_with_kwargs: dict):
-    try:
-        user_id = dict_with_kwargs.get('user_id')
-        
-        # Authenticate using service account credentials
-        gc = pygsheets.authorize(service_file=key_json)
-        
-        # Open the Google Sheet by name
-        sheet = gc.open('FERC telegram bot overview')
-        # Select the first worksheet in the Google Sheet
-        worksheet = sheet[1]
-        
-        now = datetime.now()
-        epoch = datetime(1899, 12, 30)
-        delta = now - epoch
-        current_time = delta.days + (delta.seconds / 86400)
-        
-        row_number = find_row_number(user_id, worksheet)
-        
-        if row_number is not None:
-            col_index = 5
-            worksheet.update_value((row_number, col_index), current_time)
-    
-    except Exception as x:
-        logger.exception(x)
-
-
-def loyalty_user_set_remind_date(dict_with_kwargs: dict):
-    try:
-        user_id = dict_with_kwargs.get('user_id')
-        date_str = dict_with_kwargs.get('date')
-        
-        # Authenticate using service account credentials
-        gc = pygsheets.authorize(service_file=key_json)
-        
-        # Open the Google Sheet by name
-        sheet = gc.open('FERC telegram bot overview')
-        # Select the first worksheet in the Google Sheet
-        worksheet = sheet[0]
-        
-        row_number = find_row_number(user_id, worksheet)
-        
-        if row_number is not None:
-            col_index = 9
-            worksheet.update_value((row_number, col_index), date_str)
-    
-    except Exception as x:
-        logger.exception(x)
-
-
-def outsource_user_set_remind_date(dict_with_kwargs: dict):
-    try:
-        user_id = dict_with_kwargs.get('user_id')
-        date_str = dict_with_kwargs.get('date')
-        
-        # Authenticate using service account credentials
-        gc = pygsheets.authorize(service_file=key_json)
-        
-        # Open the Google Sheet by name
-        sheet = gc.open('FERC telegram bot overview')
-        # Select the first worksheet in the Google Sheet
-        worksheet = sheet[1]
-        
-        row_number = find_row_number(user_id, worksheet)
-
-        if row_number is not None:
-            col_index = 6
-            worksheet.update_value((row_number, col_index), date_str)
-    
-    except Exception as x:
-        logger.exception(x)
+    worksheet.insert_rows(row=1, values=list_of_inputs)
 
 
 async def async_execute_of_sync_gsheets(func, **kwargs):
@@ -269,4 +98,5 @@ async def async_execute_of_sync_gsheets(func, **kwargs):
 if __name__ == '__main__':
     # loop = asyncio.get_event_loop()
     # loop.create_task(async_execute_of_sync_gsheets(register_loyalty_user(user_id=8, username=7, user_full_name=7)))
-    pass
+    # register_user({'user_id': 2})
+    new_ingredient('g0', 1, 2, 3, 4)

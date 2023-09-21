@@ -1,5 +1,7 @@
 import json
 import os
+import threading
+
 import aiohttp
 from aiohttp import web
 import jinja2
@@ -10,6 +12,7 @@ from root.db import setup as db
 from root.db import models
 from root.logger.config import logger
 from root.tg.main import admin_ids
+from root.gsheets import main as gsh
 from . import utils
 
 env = jinja2.Environment(
@@ -61,6 +64,15 @@ async def add_ingredient_post(request):
         )
         session.add(new_ingredient)
         session.commit()
+        session.refresh(new_ingredient)
+        new_ingredient_id = new_ingredient.ingredient_id
+
+        gsheet_thread = threading.Thread(target=gsh.add_to_sheet, args=('ingredients',
+                                                                        [[new_ingredient_id, name, measure,
+                                                                          calories, proteins,
+                                                                          fats, carbohydrates]]))
+        gsheet_thread.start()
+        
     except Exception as x:
         print(x)
         return web.json_response({'success': False,
@@ -110,6 +122,12 @@ async def add_meal_post(request):
         session1.refresh(new_meal)
         new_meal_id = new_meal.meal_id
         print("Obtained new_meal_id:", new_meal_id)
+
+        gsheet_thread = threading.Thread(target=gsh.add_to_sheet, args=('meals',
+                                                                        [[new_meal_id, name, recipe,
+                                                                          recipe_active_time, recipe_time,
+                                                                          recipe_difficulty]]))
+        gsheet_thread.start()
     
     except Exception as x:
         print('First exception:', x)
@@ -121,6 +139,7 @@ async def add_meal_post(request):
     print('After 1st block')
     
     session2 = db.Session()
+    
     try:
         ids_list = list()
         for i in range(1, (len(data) - 5) // 2 + 1):
@@ -130,6 +149,9 @@ async def add_meal_post(request):
         
         if len(set(ids_list)) < len(ids_list):
             raise Exception('Вы выбрали 1 ингредиент несколько раз. Проверьте, пожалуйста')
+        del ids_list
+        
+        list_to_insert_into_gsheets = []
         
         for i in range(1, (len(data) - 5) // 2 + 1):
             print(i, 'i')
@@ -146,8 +168,14 @@ async def add_meal_post(request):
                 meal_id=int(new_meal_id)
             )
             session2.execute(association)
+            list_to_insert_into_gsheets.append([ingredient.ingredient_id, new_meal_id, ingredient_amount])
         
         session2.commit()
+
+        gsheet_thread = threading.Thread(target=gsh.add_to_sheet, args=('meal_ingredients',
+                                                                        list_to_insert_into_gsheets))
+        gsheet_thread.start()
+        
     except Exception as x:
         session2.rollback()
         meal_to_delete = session2.query(models.Meal).filter(models.Meal.meal_id == new_meal_id).first()
@@ -199,6 +227,9 @@ async def add_plate_post(request):
         session1.refresh(new_plate)
         new_plate_id = new_plate.plate_id
         print("Obtained new_meal_id:", new_plate_id)
+
+        gsheet_thread = threading.Thread(target=gsh.add_to_sheet, args=('plates', [[new_plate_id, name]]))
+        gsheet_thread.start()
     
     except Exception as x:
         print('First exception:', x)
@@ -226,6 +257,8 @@ async def add_plate_post(request):
         if len(set(ids_list)) < len(ids_list):
             raise Exception('Вы выбрали 1 блюдо несколько раз. Проверьте, пожалуйста')
         
+        list_to_insert_into_gsheets = list()
+        
         for meal_id, meal_percentage in zip(ids_list, percentages_list):
             meal = session2.query(models.Meal).filter(
                 models.Meal.meal_id == int(meal_id)).first()
@@ -235,8 +268,13 @@ async def add_plate_post(request):
                 meal_id=meal.meal_id
             )
             session2.execute(association)
+            list_to_insert_into_gsheets.append([new_plate_id, meal.meal_id, meal_percentage])
         
         session2.commit()
+
+        gsheet_thread = threading.Thread(target=gsh.add_to_sheet, args=('plate_meals',
+                                                                        list_to_insert_into_gsheets))
+        gsheet_thread.start()
     
     except Exception as x:
         session2.rollback()
