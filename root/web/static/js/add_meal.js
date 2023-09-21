@@ -138,7 +138,7 @@ document
     console.log("fetched!!!!!!!!!!!!!!!!!");
     // Send JSON data to the backend
     try {
-      const request = await fetch("../api/add_plate", {
+      const request = await fetch("../api/add_meal", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

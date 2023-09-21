@@ -106,18 +106,47 @@ document
   .addEventListener("submit", async function (event) {
     event.preventDefault();
 
+    const checkboxes = document.querySelectorAll(".step_radio");
+
+    // Найдите выбранный чекбокс
+    let selectedCheckboxValue = null;
+    for (const checkbox of checkboxes) {
+      if (checkbox.checked) {
+        console.log("check", checkbox);
+        const inputElement = document.getElementById("add-ingredient1");
+
+        // Найдите соответствующий <label>
+        const labelElement = document.querySelector(
+          `label[for="${checkbox.id}"]`
+        );
+
+        // Получите текст из <label>
+        const labelText = labelElement.textContent;
+        const finalPercent = Number(labelText.slice(0, -1));
+
+        selectedCheckboxValue = finalPercent;
+        break; // Если выбран чекбокс, можно прервать цикл
+      }
+    }
+
+    console.log(selectedCheckboxValue);
+
     // Collect form data
     const formData = new FormData(event.target);
 
     // Convert form data to JSON
     const data = {};
     formData.forEach((value, key) => {
-      data[key] = value;
+      if (key !== "step1") {
+        data[key] = value;
+      } else {
+        data["meal_percentage"] = selectedCheckboxValue;
+      }
     });
     console.log("fetched!!!!!!!!!!!!!!!!!");
     // Send JSON data to the backend
     try {
-      const request = await fetch("../api/add_ingredient", {
+      const request = await fetch("../api/add_plate", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

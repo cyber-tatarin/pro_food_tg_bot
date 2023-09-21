@@ -89,15 +89,7 @@ async function getData() {
       },
     });
     const response = await request.json();
-    response.forEach((item) => {
-      const ingredient_id = item.ingredient_id;
-      const ingredient_name = item.ingredient_name;
-      const measure = item.measure;
-      const calories = item.calories;
-      const proteins = item.proteins;
-      const fats = item.fats;
-      const carbohydrates = item.carbohydrates;
-    });
+
     console.log(response);
     return response;
   } catch (error) {
