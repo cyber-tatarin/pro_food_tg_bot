@@ -56,10 +56,13 @@ def get_ikb_to_choose_gender():
 
 def get_admin_ikb():
     ikbb = InlineKeyboardBuilder()
-    ikbb.add(InlineKeyboardButton(text='Добавить блюдо',
-                                  web_app=WebAppInfo(url='https://125f-2a02-bf0-1403-c5ca-f09e-a0ed-ad32-b469.ngrok-free.app/add_meal')))
     ikbb.add(InlineKeyboardButton(text='Добавить ингредиент',
-                                  web_app=WebAppInfo(url='https://125f-2a02-bf0-1403-c5ca-f09e-a0ed-ad32-b469.ngrok-free.app/add_ingredient')))
+                                  web_app=WebAppInfo(url='https://4c90-2a02-bf0-1414-f0ea-7975-6d3c-c936-ac86.ngrok-free.app/add_ingredient')))
+    ikbb.add(InlineKeyboardButton(text='Добавить блюдо',
+                                  web_app=WebAppInfo(url='https://4c90-2a02-bf0-1414-f0ea-7975-6d3c-c936-ac86.ngrok-free.app/add_meal')))
+    ikbb.add(InlineKeyboardButton(text='Добавить тарелку',
+                                  web_app=WebAppInfo(url='https://4c90-2a02-bf0-1414-f0ea-7975-6d3c-c936-ac86.ngrok-free.app/add_plate')))
+
     ikbb.adjust(1)
     return ikbb.as_markup()
     
