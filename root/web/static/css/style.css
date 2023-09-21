@@ -175,9 +175,8 @@ input[type="number"]::-webkit-outer-spin-button {
 .choices[data-type*="select-one"]:after {
   transition: 0.3s ease-out;
   width: 26px;
-  margin-top: -3px;
   margin-right: 10px;
-  height: 10px;
+  height: 8px;
   background-repeat: no-repeat;
   background-image: url(../images/arrow.svg);
   border-style: none;
@@ -185,8 +184,8 @@ input[type="number"]::-webkit-outer-spin-button {
 
 .choices[data-type*="select-one"].is-open:after {
   width: 26px;
-  height: 10px;
-  margin-top: -4px;
+  height: 8px;
+  top: 62%;
   margin-right: 10px;
   background-repeat: no-repeat;
   transform: rotateX(180deg);
@@ -308,7 +307,7 @@ input[type="number"]::-webkit-outer-spin-button {
 }
 
 .input_relative_last {
-  margin-bottom: 20px;
+  margin-bottom: 16px;
 }
 
 .input__relative {
@@ -327,4 +326,100 @@ input[type="number"]::-webkit-outer-spin-button {
   font-style: normal;
   font-weight: 500;
   line-height: normal;
+}
+
+.steps {
+  margin-left: 8px;
+  margin-bottom: 20px;
+}
+
+.step_radio {
+  margin-right: 8px;
+}
+
+.step__title {
+  color: #303030;
+  font-family: Montserrat;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: normal;
+  margin-bottom: 12px;
+}
+
+.steps-flex {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.li {
+  color: #303030;
+  font-family: Montserrat;
+  font-size: 13px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
+}
+
+.error {
+  display: none;
+  color: #303030;
+  font-family: Montserrat;
+  font-size: 11px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: normal;
+  border-radius: 16px;
+  border: 1.2px solid #f00;
+  padding: 16px 20px;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.error_active {
+  display: block;
+}
+
+.percentages {
+  margin-bottom: 20px;
+  margin-left: 8px;
+}
+
+.percentages-flex {
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: column;
+  gap: 20px;
+}
+
+input[type="radio"] {
+  display: none;
+}
+
+/* Создать стилизованные круглые radio-кнопки */
+input[type="radio"] + label {
+  position: relative;
+  padding-left: 30px; /* Регулируйте размер круглого курсора */
+  cursor: pointer;
+  font-size: 16px; /* Размер текста */
+}
+
+/* Стилизованные круглые radio-кнопки */
+input[type="radio"] + label::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 2px;
+  width: 18px; /* Размер круглого курсора */
+  height: 18px; /* Размер круглого курсора */
+  border: 1.5px solid #000000; /* Цвет круглого курсора */
+  border-radius: 50%; /* Делаем курсор круглым */
+  transition: background-color 0.3s ease; /* Анимация при наведении */
+}
+
+/* Изменение цвета круглого курсора при наведении */
+input[type="radio"]:checked + label::before {
+  border: 1.5px solid #000000;
+  background-color: #05ff00; /* Новый цвет круглого курсора при выборе */
 }

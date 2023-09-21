@@ -42,7 +42,7 @@ async def add_ingredient_post(request):
     await utils.is_admin_by_id(tg_id)
     
     name = data.get('name')
-    
+
     measure = data.get('measure')
     if measure == '' or measure is None:
         return web.json_response({'success': False, 'error_message': 'Вы не выбрали меру'})

@@ -1,78 +1,75 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Add Meal</title>
-</head>
-<body>
-    <h1>Add a Meal</h1>
-    <form id="add-meal-form" method="POST">
-        <label for="name">Meal Name:</label>
-        <input type="text" name="name" required><br>
-
-        <label for="recipe">Recipe:</label>
-        <textarea name="recipe" rows="4" required></textarea><br>
-
-        <h2>Ingredients</h2>
-        <div id="ingredients-container">
-            <div class="ingredient">
-                <label for="ingredient2">Ingredient 2:</label>
-                <select name="ingredient_id2">
-                    <option value="1">1</option>
-					<option value="2">2</option>
-                </select>
-                <label for="ingredient_amount2">Amount:</label>
-                <input type="number" name="ingredient_amount2" required><br>
-            </div>
-			 <div class="ingredient">
-                <label for="ingredient2">Ingredient 2:</label>
-                <select name="ingredient_id1">
-                    <option value="1">1</option>
-					<option value="2">2</option>
-                </select>
-                <label for="ingredient_amount2">Amount:</label>
-                <input type="number" name="ingredient_amount1" required><br>
-            </div>
-        </div>
-
-        <button type="button" id="add-ingredient">Add Another Ingredient</button><br>
-
-        <button type="submit">Submit</button>
-    </form>
-
-<script>
-        document.getElementById("add-meal-form").addEventListener("submit", function (event) {
-            event.preventDefault();
-
-            // Collect form data
-            const formData = new FormData(event.target);
-
-            // Convert form data to JSON
-            const data = {};
-            formData.forEach((value, key) => {
-                data[key] = value;
-            });
-			console.log('fetched!!!!!!!!!!!!!!!!!');
-            // Send JSON data to the backend
-            fetch('../api/add_meal', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(data),
-            })
-            .then(response => {
-                if (response.ok) {
-                    alert('Data submitted successfully');
-                } else {
-                    alert('Error submitting data');
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert(error);
-            });
-        });
-    </script>
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/static/css/reset.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/choices.js@9.0.1/public/assets/styles/choices.min.css"
+    />
+    <link rel="stylesheet" href="/static/css/style.css" />
+  </head>
+  <body>
+    <main class="main">
+      <div class="container">
+        <form
+          id="form"
+          action="../api/add_meal"
+          method="post"
+          enctype="multipart/form-data"
+        >
+          <p class="message">Добавить блюдо</p>
+          <div class="dish__info">
+            <p class="dish__title">Название</p>
+            <input
+              name="name"
+              class="input input_grey"
+              type="text"
+              maxlength="100"
+              placeholder="Мясо"
+              required
+            />
+          </div>
+          <div class="dish__item">
+            <p class="dish__title">Ингридиент 1 (в мере "ладонь")</p>
+            <select name="ingredient_id1" class="js-choice_1">
+              <option value="" selected>Введите ингридиент</option>
+            </select>
+            <p class="dish__title">Количество</p>
+            <input
+              name="ingredient_amount1"
+              class="input input__amount input_grey"
+              type="number"
+              maxlength="100"
+              placeholder="Введите количество на 1 порцию"
+              required
+            />
+            <div class="dish__amount dish__amount1">0 / 0 / 0 / 0</div>
+          </div>
+          <button class="dish__add">Добавить ингридиент</button>
+          <div class="dish__recepi">
+            <p class="dish__title">Рецепт</p>
+            <textarea
+              placeholder="Введите ингридиент"
+              class="dish__textarea"
+              name="recipe"
+            ></textarea>
+          </div>
+          <p class="dish__calories">Общее КБЖУ блюда: 0 / 0 / 0 / 0</p>
+          <input name="tg_id" type="hidden" value="459471362" />
+          <button class="button_submit" type="submit">Сохранить</button>
+        </form>
+      </div>
+    </main>
+    <script src="https://cdn.jsdelivr.net/npm/choices.js@9.0.1/public/assets/scripts/choices.min.js"></script>
+    <script src="/static/js/add_meal.js"></script>
+  </body>
 </html>

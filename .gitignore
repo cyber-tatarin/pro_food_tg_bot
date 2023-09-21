@@ -4,3 +4,4 @@ __pycache__
 bot.log
 gsheets_key.json
 recommendations
+venv

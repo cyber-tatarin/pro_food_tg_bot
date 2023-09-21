@@ -10,22 +10,27 @@
       href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="/static/css/style.css" />
+
+    <link rel="stylesheet" href="/static/css/reset.css" />
     <link
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/choices.js@9.0.1/public/assets/styles/choices.min.css"
     />
-    <link rel="stylesheet" href="/static/css/reset.css" />
+    <link rel="stylesheet" href="/static/css/style.css" />
   </head>
   <body>
     <main class="main">
       <div class="container">
-        <form action="../api/add_ingredient" method="post" enctype="multipart/form-data">
+        <form
+          action="../api/add_ingredient"
+          method="post"
+          enctype="multipart/form-data"
+        >
           <p class="message">Добавить ингридиент</p>
           <div class="ingredient__info">
             <p class="dish__title">Название</p>
             <input
-					name="name"
+              name="name"
               class="input input_grey"
               type="text"
               maxlength="100"
@@ -35,7 +40,7 @@
           </div>
 
           <p class="dish__title">Мера</p>
-          <select name="measure" class="js-choice_1">
+          <select required name="measure" class="js-choice_1">
             <option value="" selected>Выберите меру</option>
             <option value="1">Кафе</option>
             <option value="2">Финтес клуб</option>
@@ -56,7 +61,7 @@
           <p class="dish__title">Энергетическая ценность</p>
           <div class="input__relative">
             <input
-					name="calories"
+              name="calories"
               class="input input_grey input_pfc"
               type="number"
               maxlength="100"
@@ -68,7 +73,7 @@
           <p class="dish__title">Белков</p>
           <div class="input__relative">
             <input
-					name="proteins"
+              name="proteins"
               class="input input_grey input_pfc"
               type="number"
               maxlength="100"
@@ -79,7 +84,7 @@
           <p class="dish__title">Жиров</p>
           <div class="input__relative">
             <input
-					name="fats"
+              name="fats"
               class="input input_grey input_pfc"
               type="number"
               maxlength="100"
@@ -90,7 +95,7 @@
           <p class="dish__title">Углеводов</p>
           <div class="input__relative input_relative_last">
             <input
-					name="carbohydrates"
+              name="carbohydrates"
               class="input input_grey"
               type="number"
               maxlength="100"
@@ -98,12 +103,54 @@
               required
             /><span class="cal">г</span>
           </div>
-			<input name="tg_id" type="hidden" value="459471362"/>
+          <div class="steps">
+            <p class="step__title">Следующий шаг</p>
+            <div class="steps-flex">
+              <div class="step__inner">
+                <input
+                  selected
+                  type="radio"
+                  name="next_step"
+                  class="step_radio"
+                  id="close"
+                /><label for="close">Закрыть окно</label>
+              </div>
+              <div class="step__inner">
+                <input
+                  type="radio"
+                  name="next_step"
+                  class="step_radio"
+                  id="add-ingredient"
+                /><label for="add-ingredient">Добавить ингридиент</label>
+              </div>
+              <div class="step__inner">
+                <input
+                  type="radio"
+                  name="next_step"
+                  class="step_radio"
+                  id="add-dish"
+                /><label for="add-dish">Добавить блюдо</label>
+              </div>
+              <div class="step__inner">
+                <input
+                  type="radio"
+                  name="next_step"
+                  class="step_radio"
+                  id="add-meal"
+                /><label for="add-meal">Добавить прием пищи</label>
+              </div>
+            </div>
+          </div>
+
+          <div class="error">
+            Вы ввели данные некорректно, проверьте пожалуйста
+          </div>
+          <input name="tg_id" type="hidden" value="459471362" />
           <button class="button_submit" type="submit">Сохранить</button>
         </form>
       </div>
     </main>
     <script src="https://cdn.jsdelivr.net/npm/choices.js@9.0.1/public/assets/scripts/choices.min.js"></script>
-    <script src="/static/js/main.js"></script>
+    <script src="/static/js/add_ingredient.js"></script>
   </body>
 </html>
