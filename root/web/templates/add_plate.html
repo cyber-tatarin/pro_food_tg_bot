@@ -40,43 +40,21 @@
             />
             <p class="dish__title">Тип</p>
             <select class="js-choice_1 js-choice_type">
-              <option value="" selected>Введите ингридиент</option>
+              <option value="" selected>Введите тип</option>
               <option value="1">Кафе</option>
               <option value="2">Финтес клуб</option>
               <option value="3">Пиццерия</option>
-              <option value="4">Реклама</option>
-              <option value="5">Салон красоты</option>
-              <option value="6">Шаурмичная</option>
-              <option value="7">Бургерная</option>
-              <option value="8">Кальянная</option>
-              <option value="9">Суши-бар</option>
-              <option value="10">Интернет-магазин</option>
-              <option value="11">Рыбалка</option>
-              <option value="12">Пчеловодство</option>
-              <option value="13">Медицина</option>
-              <option value="14">Маркетинг</option>
             </select>
           </div>
           <div class="dish__item">
             <p class="dish__title">Блюдо 1</p>
             <select name="meal_id1" class="js-choice_1">
-              <option value="" selected>Введите ингридиент</option>
+              <option value="" selected>Введите блюдо</option>
               <option value="1">Кафе</option>
               <option value="2">Финтес клуб</option>
               <option value="3">Пиццерия</option>
-              <option value="4">Реклама</option>
-              <option value="5">Салон красоты</option>
-              <option value="6">Шаурмичная</option>
-              <option value="7">Бургерная</option>
-              <option value="8">Кальянная</option>
-              <option value="9">Суши-бар</option>
-              <option value="10">Интернет-магазин</option>
-              <option value="11">Рыбалка</option>
-              <option value="12">Пчеловодство</option>
-              <option value="13">Медицина</option>
-              <option value="14">Маркетинг</option>
             </select>
-            <p class="dish__title">% в тарелке</p>
+            <!-- <p class="dish__title">% в тарелке</p>
             <input
               name="meal_percentage1"
               class="input input_grey"
@@ -84,18 +62,56 @@
               maxlength="100"
               placeholder="Введите количество на 1 порцию"
               required
-            />
+            /> -->
+            <div class="percentages">
+              <p class="step__title">% в тарелке</p>
+              <div class="percentages-flex">
+                <div class="step__inner">
+                  <input
+                    type="radio"
+                    name="step1"
+                    class="step_radio"
+                    id="close1"
+                  /><label for="close1">25%</label>
+                </div>
+                <div class="step__inner">
+                  <input
+                    type="radio"
+                    name="step1"
+                    class="step_radio"
+                    id="add-ingredient1"
+                  /><label for="add-ingredient1">33%</label>
+                </div>
+                <div class="step__inner">
+                  <input
+                    type="radio"
+                    name="step1"
+                    class="step_radio"
+                    id="add-dish1"
+                  /><label for="add-dish1">50%</label>
+                </div>
+                <div class="step__inner">
+                  <input
+                    type="radio"
+                    name="step1"
+                    class="step_radio"
+                    id="add-meal1"
+                  /><label for="add-meal1">100%</label>
+                </div>
+              </div>
+            </div>
           </div>
 
           <button class="dish__add">Добавить ингридиент</button>
           <p class="dish__calories" style="margin-top: 16px">
-            Общее КБЖУ блюда: 300 / 20 / 10 / 3
+            Общее КБЖУ блюда: 0 / 0 / 0 / 0
           </p>
+          <input name="tg_id" type="hidden" value="459471362" />
           <button class="button_submit" type="submit">Сохранить</button>
         </form>
       </div>
     </main>
     <script src="https://cdn.jsdelivr.net/npm/choices.js@9.0.1/public/assets/scripts/choices.min.js"></script>
-    <script src="/static/js/add_meal.js"></script>
+    <script src="/static/js/add_plate.js"></script>
   </body>
 </html>

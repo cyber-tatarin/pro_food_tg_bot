@@ -363,6 +363,7 @@ input[type="number"]::-webkit-outer-spin-button {
 }
 
 .error {
+  display: none;
   color: #303030;
   font-family: Montserrat;
   font-size: 11px;
@@ -374,6 +375,22 @@ input[type="number"]::-webkit-outer-spin-button {
   padding: 16px 20px;
   text-align: center;
   margin-bottom: 20px;
+}
+
+.error_active {
+  display: block;
+}
+
+.percentages {
+  margin-bottom: 20px;
+  margin-left: 8px;
+}
+
+.percentages-flex {
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: column;
+  gap: 20px;
 }
 
 input[type="radio"] {
@@ -396,12 +413,13 @@ input[type="radio"] + label::before {
   top: 2px;
   width: 18px; /* Размер круглого курсора */
   height: 18px; /* Размер круглого курсора */
-  background-color: black; /* Цвет круглого курсора */
+  border: 1.5px solid #000000; /* Цвет круглого курсора */
   border-radius: 50%; /* Делаем курсор круглым */
   transition: background-color 0.3s ease; /* Анимация при наведении */
 }
 
 /* Изменение цвета круглого курсора при наведении */
 input[type="radio"]:checked + label::before {
+  border: 1.5px solid #000000;
   background-color: #05ff00; /* Новый цвет круглого курсора при выборе */
 }

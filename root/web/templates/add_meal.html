@@ -10,7 +10,6 @@
       href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap"
       rel="stylesheet"
     />
-
     <link rel="stylesheet" href="/static/css/reset.css" />
     <link
       rel="stylesheet"
@@ -22,6 +21,7 @@
     <main class="main">
       <div class="container">
         <form
+          id="form"
           action="../api/add_meal"
           method="post"
           enctype="multipart/form-data"
@@ -30,6 +30,7 @@
           <div class="dish__info">
             <p class="dish__title">Название</p>
             <input
+              name="name"
               class="input input_grey"
               type="text"
               maxlength="100"
@@ -39,32 +40,19 @@
           </div>
           <div class="dish__item">
             <p class="dish__title">Ингридиент 1 (в мере "ладонь")</p>
-            <select class="js-choice_1">
+            <select name="ingredient_id1" class="js-choice_1">
               <option value="" selected>Введите ингридиент</option>
-              <option value="1">Кафе</option>
-              <option value="2">Финтес клуб</option>
-              <option value="3">Пиццерия</option>
-              <option value="4">Реклама</option>
-              <option value="5">Салон красоты</option>
-              <option value="6">Шаурмичная</option>
-              <option value="7">Бургерная</option>
-              <option value="8">Кальянная</option>
-              <option value="9">Суши-бар</option>
-              <option value="10">Интернет-магазин</option>
-              <option value="11">Рыбалка</option>
-              <option value="12">Пчеловодство</option>
-              <option value="13">Медицина</option>
-              <option value="14">Маркетинг</option>
             </select>
             <p class="dish__title">Количество</p>
             <input
-              class="input input_grey"
+              name="ingredient_amount1"
+              class="input input__amount input_grey"
               type="number"
               maxlength="100"
               placeholder="Введите количество на 1 порцию"
               required
             />
-            <div class="dish__amount">450 / 10 / 20 / 4</div>
+            <div class="dish__amount dish__amount1">0 / 0 / 0 / 0</div>
           </div>
           <button class="dish__add">Добавить ингридиент</button>
           <div class="dish__recepi">
@@ -72,16 +60,16 @@
             <textarea
               placeholder="Введите ингридиент"
               class="dish__textarea"
-              name=""
-              id=""
+              name="recipe"
             ></textarea>
           </div>
-          <p class="dish__calories">Общее КБЖУ блюда: 300/20/10/3</p>
+          <p class="dish__calories">Общее КБЖУ блюда: 0 / 0 / 0 / 0</p>
+          <input name="tg_id" type="hidden" value="459471362" />
           <button class="button_submit" type="submit">Сохранить</button>
         </form>
       </div>
     </main>
     <script src="https://cdn.jsdelivr.net/npm/choices.js@9.0.1/public/assets/scripts/choices.min.js"></script>
-    <script src="/static/js/main.js"></script>
+    <script src="/static/js/add_meal.js"></script>
   </body>
 </html>
