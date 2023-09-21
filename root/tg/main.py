@@ -175,7 +175,7 @@ async def get_gender(callback_query: CallbackQuery,
                 day_carbohydrates=carbohydrates
             )
             session.add(new_user)
-            new_measure = models.Measure(
+            new_measure = models.BodyMeasure(
                 tg_id=callback_query.from_user.id,
                 weight=weight
             )
