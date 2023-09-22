@@ -26,13 +26,13 @@ if __name__ == '__main__':
     # models.Meal.__table__.drop(bind=engine)
     # models.Plate.__table__.drop(bind=engine)
     # models.ingredient_measure_association.create(bind=engine)
-#     #
-#     models.User.__table__.create(bind=engine)
-#     models.BodyMeasure.__table__.create(bind=engine)
-#     models.Ingredient.__table__.create(bind=engine)
-#     models.Meal.__table__.create(bind=engine)
-#     models.Plate.__table__.create(bind=engine)
-#     models.meal_ingredients_association.create(bind=engine)
+
+    models.User.__table__.create(bind=engine)
+    models.BodyMeasure.__table__.create(bind=engine)
+    models.Ingredient.__table__.create(bind=engine)
+    models.Meal.__table__.create(bind=engine)
+    models.Plate.__table__.create(bind=engine)
+    models.meal_ingredients_association.create(bind=engine)
     models.plate_meals_association.create(bind=engine)
     
     # session = Session()
