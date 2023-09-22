@@ -17,14 +17,14 @@ class User(Base):
     __tablename__ = "users"
     
     tg_id = Column(Integer, primary_key=True)
-    username = Column(String)
+    username = Column(String(100))
     date_registered = Column(DateTime, default=datetime.now)
     
     is_new = Column(Boolean, default=True)
     
     birth_date = Column(DateTime)
     height = Column(Integer)
-    gender = Column(String)
+    gender = Column(String(20))
     weight_aim = Column(Float)
     
     plate_diameter = Column(Integer)
@@ -73,9 +73,9 @@ class Ingredient(Base):
     __tablename__ = 'ingredients'
     
     ingredient_id = Column(Integer, primary_key=True, autoincrement=True)
-    ingredient_name = Column(String, unique=True)
+    ingredient_name = Column(String(256), unique=True)
     
-    measure = Column(String)
+    measure = Column(String(50))
     calories = Column(Integer)
     proteins = Column(Integer)
     fats = Column(Integer)
@@ -88,7 +88,7 @@ class Meal(Base):
     __tablename__ = 'meals'
     
     meal_id = Column(Integer, primary_key=True, autoincrement=True)
-    meal_name = Column(String, unique=True)
+    meal_name = Column(String(120), unique=True)
 
     recipe = Column(Text)
     
@@ -105,7 +105,7 @@ class Plate(Base):
     __tablename__ = "plates"
     
     plate_id = Column(Integer, primary_key=True, autoincrement=True)
-    plate_name = Column(String, unique=True)
+    plate_name = Column(String(120), unique=True)
     plate_type = Column(String)
     
     meals = relationship("Meal", secondary=plate_meals_association, back_populates="plates")
