@@ -38,6 +38,8 @@
               required
             />
           </div>
+
+
           <div class="dish__item">
             <p class="dish__title">Ингридиент 1 (в мере "ладонь")</p>
             <select name="ingredient_id1" class="js-choice_1">
@@ -64,6 +66,48 @@
             ></textarea>
           </div>
           <p class="dish__calories">Общее КБЖУ блюда: 0 / 0 / 0 / 0</p>
+
+
+
+			<div class="dish__info">
+          <p class="dish__title">Время приготовления</p>
+			<div class="input__relative">
+            <input
+              name="recipe_time"
+              class="input input_grey input_pfc"
+              type="number"
+              maxlength="100"
+              placeholder="Введите время приготовления"
+              required
+            /><span class="cal">минут</span>
+          </div>
+
+			<p class="dish__title">Время активного приготовления</p>
+			<div class="input__relative">
+            <input
+              name="recipe_active_time"
+              class="input input_grey input_pfc"
+              type="number"
+              maxlength="100"
+              placeholder="Введите время активного приготовления"
+              required
+            /><span class="cal">минут</span>
+          </div>
+
+			<p class="dish__title">Общая сложность блюда</p>
+			<div class="input__relative">
+            <input
+              name="recipe_difficulty"
+              class="input input_grey input_pfc"
+              type="number"
+              maxlength="100"
+              placeholder="Введите общую сложность рецепта от 1 до 5"
+              required
+            />
+          </div>
+			</div>
+
+
           <div class="steps">
             <p class="step__title">Следующий шаг</p>
             <div class="steps-flex">

@@ -106,6 +106,7 @@ class Plate(Base):
     
     plate_id = Column(Integer, primary_key=True, autoincrement=True)
     plate_name = Column(String, unique=True)
+    plate_type = Column(String)
     
     meals = relationship("Meal", secondary=plate_meals_association, back_populates="plates")
 

@@ -213,12 +213,14 @@ async def add_plate_post(request):
     print('Parsed data')
     
     name = data.get('name')
+    plate_type = data.get('plate_type')
     
     session1 = db.Session()
     print('Created session')
     try:
         new_plate = models.Plate(
             plate_name=name,
+            plate_type=plate_type
         )
         print("Created new_meal:", new_plate)
         session1.add(new_plate)
@@ -226,9 +228,9 @@ async def add_plate_post(request):
         
         session1.refresh(new_plate)
         new_plate_id = new_plate.plate_id
-        print("Obtained new_meal_id:", new_plate_id)
+        print("Obtain ed new_meal_id:", new_plate_id)
 
-        gsheet_thread = threading.Thread(target=gsh.add_to_sheet, args=('plates', [[new_plate_id, name]]))
+        gsheet_thread = threading.Thread(target=gsh.add_to_sheet, args=('plates', [[new_plate_id, name, plate_type]]))
         gsheet_thread.start()
     
     except Exception as x:

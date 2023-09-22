@@ -29,7 +29,7 @@ load_dotenv(find_dotenv())
 bot = Bot(token=os.getenv('TG_API'))
 storage = RedisStorage.from_url('redis://localhost:6379/0')
 dp = Dispatcher(storage=storage)
-admin_ids = {459471362, }
+admin_ids = {459471362, 983672566}
 
 
 # -------------------------------------------------------------------------------------------------
