@@ -103,16 +103,8 @@ input[type="number"]::-webkit-outer-spin-button {
 }
 
 .add-ingredient,
-.dish__add:hover {
-  border: 1.5px dashed #05ff00;
-}
-
 .dish__remove_active {
   display: block;
-}
-
-.dish__remove:hover {
-  border: 1.5px dashed #ff0831;
 }
 
 .dish__recepi {
@@ -169,10 +161,6 @@ input[type="number"]::-webkit-outer-spin-button {
   line-height: normal;
   border-radius: 16px;
   background: #05ff00;
-}
-
-.button_submit:hover {
-  color: #fff;
 }
 
 .input_grey::placeholder {
@@ -445,4 +433,31 @@ input[type="radio"] + label::before {
 input[type="radio"]:checked + label::before {
   border: 1.5px solid #000000;
   background-color: #05ff00; /* Новый цвет круглого курсора при выборе */
+}
+
+* {
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+}
+
+@media (hover: hover) {
+  .dish__add:hover {
+    border: 1.5px dashed #05ff00;
+  }
+
+  .dish__remove:hover {
+    border: 1.5px dashed #ff0831;
+  }
+
+  .button_submit:hover {
+    color: #fff;
+  }
+}
+
+@media (hover: none) {
+  .dish__add {
+    border: 1.5px dashed #05ff00;
+  }
+  .dish__remove {
+    border: 1.5px dashed #ff0831;
+  }
 }

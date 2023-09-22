@@ -25,37 +25,20 @@ const renderSelect = (response, data) => {
     el.addEventListener(
       "choice",
       function (event) {
-        console.log("label", event.detail.choice.label);
-        console.log("value", event.detail.choice.value);
-        // console.log(response.length);
-        // response.forEach((item) => {
-        //   console.log(item["ingredient_id"]);
-        //   console.log(event.detail.choice.value);
-        //   if (
-        //     item["ingredient_id"] ===
-        //     response[event.detail.choice.value]["ingredient_id"]
-        //   ) {
-        //     console.log(1);
-        //   }
-        // });
+        response.forEach((item) => {
+          // console.log(item);
+          if (item.meal_name === event.detail.choice.label) {
+            console.log("measure", item.meal_name);
+            setTimeout(() => {
+              setTotalEnergy(response);
+            }, 0);
+          }
+        });
 
-        // const dish__amount = document.querySelector(
-        //   `.dish__amount${choicesCounter--}`
-        // );
-        // console.log(test, choicesCounter);
-        // dish__amount.innerHTML =
-        //   test[choicesCounter].calories +
-        //   "  /  " +
-        //   test[choicesCounter].proteins +
-        //   "  /  " +
-        //   test[choicesCounter].fats +
-        //   "  /  " +
-        //   test[choicesCounter].carbohydrates;
         el.parentElement.style.color = "#303030";
       },
       false
     );
-    console.log("data", data);
     choices.setChoices(data, "value", "label", false);
   });
 };
@@ -63,17 +46,16 @@ const renderSelect = (response, data) => {
 let testChoices = [];
 let response;
 
-// renderSelect();
-
 const buttonAdd = document.querySelector(".dish__add");
 buttonAdd.addEventListener("click", async (event) => {
   event.preventDefault();
   document.querySelector(".dish__remove").classList.add("dish__remove_active");
+  document.querySelector(".dish__remove").disabled = false;
   buttonAdd.parentElement.insertAdjacentHTML(
     "beforebegin",
     `<div class="dish__item dish__item_new">
     <p class="dish__title">Блюдо ${choicesCounter}</p>
-    <select name="meal_id${choicesCounter}" class="js-choice_${choicesCounter}">
+    <select name="meal_id${choicesCounter}" class="js-choice_${choicesCounter} choice-energy">
       <option value="" selected>Введите ингридиент</option>
     
     </select>
@@ -82,6 +64,7 @@ buttonAdd.addEventListener("click", async (event) => {
               <div class="percentages-flex">
                 <div class="step__inner">
                   <input
+                  checked
                     type="radio"    
                     name="meal_percentage${choicesCounter}"
                     class="step__margin"
@@ -117,35 +100,22 @@ buttonAdd.addEventListener("click", async (event) => {
   );
   console.log(choicesCounter);
   renderSelect(response, testChoices);
-
-  // const elements = document.querySelectorAll(`.js-choice_${choicesCounter++}`);
-  // elements.forEach((el) => {
-  //   const choices = new Choices(el, {
-  //     itemSelectText: "",
-  //     noResultsText: "Не найдено",
-  //   });
-  //   el.addEventListener(
-  //     "choice",
-  //     function (event) {
-  //       el.parentElement.style.color = "#303030";
-  //     },
-  //     false
-  //   );
-  // });
 });
 
 const buttonRemove = document.querySelector(".dish__remove");
 buttonRemove.addEventListener("click", (event) => {
   event.preventDefault();
-  console.log(buttonRemove.parentElement.previousSibling);
+  // console.log(buttonRemove.parentElement.previousSibling);
   buttonRemove.parentElement.previousSibling.remove();
   const items = document.querySelectorAll(".dish__item");
   if (items.length < 2) {
+    document.querySelector(".dish__remove").disabled = true;
     document
       .querySelector(".dish__remove")
       .classList.remove("dish__remove_active");
   }
   choicesCounter--;
+  setTotalEnergy(response);
 });
 
 const form = document.getElementById("form");
@@ -158,36 +128,23 @@ document
     const box = {};
 
     const checkboxes = document.querySelectorAll(".step__margin");
-    // console.log(checkboxes);
-
-    // Найдите выбранный чекбокс
     let selectedCheckboxValue = null;
     for (const checkbox of checkboxes) {
       if (checkbox.checked) {
-        // console.log("check", checkbox);
-
-        // Найдите соответствующий <label>
         const labelElement = document.querySelector(
           `label[for="${checkbox.id}"]`
         );
 
-        // Получите текст из <label>
         const labelText = labelElement.textContent;
         const finalPercent = Number(labelText.slice(0, -1));
 
         selectedCheckboxValue = finalPercent;
         box[checkbox.name] = selectedCheckboxValue;
-        // break; // Если выбран чекбокс, можно прервать цикл
       }
     }
 
-    // console.log(selectedCheckboxValue);
-    // console.log("box", box);
-
-    // Collect form data
     const formData = new FormData(event.target);
 
-    // Convert form data to JSON
     const data = {};
     formData.forEach((value, key) => {
       if (key !== "next_step") {
@@ -199,8 +156,6 @@ document
       data[key] = box[key];
     }
 
-    // console.log("fetched", data);
-    // Send JSON data to the backend
     try {
       const request = await fetch("../api/add_plate", {
         method: "POST",
@@ -250,26 +205,14 @@ async function getData() {
       },
     });
     response = await request.json();
-    // console.log("response", response);
 
     testChoices = response.map((item) => ({
       value: item.meal_id,
       label: item.meal_name,
     }));
-    // console.log(testChoices);
-    renderSelect(response, testChoices);
-    // const dish__amount = document.querySelector(
-    //   `.dish__amount${choicesCounter - 1}`
-    // );
 
-    // dish__amount.innerHTML =
-    //   response[choicesCounter - 1].calories +
-    //   "  /  " +
-    //   response[choicesCounter - 1].proteins +
-    //   "  /  " +
-    //   response[choicesCounter - 1].fats +
-    //   "  /  " +
-    //   response[choicesCounter - 1].carbohydrates;
+    renderSelect(response, testChoices);
+
     return response;
   } catch (error) {
     console.error("Ошибка при получении данных:", error);
@@ -277,6 +220,33 @@ async function getData() {
 }
 
 getData();
+
+function setTotalEnergy(data) {
+  const dishAmount = document.querySelectorAll(`.choice-energy`);
+  const totalEnergy = {};
+  totalEnergy.calories = 0;
+  totalEnergy.proteins = 0;
+  totalEnergy.fats = 0;
+  totalEnergy.carbohydrates = 0;
+
+  dishAmount.forEach((item) => {
+    const value = item.textContent;
+
+    data.forEach((el) => {
+      if (el.meal_name === value) {
+        // console.log(el);
+        totalEnergy.calories += +el.calories;
+        totalEnergy.proteins += +el.proteins;
+        totalEnergy.fats += +el.fats;
+        totalEnergy.carbohydrates += +el.carbohydrates;
+      }
+    });
+  });
+
+  const totalCalories = document.querySelector(".dish__calories");
+
+  totalCalories.textContent = `Общее КБЖУ приема пищи: ${totalEnergy.calories}  /  ${totalEnergy.proteins}  /  ${totalEnergy.fats}  /  ${totalEnergy.carbohydrates}`;
+}
 
 let tg = window.Telegram.WebApp;
 let tg_id = tg.initDataUnsafe.user.id;
