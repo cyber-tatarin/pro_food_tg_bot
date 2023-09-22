@@ -77,8 +77,6 @@ const renderSelect = (response, data) => {
 let testChoices = [];
 let response;
 
-console.log(testChoices);
-
 // renderSelect();
 
 const button = document.querySelector(".dish__add");
@@ -87,7 +85,7 @@ button.addEventListener("click", (event) => {
   button.insertAdjacentHTML(
     "beforebegin",
     `<div class="dish__item dish__item_new">
-    <p class="dish__title">Ингридиент 1 (в мере "ладонь")</p>
+    <p class="dish__title">Ингридиент ${choicesCounter} (в мере "ладонь")</p>
     <select name="ingredient_id${choicesCounter}" class="js-choice_${choicesCounter}">
       <option value="" selected>Введите ингридиент</option>
     </select>
@@ -115,7 +113,6 @@ button.addEventListener("click", (event) => {
   //   "  /  " +
   //   test[choicesCounter].carbohydrates;
 
-  renderSelect();
   // calculateAmountFromInputs();
 });
 
@@ -132,13 +129,15 @@ document
     // Convert form data to JSON
     const data = {};
     formData.forEach((value, key) => {
-      data[key] = value;
+      if (key !== "next_step") {
+        data[key] = value;
+      }
     });
     console.log("data", data);
     console.log("fetched!!!!!!!!!!!!!!!!!");
     // Send JSON data to the backend
     try {
-      const request = await fetch("../api/add_plate", {
+      const request = await fetch("../api/add_meal", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -146,10 +145,31 @@ document
         body: JSON.stringify(data),
       });
       const response = await request.json();
-      if (response.status === 200) {
+      if (response.success === true) {
+        const stepInputs = document.querySelectorAll(".step_radio");
+        stepInputs.forEach((step) => {
+          if (step.checked) {
+            if (step.id === "close") {
+              console.log("close");
+              let tg = window.Telegram.WebApp;
+              tg.close();
+            } else if (step.id === "add-ingredient") {
+              window.location.href = "../add_ingredient";
+              console.log("add-ingredient");
+            } else if (step.id === "add-dish") {
+              window.location.href = "../add_meal";
+              console.log("add-dish");
+            } else {
+              window.location.href = "../add_plate";
+              console.log("else");
+            }
+          }
+        });
         console.log("fetched successfully!");
+        document.querySelector(".error").classList.remove("error_active");
       } else {
-        console.log(response.status);
+        document.querySelector(".error").classList.add("error_active");
+        console.log(response);
       }
     } catch (err) {
       console.log(err);
@@ -233,3 +253,8 @@ function calculateAmountFromInputs() {
 }
 
 calculateAmountFromInputs();
+
+let tg = window.Telegram.WebApp;
+let tg_id = tg.initDataUnsafe.user.id;
+
+document.querySelector("#tg_id").value = tg_id;

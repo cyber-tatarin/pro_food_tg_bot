@@ -26,7 +26,7 @@
           method="post"
           enctype="multipart/form-data"
         >
-          <p class="message">Добавить блюдо</p>
+          <p class="message">Добавить прием пищи</p>
           <div class="dish__info">
             <p class="dish__title">Название</p>
             <input
@@ -39,20 +39,17 @@
               required
             />
             <p class="dish__title">Тип</p>
-            <select class="js-choice_1 js-choice_type">
+            <select class="js-choice_type">
               <option value="" selected>Введите тип</option>
-              <option value="1">Кафе</option>
-              <option value="2">Финтес клуб</option>
-              <option value="3">Пиццерия</option>
+              <option value="1">Завтрак</option>
+              <option value="2">Обед</option>
+              <option value="3">Ужин</option>
             </select>
           </div>
           <div class="dish__item">
             <p class="dish__title">Блюдо 1</p>
             <select name="meal_id1" class="js-choice_1">
               <option value="" selected>Введите блюдо</option>
-              <option value="1">Кафе</option>
-              <option value="2">Финтес клуб</option>
-              <option value="3">Пиццерия</option>
             </select>
             <!-- <p class="dish__title">% в тарелке</p>
             <input
@@ -68,49 +65,93 @@
               <div class="percentages-flex">
                 <div class="step__inner">
                   <input
+                    checked
                     type="radio"
-                    name="step1"
-                    class="step_radio"
-                    id="close1"
-                  /><label for="close1">25%</label>
+                    name="meal_percentage1"
+                    class="step__margin"
+                    id="percentage1_1"
+                  /><label for="percentage1_1">25%</label>
                 </div>
                 <div class="step__inner">
                   <input
                     type="radio"
-                    name="step1"
-                    class="step_radio"
-                    id="add-ingredient1"
-                  /><label for="add-ingredient1">33%</label>
+                    name="meal_percentage1"
+                    class="step__margin"
+                    id="percentage2_1"
+                  /><label for="percentage2_1">33%</label>
                 </div>
                 <div class="step__inner">
                   <input
                     type="radio"
-                    name="step1"
-                    class="step_radio"
-                    id="add-dish1"
-                  /><label for="add-dish1">50%</label>
+                    name="meal_percentage1"
+                    class="step__margin"
+                    id="percentage3_1"
+                  /><label for="percentage3_1">50%</label>
                 </div>
                 <div class="step__inner">
                   <input
                     type="radio"
-                    name="step1"
-                    class="step_radio"
-                    id="add-meal1"
-                  /><label for="add-meal1">100%</label>
+                    name="meal_percentage1"
+                    class="step__margin"
+                    id="percentage4_1"
+                  /><label for="percentage4_1">100%</label>
                 </div>
               </div>
             </div>
           </div>
 
-          <button class="dish__add">Добавить ингридиент</button>
+          <button class="dish__add">Добавить блюдо</button>
           <p class="dish__calories" style="margin-top: 16px">
             Общее КБЖУ блюда: 0 / 0 / 0 / 0
           </p>
-          <input name="tg_id" type="hidden" value="459471362" />
+          <input id="tg_id" name="tg_id" type="hidden" value="459471362" />
+          <div class="steps">
+            <p class="step__title">Следующий шаг</p>
+            <div class="steps-flex">
+              <div class="step__inner">
+                <input
+                  selected
+                  type="radio"
+                  name="next_step"
+                  class="step_radio"
+                  id="close"
+                /><label for="close">Закрыть окно</label>
+              </div>
+              <div class="step__inner">
+                <input
+                  type="radio"
+                  name="next_step"
+                  class="step_radio"
+                  id="add-ingredient"
+                /><label for="add-ingredient">Добавить ингридиент</label>
+              </div>
+              <div class="step__inner">
+                <input
+                  type="radio"
+                  name="next_step"
+                  class="step_radio"
+                  id="add-dish"
+                /><label for="add-dish">Добавить блюдо</label>
+              </div>
+              <div class="step__inner">
+                <input
+                  checked
+                  type="radio"
+                  name="next_step"
+                  class="step_radio"
+                  id="add-meal"
+                /><label for="add-meal">Добавить прием пищи</label>
+              </div>
+            </div>
+          </div>
+          <div class="error">
+            Вы ввели данные некорректно, проверьте пожалуйста
+          </div>
           <button class="button_submit" type="submit">Сохранить</button>
         </form>
       </div>
     </main>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/choices.js@9.0.1/public/assets/scripts/choices.min.js"></script>
     <script src="/static/js/add_plate.js"></script>
   </body>

@@ -1,6 +1,6 @@
 let choicesCounter = 1;
 
-const renderSelect = () => {
+const renderSelect = (response, data) => {
   const elements = document.querySelectorAll(`.js-choice_${choicesCounter++}`);
   elements.forEach((el) => {
     const choices = new Choices(el, {
@@ -10,16 +10,45 @@ const renderSelect = () => {
     el.addEventListener(
       "choice",
       function (event) {
-        document
-          .querySelectorAll(".choices__inner")
-          .forEach((el) => (el.style.color = "#303030"));
+        console.log("label", event.detail.choice.label);
+        console.log("value", event.detail.choice.value);
+        // console.log(response.length);
+        // response.forEach((item) => {
+        //   console.log(item["ingredient_id"]);
+        //   console.log(event.detail.choice.value);
+        //   if (
+        //     item["ingredient_id"] ===
+        //     response[event.detail.choice.value]["ingredient_id"]
+        //   ) {
+        //     console.log(1);
+        //   }
+        // });
+
+        // const dish__amount = document.querySelector(
+        //   `.dish__amount${choicesCounter--}`
+        // );
+        // console.log(test, choicesCounter);
+        // dish__amount.innerHTML =
+        //   test[choicesCounter].calories +
+        //   "  /  " +
+        //   test[choicesCounter].proteins +
+        //   "  /  " +
+        //   test[choicesCounter].fats +
+        //   "  /  " +
+        //   test[choicesCounter].carbohydrates;
+        el.parentElement.style.color = "#303030";
       },
       false
     );
+    console.log(data);
+    choices.setChoices(data, "value", "label", false);
   });
 };
 
-renderSelect();
+// renderSelect();
+
+let testChoices = [];
+let response;
 
 const form = document.getElementById("form");
 
@@ -71,9 +100,29 @@ document
       console.log(response);
       if (response.success === true) {
         console.log("redirect");
-        window.location.href = "../add_meal";
+        const stepInputs = document.querySelectorAll(".step_radio");
+        stepInputs.forEach((step) => {
+          if (step.checked) {
+            if (step.id === "close") {
+              console.log("close");
+              let tg = window.Telegram.WebApp;
+              tg.close();
+            } else if (step.id === "add-ingredient") {
+              window.location.href = "../add_ingredient";
+              console.log("add-ingredient");
+            } else if (step.id === "add-dish") {
+              window.location.href = "../add_meal";
+              console.log("add-dish");
+            } else {
+              window.location.href = "../add_plate";
+              console.log("else");
+            }
+          }
+        });
+        document.querySelector(".error").classList.remove("error_active");
       } else {
-        console.log(response.status);
+        document.querySelector(".error").classList.add("error_active");
+        console.log(response);
       }
     } catch (err) {
       console.log(err);
@@ -88,17 +137,16 @@ async function getData() {
         "Content-Type": "application/json",
       },
     });
-    const response = await request.json();
-    response.forEach((item) => {
-      const ingredient_id = item.ingredient_id;
-      const ingredient_name = item.ingredient_name;
-      const measure = item.measure;
-      const calories = item.calories;
-      const proteins = item.proteins;
-      const fats = item.fats;
-      const carbohydrates = item.carbohydrates;
-    });
-    console.log(response);
+    response = await request.json();
+    console.log("response", response, choicesCounter);
+
+    testChoices = response.map((item) => ({
+      value: item.measure,
+      label: "Мера",
+    }));
+    console.log(testChoices);
+    renderSelect(response, testChoices);
+
     return response;
   } catch (error) {
     console.error("Ошибка при получении данных:", error);
@@ -109,3 +157,8 @@ async function getData() {
 document.addEventListener("DOMContentLoaded", function () {
   getData(); // Вызывает функцию после полной загрузки HTML
 });
+
+let tg = window.Telegram.WebApp;
+let tg_id = tg.initDataUnsafe.user.id;
+
+document.querySelector("#tg_id").value = tg_id;
