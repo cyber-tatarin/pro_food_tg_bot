@@ -1,5 +1,20 @@
 let choicesCounter = 1;
 
+const elements = document.querySelectorAll(`.js-choice_type`);
+elements.forEach((el) => {
+  const choices = new Choices(el, {
+    itemSelectText: "",
+    noResultsText: "Не найдено",
+  });
+  el.addEventListener(
+    "choice",
+    function (event) {
+      el.parentElement.style.color = "#303030";
+    },
+    false
+  );
+});
+
 const renderSelect = (response, data) => {
   const elements = document.querySelectorAll(`.js-choice_${choicesCounter++}`);
   elements.forEach((el) => {

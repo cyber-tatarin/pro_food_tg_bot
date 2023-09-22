@@ -74,13 +74,20 @@ input[type="number"]::-webkit-outer-spin-button {
   border: 1.2px solid #303030;
 }
 
-.dish__add {
+.buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 20px;
+}
+
+.dish__add,
+.dish__remove {
   transition: 0.3s ease;
   cursor: pointer;
   text-align: center;
   width: 100%;
   padding: 28px 0px;
-  margin-top: 20px;
   color: #303030;
   text-align: center;
   font-size: 12px;
@@ -91,9 +98,21 @@ input[type="number"]::-webkit-outer-spin-button {
   border: 1.5px dashed #303030;
 }
 
+.dish__remove {
+  display: none;
+}
+
 .add-ingredient,
 .dish__add:hover {
   border: 1.5px dashed #05ff00;
+}
+
+.dish__remove_active {
+  display: block;
+}
+
+.dish__remove:hover {
+  border: 1.5px dashed #ff0831;
 }
 
 .dish__recepi {

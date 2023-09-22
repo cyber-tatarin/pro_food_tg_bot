@@ -65,10 +65,11 @@ let response;
 
 // renderSelect();
 
-const button = document.querySelector(".dish__add");
-button.addEventListener("click", async (event) => {
+const buttonAdd = document.querySelector(".dish__add");
+buttonAdd.addEventListener("click", async (event) => {
   event.preventDefault();
-  button.insertAdjacentHTML(
+  document.querySelector(".dish__remove").classList.add("dish__remove_active");
+  buttonAdd.parentElement.insertAdjacentHTML(
     "beforebegin",
     `<div class="dish__item dish__item_new">
     <p class="dish__title">Блюдо ${choicesCounter}</p>
@@ -131,6 +132,20 @@ button.addEventListener("click", async (event) => {
   //     false
   //   );
   // });
+});
+
+const buttonRemove = document.querySelector(".dish__remove");
+buttonRemove.addEventListener("click", (event) => {
+  event.preventDefault();
+  console.log(buttonRemove.parentElement.previousSibling);
+  buttonRemove.parentElement.previousSibling.remove();
+  const items = document.querySelectorAll(".dish__item");
+  if (items.length < 2) {
+    document
+      .querySelector(".dish__remove")
+      .classList.remove("dish__remove_active");
+  }
+  choicesCounter--;
 });
 
 const form = document.getElementById("form");

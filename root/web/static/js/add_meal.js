@@ -14,6 +14,16 @@ const renderSelect = (response, data) => {
       function (event) {
         console.log("label", event.detail.choice.label);
         console.log("value", event.detail.choice.value);
+        response.forEach((item) => {
+          if (item.ingredient_name === event.detail.choice.label) {
+            console.log("measure", item.measure);
+            el
+              .closest(".dish__item")
+              .querySelector(
+                ".dish__title-measure"
+              ).textContent = ` в мере ("${item.measure}")`;
+          }
+        });
         // console.log(response.length);
         // response.forEach((item) => {
         //   console.log(item["ingredient_id"]);
@@ -79,13 +89,14 @@ let response;
 
 // renderSelect();
 
-const button = document.querySelector(".dish__add");
-button.addEventListener("click", (event) => {
+const buttonAdd = document.querySelector(".dish__add");
+buttonAdd.addEventListener("click", (event) => {
   event.preventDefault();
-  button.insertAdjacentHTML(
+  document.querySelector(".dish__remove").classList.add("dish__remove_active");
+  buttonAdd.parentElement.insertAdjacentHTML(
     "beforebegin",
     `<div class="dish__item dish__item_new">
-    <p class="dish__title">Ингридиент ${choicesCounter} (в мере "ладонь")</p>
+    <p class="dish__title">Ингридиент ${choicesCounter}<span class="dish__title-measure"></span></p>
     <select name="ingredient_id${choicesCounter}" class="js-choice_${choicesCounter}">
       <option value="" selected>Введите ингридиент</option>
     </select>
@@ -114,6 +125,20 @@ button.addEventListener("click", (event) => {
   //   test[choicesCounter].carbohydrates;
 
   // calculateAmountFromInputs();
+});
+
+const buttonRemove = document.querySelector(".dish__remove");
+buttonRemove.addEventListener("click", (event) => {
+  event.preventDefault();
+  console.log(buttonRemove.parentElement.previousSibling);
+  buttonRemove.parentElement.previousSibling.remove();
+  const items = document.querySelectorAll(".dish__item");
+  if (items.length < 2) {
+    document
+      .querySelector(".dish__remove")
+      .classList.remove("dish__remove_active");
+  }
+  choicesCounter--;
 });
 
 const form = document.getElementById("form");
