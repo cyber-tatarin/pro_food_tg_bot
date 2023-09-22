@@ -1,9 +1,15 @@
+import os
+
 from aiogram.types import InlineKeyboardButton
 from aiogram.utils.keyboard import InlineKeyboardBuilder, KeyboardBuilder
 from aiogram.types.web_app_info import WebAppInfo
 
 from . import callback_data_models
 from root.logger.config import logger
+from dotenv import load_dotenv, find_dotenv
+
+
+load_dotenv(find_dotenv())
 
 
 def get_ikb_to_get_user_start_data():
@@ -54,14 +60,17 @@ def get_ikb_to_choose_gender():
     return ikbb.as_markup()
 
 
+web_app_link = os.getenv('WEB_APP_LINK')
+
+
 def get_admin_ikb():
     ikbb = InlineKeyboardBuilder()
     ikbb.add(InlineKeyboardButton(text='Добавить ингредиент',
-                                  web_app=WebAppInfo(url='https://4c90-2a02-bf0-1414-f0ea-7975-6d3c-c936-ac86.ngrok-free.app/add_ingredient')))
+                                  web_app=WebAppInfo(url=f'{web_app_link}/add_ingredient')))
     ikbb.add(InlineKeyboardButton(text='Добавить блюдо',
-                                  web_app=WebAppInfo(url='https://4c90-2a02-bf0-1414-f0ea-7975-6d3c-c936-ac86.ngrok-free.app/add_meal')))
+                                  web_app=WebAppInfo(url=f'{web_app_link}/add_meal')))
     ikbb.add(InlineKeyboardButton(text='Добавить тарелку',
-                                  web_app=WebAppInfo(url='https://4c90-2a02-bf0-1414-f0ea-7975-6d3c-c936-ac86.ngrok-free.app/add_plate')))
+                                  web_app=WebAppInfo(url=f'{web_app_link}/add_plate')))
 
     ikbb.adjust(1)
     return ikbb.as_markup()
