@@ -55,20 +55,6 @@ class UserStates(StatesGroup):
 async def start(message: types.Message):
     await message.answer(texts.start_message, reply_markup=keyboards.get_ikb_to_get_user_start_data())
     
-    session = db.Session()
-    try:
-        new_user = models.User(tg_id=message.from_user.id, username=message.from_user.username)
-        session.add(new_user)
-        session.commit()
-    except IntegrityError:
-        pass
-    except Exception as x:
-        logger.exception(x)
-        await message.answer(texts.db_error_message)
-    finally:
-        if session.is_active:
-            session.close()
-            
 
 @dp.message(Command('admin'), F.from_user.id.in_(admin_ids))
 async def admin(message: types.Message):
