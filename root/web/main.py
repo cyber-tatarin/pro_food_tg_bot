@@ -246,7 +246,7 @@ async def add_plate_post(request):
     try:
         percentages_list = list()
         ids_list = list()
-        for i in range(1, (len(data) - 1) // 2 + 1):
+        for i in range(1, (len(data) - 2) // 2 + 1):
             print(i, 'i')
             meal_id = data.get(f'meal_id{i}')
             meal_percentage = data.get(f'meal_percentage{i}')
@@ -294,7 +294,6 @@ async def add_plate_post(request):
         else:
             return web.json_response({'success': False,
                                       'error_message': str(x)})
-    
     return web.json_response({'success': True})
 
 
