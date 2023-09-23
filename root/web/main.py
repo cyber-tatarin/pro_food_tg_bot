@@ -122,13 +122,7 @@ async def add_meal_post(request):
         session1.refresh(new_meal)
         new_meal_id = new_meal.meal_id
         print("Obtained new_meal_id:", new_meal_id)
-
-        gsheet_thread = threading.Thread(target=gsh.add_to_sheet, args=('meals',
-                                                                        [[new_meal_id, name, recipe,
-                                                                          recipe_active_time, recipe_time,
-                                                                          recipe_difficulty]]))
-        gsheet_thread.start()
-    
+   
     except Exception as x:
         print('First exception:', x)
         return web.json_response({'success': False,
@@ -171,7 +165,12 @@ async def add_meal_post(request):
             list_to_insert_into_gsheets.append([ingredient.ingredient_id, new_meal_id, ingredient_amount])
         
         session2.commit()
-
+        
+        gsheet_thread = threading.Thread(target=gsh.add_to_sheet, args=('meals',
+                                                                        [[new_meal_id, name, recipe,
+                                                                          recipe_active_time, recipe_time,
+                                                                          recipe_difficulty]]))
+        gsheet_thread.start()
         gsheet_thread = threading.Thread(target=gsh.add_to_sheet, args=('meal_ingredients',
                                                                         list_to_insert_into_gsheets))
         gsheet_thread.start()
@@ -229,9 +228,6 @@ async def add_plate_post(request):
         session1.refresh(new_plate)
         new_plate_id = new_plate.plate_id
         print("Obtain ed new_meal_id:", new_plate_id)
-
-        gsheet_thread = threading.Thread(target=gsh.add_to_sheet, args=('plates', [[new_plate_id, name, plate_type]]))
-        gsheet_thread.start()
     
     except Exception as x:
         print('First exception:', x)
@@ -273,7 +269,9 @@ async def add_plate_post(request):
             list_to_insert_into_gsheets.append([new_plate_id, meal.meal_id, meal_percentage])
         
         session2.commit()
-
+        
+        gsheet_thread = threading.Thread(target=gsh.add_to_sheet, args=('plates', [[new_plate_id, name, plate_type]]))
+        gsheet_thread.start()
         gsheet_thread = threading.Thread(target=gsh.add_to_sheet, args=('plate_meals',
                                                                         list_to_insert_into_gsheets))
         gsheet_thread.start()
