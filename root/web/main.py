@@ -295,6 +295,11 @@ async def add_plate_post(request):
     return web.json_response({'success': True})
 
 
+@aiohttp_jinja2.template('main_view.html')
+async def main_view(request):
+    return {}
+
+
 async def get_ingredient_ids_names_properties_list(request):
     session = db.Session()
     all_ingredients = session.query(models.Ingredient).all()
@@ -349,6 +354,7 @@ app.add_routes([
     web.get('/add_ingredient', add_ingredient_get),
     web.get('/add_meal', add_meal_get),
     web.get('/add_plate', add_plate_get),
+    web.get('/main', get_meal_ids_names_properties_list),
     web.get('/api/get_ingredients_list', get_ingredient_ids_names_properties_list),
     web.get('/api/get_meals_list', get_meal_ids_names_properties_list),
 ])
