@@ -354,7 +354,7 @@ app.add_routes([
     web.get('/add_ingredient', add_ingredient_get),
     web.get('/add_meal', add_meal_get),
     web.get('/add_plate', add_plate_get),
-    web.get('/main', get_meal_ids_names_properties_list),
+    web.get('/main', main_view),
     web.get('/api/get_ingredients_list', get_ingredient_ids_names_properties_list),
     web.get('/api/get_meals_list', get_meal_ids_names_properties_list),
 ])
