@@ -1,19 +1,26 @@
 import json
 import os
 import threading
+from datetime import datetime
 
 import aiohttp
 from aiohttp import web
 import jinja2
 import aiohttp_jinja2
 from sqlalchemy import func, select, text
+from dotenv import load_dotenv, find_dotenv
 
 from root.db import setup as db
 from root.db import models
 from root.logger.config import logger
 from root.tg.main import admin_ids
+from root.tg.utils import get_age_from_birth_date
 from root.gsheets import main as gsh
 from . import utils
+
+
+load_dotenv(find_dotenv())
+
 
 env = jinja2.Environment(
     loader=jinja2.FileSystemLoader(os.path.join('root', 'web', 'templates')),
@@ -300,49 +307,209 @@ async def main_view(request):
     return {}
 
 
-async def get_ingredient_ids_names_properties_list(request):
+async def get_user_parameters(request):
+    data = await request.json()
+    tg_id = data.get('tg_id')
+    
     session = db.Session()
-    all_ingredients = session.query(models.Ingredient).all()
-    data = [{
-        'ingredient_id': ingredient.ingredient_id,
-        'ingredient_name': ingredient.ingredient_name,
-        'measure': ingredient.measure,
-        'calories': ingredient.calories,
-        'proteins': ingredient.proteins,
-        'fats': ingredient.fats,
-        'carbohydrates': ingredient.carbohydrates
+    try:
+        user = session.query(models.User).filter(models.User.tg_id == int(tg_id)).first()
+        latest_body_measure = session.query(models.BodyMeasure).filter(models.BodyMeasure.tg_id == int(tg_id)).order_by(models.BodyMeasure.date.desc())
+        
+        res_data = {
+            'weight': latest_body_measure.weight,
+            'age': get_age_from_birth_date(datetime.strftime(user.birth_date, "%d.%m.%Y")),
+            'height': user.height,
+            'weight_aim': user.weight_aim,
+            'weight_gap':  float(user.weight_aim) - float(latest_body_measure.weight),
+            'plate_diameter': user.plate_diameter
+        }
+        
+        return web.json_response(res_data)
+    except Exception as x:
+        return web.HTTPBadGateway()
+    finally:
+        if session.is_active:
+            session.close()
+        
+
+async def get_current_streak(request):
+    data = await request.json()
+    tg_id = data.get('tg_id')
+    
+    data = {
+        'current_streak': 3,
+        'motivational text': 'Так держать! С каждым днём ты получаешь все больше монет и становишься ближе к своей цели!',
+        'coins_per_completed_task': 6,
+        'coins_loss_for_inactivity': 2,
+        'coins_per_completed_task_for_tomorrow': 7
     }
-        for ingredient in all_ingredients]
     
     return web.json_response(data)
+
+
+async def get_nutrient_parameters(request):
+    data = await request.json()
+    tg_id = data.get('tg_id')
+    
+    session = db.Session()
+    try:
+        user = session.query(models.User).filter(models.User.tg_id == tg_id).first()
+        
+        data = {
+            'day_calories': user.day_calories,
+            'day_proteins': user.day_proteins,
+            'day_fats': user.day_fats,
+            'day_carbohydrates': user.day_carbohydrates,
+            'eaten_proteins': 10,
+            'eaten_fats': 10,
+            'eaten_carbohydrates': 190
+        }
+        
+        return web.json_response(data)
+    except Exception as x:
+        return web.HTTPBadGateway()
+    finally:
+        if session.is_active:
+            session.close()
+
+
+db_func_dict = {
+    'mysql': "GROUP_CONCAT(meal_name SEPARATOR ', ')",
+    'postgresql': "string_agg(meal_name, ', ')"
+}
+
+            
+async def get_today_plates(request):
+    data = await request.json()
+    tg_id = data.get('tg_id')
+    
+    plate_ids = [3, 4, 5]
+    
+    session = db.Session()
+    try:
+        plate_ids_as_str = ', '.join([str(x) for x in plate_ids])
+        agg_statement = db_func_dict[os.getenv('DB_ENGINE')]
+        
+        sql_query = text(f"""
+        select plate_name, plate_type,
+        recipe_time, recipe_active_time, recipe_difficulty,
+        {agg_statement} as meal_names, sum(calories) as calories, sum(proteins) as proteins,
+        sum(fats) as fats, sum(carbohydrates) as carbohydrates
+        
+        from
+        
+        (
+          select plates.plate_name as plate_name, plate_type, meal_name,
+          recipe_time, recipe_active_time, recipe_difficulty,
+          sum(calories*amount) as calories, sum(proteins*amount) as proteins,
+          sum(fats*amount) as fats, sum(carbohydrates*amount) as carbohydrates
+          
+          from
+          
+          meals inner join meal_ingredients_association using(meal_id)
+          inner join ingredients using(ingredient_id)
+          inner join plate_meals_association using(meal_id)
+          inner join plates using(plate_id)
+          where plates.plate_id in ({plate_ids_as_str})
+          group by meals.meal_id, meal_name, plate_name, plate_type, recipe_time, recipe_active_time, recipe_difficulty
+        ) as q1
+        
+        group by plate_name, plate_type, recipe_time, recipe_active_time, recipe_difficulty;
+        """)
+        
+        # Execute the query
+        result = session.execute(sql_query).fetchall()
+        print(result)
+        result_list = list()
+
+        custom_order = {
+            "Завтрак": 1,
+            "Обед": 2,
+            "Ужин": 3
+        }
+
+        # Sort the objects based on the custom order of plate_type
+        result.sort(key=lambda obj: custom_order.get(obj.plate_type, float('inf')))
+        
+        for row in result:
+            result_list.append({
+                'plate_name': row.plate_name,
+                'plate_type': row.plate_type,
+                'recipe_time': row.recipe_time,
+                'recipe_active_time': row.recipe_active_time,
+                'recipe_difficulty': row.recipe_difficulty,
+                'meal_names': row.meal_names,
+                'calories': row.calories,
+                'proteins': row.proteins,
+                'fats': row.fats,
+                'carbohydrates': row.carbohydrates,
+            })
+            
+        return web.json_response(result_list)
+        
+    except Exception as x:
+        return web.HTTPBadGateway()
+    finally:
+        if session.is_active:
+            session.close()
+
+
+async def get_ingredient_ids_names_properties_list(request):
+    session = db.Session()
+    try:
+        all_ingredients = session.query(models.Ingredient).all()
+        data = [{
+            'ingredient_id': ingredient.ingredient_id,
+            'ingredient_name': ingredient.ingredient_name,
+            'measure': ingredient.measure,
+            'calories': ingredient.calories,
+            'proteins': ingredient.proteins,
+            'fats': ingredient.fats,
+            'carbohydrates': ingredient.carbohydrates
+        }
+            for ingredient in all_ingredients]
+        
+        return web.json_response(data)
+    except Exception as x:
+        return web.HTTPBadGateway()
+    finally:
+        if session.is_active:
+            session.close()
 
 
 async def get_meal_ids_names_properties_list(request):
     session = db.Session()
     
     sql_query = text(
-        "select meals.meal_id, meal_name, sum(calories*amount), sum(proteins*amount), "
-        "sum(fats*amount), sum(carbohydrates*amount) "
+        "select meals.meal_id as meal_id, meal_name, sum(calories*amount) as calories, "
+        "sum(proteins*amount) as proteins, "
+        "sum(fats*amount) as fats, sum(carbohydrates*amount) as carbohydrates "
         "from meals "
-        "inner join meal_ingredients_association on meals.meal_id = meal_ingredients_association.meal_id "
-        "inner join ingredients on ingredients.ingredient_id = meal_ingredients_association.ingredient_id "
-        "group by meals.meal_id, meal_name;"
+        "inner join meal_ingredients_association using(meal_id) "
+        "inner join ingredients using(ingredient_id) "
+        "group by meal_id, meal_name;"
     )
-    
-    # Execute the query
-    result = session.execute(sql_query)
-    result_list = []
-    for row in result:
-        result_list.append({
-            'meal_id': row[0],
-            'meal_name': row[1],
-            'calories': row[2],
-            'proteins': row[3],
-            'fats': row[4],
-            'carbohydrates': row[5]
-        })
-    
-    return web.json_response(result_list)
+    try:
+        # Execute the query
+        result = session.execute(sql_query).fetchall()
+        result_list = list()
+        for row in result:
+            result_list.append({
+                'meal_id': row.meal_id,
+                'meal_name': row.meal_name,
+                'calories': row.calories,
+                'proteins': row.proteins,
+                'fats': row.fats,
+                'carbohydrates': row.carbohydrates
+            })
+        
+        return web.json_response(result_list)
+    except Exception as x:
+        return web.HTTPBadGateway()
+    finally:
+        if session.is_active:
+            session.close()
 
 
 app = web.Application()
@@ -364,6 +531,11 @@ app.add_routes([
     web.post('/api/add_ingredient', add_ingredient_post),
     web.post('/api/add_meal', add_meal_post),
     web.post('/api/add_plate', add_plate_post),
+    
+    web.post('/api/get_user_parameters', get_user_parameters),
+    web.post('/api/get_current_streak', get_current_streak),
+    web.post('/api/get_nutrient_parameters', get_nutrient_parameters),
+    web.post('/api/get_today_plates', get_today_plates),
 ])
 
 aiohttp_jinja2.setup(app, loader=env.loader, context_processors=[aiohttp_jinja2.request_processor])
