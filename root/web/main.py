@@ -341,6 +341,7 @@ async def get_current_streak(request):
     data = {
         'current_streak': 3,
         'motivational text': 'Так держать! С каждым днём ты получаешь все больше монет и становишься ближе к своей цели!',
+        'tasks': ['Составить рацион', 'Съесть рацион'],
         'coins_per_completed_task': 6,
         'coins_loss_for_inactivity': 2,
         'coins_per_completed_task_for_tomorrow': 7
