@@ -314,7 +314,7 @@ async def get_user_parameters(request):
     session = db.Session()
     try:
         user = session.query(models.User).filter(models.User.tg_id == int(tg_id)).first()
-        latest_body_measure = session.query(models.BodyMeasure).filter(models.BodyMeasure.tg_id == int(tg_id)).order_by(models.BodyMeasure.date.desc())
+        latest_body_measure = session.query(models.BodyMeasure).filter(models.BodyMeasure.tg_id == int(tg_id)).order_by(models.BodyMeasure.date.desc()).first()
         
         res_data = {
             'weight': latest_body_measure.weight,
@@ -327,6 +327,7 @@ async def get_user_parameters(request):
         
         return web.json_response(res_data)
     except Exception as x:
+        print(x)
         return web.HTTPBadGateway()
     finally:
         if session.is_active:
@@ -368,15 +369,21 @@ async def get_nutrient_parameters(request):
         
         return web.json_response(data)
     except Exception as x:
+        print(x)
         return web.HTTPBadGateway()
     finally:
         if session.is_active:
             session.close()
 
 
-db_func_dict = {
+meal_db_func_dict = {
     'mysql': "GROUP_CONCAT(meal_name SEPARATOR ', ')",
     'postgresql': "string_agg(meal_name, ', ')"
+}
+
+percentage_db_func_dict = {
+    'mysql': "GROUP_CONCAT(CONVERT(percentage, CHAR) SEPARATOR ', ')",
+    'postgresql': "string_agg(cast(percentage as text), ', ')"
 }
 
             
@@ -384,24 +391,27 @@ async def get_today_plates(request):
     data = await request.json()
     tg_id = data.get('tg_id')
     
-    plate_ids = [3, 4, 5]
+    plate_ids = [3, 6, 9]
     
     session = db.Session()
     try:
         plate_ids_as_str = ', '.join([str(x) for x in plate_ids])
-        agg_statement = db_func_dict[os.getenv('DB_ENGINE')]
+        meal_agg_statement = meal_db_func_dict[os.getenv('DB_ENGINE')]
+        percentage_agg_statement = percentage_db_func_dict[os.getenv('DB_ENGINE')]
         
         sql_query = text(f"""
         select plate_name, plate_type,
-        recipe_time, recipe_active_time, recipe_difficulty,
-        {agg_statement} as meal_names, sum(calories) as calories, sum(proteins) as proteins,
+        max(recipe_time) as recipe_time, sum(recipe_active_time) as recipe_active_time,
+        max(recipe_difficulty) as recipe_difficulty,
+        {percentage_agg_statement} as percentage,
+        {meal_agg_statement} as meal_names, sum(calories) as calories, sum(proteins) as proteins,
         sum(fats) as fats, sum(carbohydrates) as carbohydrates
         
         from
         
         (
           select plates.plate_name as plate_name, plate_type, meal_name,
-          recipe_time, recipe_active_time, recipe_difficulty,
+          recipe_time, recipe_active_time, recipe_difficulty, percentage,
           sum(calories*amount) as calories, sum(proteins*amount) as proteins,
           sum(fats*amount) as fats, sum(carbohydrates*amount) as carbohydrates
           
@@ -412,10 +422,10 @@ async def get_today_plates(request):
           inner join plate_meals_association using(meal_id)
           inner join plates using(plate_id)
           where plates.plate_id in ({plate_ids_as_str})
-          group by meals.meal_id, meal_name, plate_name, plate_type, recipe_time, recipe_active_time, recipe_difficulty
+          group by meals.meal_id, meal_name, plate_name, plate_type, recipe_time, recipe_active_time, recipe_difficulty, percentage
         ) as q1
         
-        group by plate_name, plate_type, recipe_time, recipe_active_time, recipe_difficulty;
+        group by plate_name, plate_type;
         """)
         
         # Execute the query
@@ -439,7 +449,8 @@ async def get_today_plates(request):
                 'recipe_time': row.recipe_time,
                 'recipe_active_time': row.recipe_active_time,
                 'recipe_difficulty': row.recipe_difficulty,
-                'meal_names': row.meal_names,
+                'meals': row.meal_names.split(', '),
+                'percentages': row.percentage.split(', '),
                 'calories': row.calories,
                 'proteins': row.proteins,
                 'fats': row.fats,
@@ -449,6 +460,7 @@ async def get_today_plates(request):
         return web.json_response(result_list)
         
     except Exception as x:
+        print(x)
         return web.HTTPBadGateway()
     finally:
         if session.is_active:
@@ -541,5 +553,5 @@ app.add_routes([
 aiohttp_jinja2.setup(app, loader=env.loader, context_processors=[aiohttp_jinja2.request_processor])
 
 if __name__ == '__main__':
-    web.run_app(app, host='0.0.0.0')
-    # web.run_app(app, host='127.0.0.1', port=80)
+    # web.run_app(app, host='0.0.0.0')
+    web.run_app(app, host='127.0.0.1', port=80)
