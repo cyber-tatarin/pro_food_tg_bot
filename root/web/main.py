@@ -1,7 +1,7 @@
 import json
 import os
 import threading
-from datetime import datetime
+from datetime import datetime, date, timedelta
 
 import aiohttp
 from aiohttp import web
@@ -300,21 +300,23 @@ async def add_plate_post(request):
             return web.json_response({'success': False,
                                       'error_message': str(x)})
 
-    session3 = db.Session()
-    try:
-        result = await utils.get_nutrient_for_plates_by_ids(session3, [new_plate_id])
-    
-        new_info = models.PlateNutrientsInfo(plate_id=new_plate_id, calories=result[0].calories,
-                                             proteins=result[0].proteins,
-                                             fats=result[0].fats, carbohydrates=result[0].carbohydrates)
-        session3.add(new_info)
-        session3.commit()
-
-    except Exception as x:
-        print(x)
-        return web.json_response({'success': False,
-                                  'error_message': 'Блюда сохранены, но произошла ошибка при высчитывании информации '
-                                                   'о питательных веществах. Пожалуйста, свяжитесь с разработчиком'})
+    # session3 = db.Session()
+    # try:
+    #     result = await utils.get_nutrient_for_plates_by_ids(session3, [new_plate_id])
+    #     plate_obj = session3.query(models.Plate).filter(models.Plate.plate_id == new_plate_id).first()
+    #
+    #     plate_obj.calories = result[0].calories
+    #     plate_obj.proteins = result[0].proteins
+    #     plate_obj.fats = result[0].fats
+    #     plate_obj.carbohydrates = result[0].carbohydrates
+    #
+    #     session3.commit()
+    #
+    # except Exception as x:
+    #     print(x)
+    #     return web.json_response({'success': False,
+    #                               'error_message': 'Блюда сохранены, но произошла ошибка при высчитывании информации '
+    #                                                'о питательных веществах. Пожалуйста, свяжитесь с разработчиком'})
 
     return web.json_response({'success': True})
 
@@ -331,7 +333,9 @@ async def get_user_parameters(request):
     session = db.Session()
     try:
         user = session.query(models.User).filter(models.User.tg_id == int(tg_id)).first()
-        latest_body_measure = session.query(models.BodyMeasure).filter(models.BodyMeasure.tg_id == int(tg_id)).order_by(models.BodyMeasure.date.desc()).first()
+        latest_body_measure = session.query(models.BodyMeasure).filter(
+            models.BodyMeasure.tg_id == int(tg_id)
+        ).order_by(models.BodyMeasure.date.desc()).first()
         
         res_data = {
             'weight': latest_body_measure.weight,
@@ -373,17 +377,33 @@ async def get_nutrient_parameters(request):
     
     session = db.Session()
     try:
+        today = date.today()
         user = session.query(models.User).filter(models.User.tg_id == tg_id).first()
+        all_today_has_eaten_query = session.query(
+            func.sum(models.HasEaten.calories),
+            func.sum(models.HasEaten.proteins),
+            func.sum(models.HasEaten.fats),
+            func.sum(models.HasEaten.carbohydrates)
+        ).filter(
+            models.HasEaten.date_time >= today,
+            models.HasEaten.date_time < today + timedelta(days=1),
+            models.HasEaten.tg_id == tg_id
+        )
+
+        # Fetch the results (returns a tuple with sum values)
+        sums = all_today_has_eaten_query.one()
+
+        sum_calories, sum_proteins, sum_fats, sum_carbohydrates = sums
         
         data = {
             'day_calories': user.day_calories,
             'day_proteins': user.day_proteins,
             'day_fats': user.day_fats,
             'day_carbohydrates': user.day_carbohydrates,
-            'eaten_calories': 1100,
-            'eaten_proteins': 10,
-            'eaten_fats': 10,
-            'eaten_carbohydrates': 190
+            'eaten_calories': sum_calories,
+            'eaten_proteins': sum_proteins,
+            'eaten_fats': sum_fats,
+            'eaten_carbohydrates': sum_carbohydrates
         }
         
         return web.json_response(data)
@@ -403,33 +423,17 @@ async def get_today_plates(request):
     
     session = db.Session()
     try:
-        result = await utils.get_nutrient_for_plates_by_ids(session, plate_ids)
-        result_list = list()
+        result_list = await utils.get_nutrient_for_plates_by_ids(session, plate_ids, in_json=True)
 
-        custom_order = {
-            "Завтрак": 1,
-            "Обед": 2,
-            "Ужин": 3
-        }
+        # custom_order = {
+        #     "Завтрак": 1,
+        #     "Обед": 2,
+        #     "Ужин": 3
+        # }
 
-        # Sort the objects based on the custom order of plate_type
-        result.sort(key=lambda obj: custom_order.get(obj.plate_type, float('inf')))
+        # # Sort the objects based on the custom order of plate_type
+        # result.sort(key=lambda obj: custom_order.get(obj.plate_type, float('inf')))
         
-        for row in result:
-            result_list.append({
-                'plate_name': row.plate_name,
-                'plate_type': row.plate_type,
-                'recipe_time': row.recipe_time,
-                'recipe_active_time': row.recipe_active_time,
-                'recipe_difficulty': row.recipe_difficulty,
-                'meals': row.meal_names.split(', '),
-                'percentages': row.percentage.split(', '),
-                'calories': row.calories,
-                'proteins': row.proteins,
-                'fats': row.fats,
-                'carbohydrates': row.carbohydrates,
-            })
-            
         return web.json_response(result_list)
         
     except Exception as x:
@@ -503,26 +507,7 @@ async def choose_plates_for_today(request):
     
     session = db.Session()
     try:
-        result = await utils.get_nutrient_for_plates_by_ids(session)
-        print(result)
-        result_list = list()
-        
-        for row in result:
-            result_list.append({
-                'plate_id': row.plate_id,
-                'plate_name': row.plate_name,
-                'plate_type': row.plate_type,
-                'recipe_time': row.recipe_time,
-                'recipe_active_time': row.recipe_active_time,
-                'recipe_difficulty': row.recipe_difficulty,
-                'meals': row.meal_names.split(', '),
-                'percentages': row.percentage.split(', '),
-                'calories': row.calories,
-                'proteins': row.proteins,
-                'fats': row.fats,
-                'carbohydrates': row.carbohydrates,
-            })
-        
+        result_list = await utils.get_nutrient_for_plates_by_ids(session, in_json=True)
         return web.json_response(result_list)
     
     except Exception as x:
@@ -536,7 +521,30 @@ async def choose_plates_for_today(request):
 async def has_eaten(request):
     data = await request.json()
     tg_id = data.get('tg_id')
-    # calories =
+    plate_id = data.get('plate_id')
+
+    calories = data.get('calories')
+    proteins = data.get('proteins')
+    fats = data.get('fats')
+    carbohydrates = data.get('carbohydrates')
+
+    session = db.Session()
+    try:
+        new_has_eaten = models.HasEaten(tg_id=tg_id, plate_id=plate_id,
+                                        calories=calories, proteins=proteins,
+                                        fats=fats, carbohydrates=carbohydrates)
+        session.add(new_has_eaten)
+        session.commit()
+        
+    except Exception as x:
+        print(x)
+        return web.json_response({'success': False})
+    
+    finally:
+        if session.is_active:
+            session.close()
+
+    return web.json_response({'success': True})
 
 
 app = web.Application()

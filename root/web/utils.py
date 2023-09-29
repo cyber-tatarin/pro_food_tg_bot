@@ -35,7 +35,7 @@ percentage_db_func_dict = {
 }
 
 
-async def get_nutrient_for_plates_by_ids(session, plate_ids=None) -> list:
+async def get_nutrient_for_plates_by_ids(session, plate_ids=None, in_json=False) -> list:
     plate_ids_as_str = ', '.join([str(x) for x in plate_ids])
     meal_agg_statement = meal_db_func_dict[os.getenv('DB_ENGINE')]
     percentage_agg_statement = percentage_db_func_dict[os.getenv('DB_ENGINE')]
@@ -74,4 +74,25 @@ async def get_nutrient_for_plates_by_ids(session, plate_ids=None) -> list:
     
     # Execute the query
     result = session.execute(sql_query).fetchall()
-    return result
+    
+    if not in_json:
+        return result
+    
+    else:
+        result_list = list()
+        for row in result:
+            result_list.append({
+                'plate_name': row.plate_name,
+                'plate_type': row.plate_type,
+                'recipe_time': row.recipe_time,
+                'recipe_active_time': row.recipe_active_time,
+                'recipe_difficulty': row.recipe_difficulty,
+                'meals': row.meal_names.split(', '),
+                'percentages': row.percentage.split(', '),
+                'calories': row.calories,
+                'proteins': row.proteins,
+                'fats': row.fats,
+                'carbohydrates': row.carbohydrates,
+            })
+            
+        return result_list

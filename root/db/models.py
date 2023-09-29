@@ -114,21 +114,28 @@ class Plate(Base):
 class HasEaten(Base):
     __tablename__ = "has_eaten"
     
-    id = Column(Integer, primary_key=True)
+    id = Column(Integer, primary_key=True, autoincrement=True)
     
     plate_id = Column(Integer)
     tg_id = Column(Integer)
-    date = Column(DateTime, default=datetime.now)
+    date_time = Column(DateTime, default=datetime.now)
+    
+    calories = Column(Integer, nullable=False)
+    proteins = Column(Integer, nullable=False)
+    fats = Column(Integer, nullable=False)
+    carbohydrates = Column(Integer, nullable=False)
+    
+    
     
 
-class PlateNutrientsInfo(Base):
-    __tablename__ = "plate_nutrients_info"
-    
-    plate_id = Column(Integer, primary_key=True)
-    calories = Column(Integer)
-    proteins = Column(Integer)
-    fats = Column(Integer)
-    carbohydrates = Column(Integer)
+# class PlateNutrientsInfo(Base):
+#     __tablename__ = "plate_nutrients_info"
+#
+#     plate_id = Column(Integer, primary_key=True)
+#     calories = Column(Integer)
+#     proteins = Column(Integer)
+#     fats = Column(Integer)
+#     carbohydrates = Column(Integer)
 
     
     
