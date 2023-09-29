@@ -109,6 +109,16 @@ class Plate(Base):
     plate_type = Column(String(30))
     
     meals = relationship("Meal", secondary=plate_meals_association, back_populates="plates")
+    
+    
+class HasEaten(Base):
+    __tablename__ = "has_eaten"
+    
+    id = Column(Integer, primary_key=True)
+    
+    plate_id = Column(Integer)
+    tg_id = Column(Integer)
+    date = Column(DateTime, default=datetime.now)
 
     
     

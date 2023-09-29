@@ -363,9 +363,10 @@ async def get_nutrient_parameters(request):
             'day_proteins': user.day_proteins,
             'day_fats': user.day_fats,
             'day_carbohydrates': user.day_carbohydrates,
+            'eaten_calories': 1100,                             # съеденные калории
             'eaten_proteins': 10,
             'eaten_fats': 10,
-            'eaten_carbohydrates': 190
+            'eaten_carbohydrates': 190,
         }
         
         return web.json_response(data)
@@ -401,7 +402,7 @@ async def get_today_plates(request):
         percentage_agg_statement = percentage_db_func_dict[os.getenv('DB_ENGINE')]
         
         sql_query = text(f"""
-        select plate_name, plate_type,
+        select plate_name, plate_type, plate_id,
         max(recipe_time) as recipe_time, sum(recipe_active_time) as recipe_active_time,
         max(recipe_difficulty) as recipe_difficulty,
         {percentage_agg_statement} as percentage,
@@ -414,7 +415,8 @@ async def get_today_plates(request):
           select plates.plate_name as plate_name, plate_type, meal_name,
           recipe_time, recipe_active_time, recipe_difficulty, percentage,
           sum(calories*amount) as calories, sum(proteins*amount) as proteins,
-          sum(fats*amount) as fats, sum(carbohydrates*amount) as carbohydrates
+          sum(fats*amount) as fats, sum(carbohydrates*amount) as carbohydrates,
+          plates.plate_id as plate_id
           
           from
           
@@ -423,10 +425,12 @@ async def get_today_plates(request):
           inner join plate_meals_association using(meal_id)
           inner join plates using(plate_id)
           where plates.plate_id in ({plate_ids_as_str})
-          group by meals.meal_id, meal_name, plate_name, plate_type, recipe_time, recipe_active_time, recipe_difficulty, percentage
+          group by meals.meal_id, plates.plate_id, meal_name, plate_name, plate_type, recipe_time, recipe_active_time,
+          recipe_difficulty, percentage
+          order by percentage
         ) as q1
         
-        group by plate_name, plate_type;
+        group by plate_name, plate_type, plate_id;
         """)
         
         # Execute the query
@@ -445,6 +449,7 @@ async def get_today_plates(request):
         
         for row in result:
             result_list.append({
+                'plate_id': row.plate_id,
                 'plate_name': row.plate_name,
                 'plate_type': row.plate_type,
                 'recipe_time': row.recipe_time,
@@ -525,6 +530,83 @@ async def get_meal_ids_names_properties_list(request):
             session.close()
 
 
+async def choose_plates_for_today(request):
+    data = await request.json()
+    tg_id = data.get('tg_id')
+    
+    session = db.Session()
+    try:
+        meal_agg_statement = meal_db_func_dict[os.getenv('DB_ENGINE')]
+        percentage_agg_statement = percentage_db_func_dict[os.getenv('DB_ENGINE')]
+        
+        sql_query = text(f"""
+        select plate_name, plate_type, plate_id,
+        max(recipe_time) as recipe_time, sum(recipe_active_time) as recipe_active_time,
+        max(recipe_difficulty) as recipe_difficulty,
+        {percentage_agg_statement} as percentage,
+        {meal_agg_statement} as meal_names, sum(calories) as calories, sum(proteins) as proteins,
+        sum(fats) as fats, sum(carbohydrates) as carbohydrates
+
+        from
+
+        (
+          select plates.plate_name as plate_name, plate_type, meal_name,
+          recipe_time, recipe_active_time, recipe_difficulty, percentage,
+          sum(calories*amount) as calories, sum(proteins*amount) as proteins,
+          sum(fats*amount) as fats, sum(carbohydrates*amount) as carbohydrates,
+          plates.plate_id as plate_id
+
+          from
+
+          meals inner join meal_ingredients_association using(meal_id)
+          inner join ingredients using(ingredient_id)
+          inner join plate_meals_association using(meal_id)
+          inner join plates using(plate_id)
+          group by meals.meal_id, plates.plate_id, meal_name, plate_name, plate_type, recipe_time, recipe_active_time,
+          recipe_difficulty, percentage
+          order by percentage
+        ) as q1
+
+        group by plate_name, plate_type, plate_id;
+        """)
+        
+        # Execute the query
+        result = session.execute(sql_query).fetchall()
+        print(result)
+        result_list = list()
+        
+        for row in result:
+            result_list.append({
+                'plate_id': row.plate_id,
+                'plate_name': row.plate_name,
+                'plate_type': row.plate_type,
+                'recipe_time': row.recipe_time,
+                'recipe_active_time': row.recipe_active_time,
+                'recipe_difficulty': row.recipe_difficulty,
+                'meals': row.meal_names.split(', '),
+                'percentages': row.percentage.split(', '),
+                'calories': row.calories,
+                'proteins': row.proteins,
+                'fats': row.fats,
+                'carbohydrates': row.carbohydrates,
+            })
+        
+        return web.json_response(result_list)
+    
+    except Exception as x:
+        print(x)
+        return web.HTTPBadGateway()
+    finally:
+        if session.is_active:
+            session.close()
+            
+
+async def has_eaten(request):
+    data = await request.json()
+    tg_id = data.get('tg_id')
+    # calories =
+    
+    
 app = web.Application()
 
 app.router.add_static('/static/', path='root/web/static', name='static')
@@ -549,6 +631,7 @@ app.add_routes([
     web.post('/api/get_current_streak', get_current_streak),
     web.post('/api/get_nutrient_parameters', get_nutrient_parameters),
     web.post('/api/get_today_plates', get_today_plates),
+    web.post('/api/choose_plates_for_for_today', choose_plates_for_today),
 ])
 
 aiohttp_jinja2.setup(app, loader=env.loader, context_processors=[aiohttp_jinja2.request_processor])
