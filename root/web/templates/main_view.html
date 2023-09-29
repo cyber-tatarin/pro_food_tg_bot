@@ -38,15 +38,15 @@
             <div class="person-info">
               <div class="person-info__item">
                 <div class="person-info__title">Вес</div>
-                <div class="person-info__value">72.0 кг</div>
+                <div class="person-info__value weight-value">72.0 кг</div>
               </div>
               <div class="person-info__item">
                 <div class="person-info__title">Возраст</div>
-                <div class="person-info__value">22</div>
+                <div class="person-info__value age-value">22</div>
               </div>
               <div class="person-info__item">
                 <div class="person-info__title">Рост</div>
-                <div class="person-info__value">173 см</div>
+                <div class="person-info__value height-value">173 см</div>
               </div>
             </div>
             <div class="edit">
@@ -89,8 +89,12 @@
             <div class="goal">
               <div class="goal__title">Цель</div>
               <div class="goal__values">
-                <span class="goal__weight_current">180.0 кг&nbsp;</span>
-                <span class="goal__weight_remaining">(+18.0 кг)</span>
+                <span class="goal__weight_current weight-aim-value"
+                  >180.0 кг</span
+                >
+                <span class="goal__weight_remaining weight-gap-value"
+                  >(+18.0 кг)</span
+                >
               </div>
             </div>
             <div class="edit">
@@ -138,38 +142,30 @@
             </div>
             <div class="notion">
               <div class="flex-12">
-                <p class="notion__p">
+                <p class="notion__p notion__p-motivation">
                   Так держать! С каждым днём ты получаешь все больше монет и
                   становишься ближе к своей цели!
                 </p>
-                <p class="notion__p_bold">
+                <p class="notion__p_bold notion__p-completed">
                   Выполни сегодня все задания, чтобы получить 12 ЖИРкоинов:
                 </p>
               </div>
-              <div class="checkbox">
-                <div class="checkbox__inner">
-                  <input
-                    checked
-                    type="radio"
-                    name="next_step"
-                    class="checkbox"
-                    id="close"
-                  /><label for="close">1.&nbsp;Составить рацион</label>
-                </div>
-                <div class="checkbox__inner">
-                  <input
-                    type="radio"
-                    name="next_step"
-                    class="checkbox"
-                    id="add-ingredient"
-                  /><label for="add-ingredient">2.&nbsp;Съесть рацион</label>
-                </div>
-              </div>
+              <ol class="list">
+                <!-- <li class="list__item">
+                  <span class="list__item__marker"></span>Составить рацион
+                </li>
+                <li class="list__item">
+                  <span
+                    class="list__item__marker list__item__marker_active"
+                  ></span
+                  >Съесть рацион
+                </li> -->
+              </ol>
               <div class="flex-12">
-                <p class="notion__p_bold">
+                <p class="notion__p_bold notion__p-inactivity">
                   Если ты не выполнишь ни одно задание, то потеряешь 2 ЖИРкоина
                 </p>
-                <p class="notion__p">
+                <p class="notion__p notion__p-tomorrow">
                   А завтра за все задания ты получишь 14 ЖИРкоинов!!
                 </p>
               </div>
@@ -186,11 +182,14 @@
             <div class="stats">
               <div class="plate">
                 <p class="plate__size">Диаметр тарелки</p>
-                <p class="plate__size_value">21 см</p>
+                <p class="plate__size_value plate-diameter-value">21 см</p>
               </div>
               <div class="current-progress">
                 <div class="date">09.09.2023 — сегодня</div>
-                <div class="calories">1100 / 2400 ккал</div>
+                <div class="calories">
+                  <span class="eaten-calories">1100</span><span> / </span
+                  ><span class="day_calories">2400 ккал</span>
+                </div>
               </div>
               <div class="progress">
                 <hr class="progress__background" />
@@ -204,15 +203,24 @@
               <div class="progress-info">
                 <div class="progress-info__item">
                   <div class="progress-info__title">Белки</div>
-                  <div class="progress-info__value">10 / 200</div>
+                  <div class="progress-info__value">
+                    <span class="eaten__proteins">10</span><span> / </span
+                    ><span class="day__proteins">200 </span>
+                  </div>
                 </div>
                 <div class="progress-info__item">
                   <div class="progress-info__title">Жиры</div>
-                  <div class="progress-info__value">10 / 20</div>
+                  <div class="progress-info__value">
+                    <span class="eaten__fats">10</span><span> / </span
+                    ><span class="day__fats">200 </span>
+                  </div>
                 </div>
                 <div class="progress-info__item">
                   <div class="progress-info__title">Углеводы</div>
-                  <div class="progress-info__value">215 / 200</div>
+                  <div class="progress-info__value">
+                    <span class="eaten__carbohydrates">10</span><span> / </span
+                    ><span class="day__carbohydrates">200 </span>
+                  </div>
                 </div>
               </div>
               <p class="diet">Рацион питания</p>
@@ -221,20 +229,27 @@
               <button class="eat__button">Я съел(-а)</button>
               <button class="eat__button">Что можно<br />перекусить?</button>
             </div>
+            <div
+              class="eat__buttons eat__buttons-single eat__buttons-single_hidden"
+            >
+              <button class="eat__button">Составить рацион на сегодня</button>
+            </div>
           </section>
           <section class="cards">
             <div class="card">
-              <div class="card__recomendation">Рекомендуем</div>
+              <div class="card__type">Завтрак</div>
               <div class="card__calories">310 ккал</div>
               <div class="card__meal">“Вареная курица с гречкой”</div>
               <div class="card__visual">
-                <img src="../static/images/plate.svg" class="card__plate" />
+                <img src="../static/images/4-parts.svg" class="card__plate" />
                 <div class="card__plate_frames"></div>
                 <div class="card__plate_size">
                   <div class="plate__arrow">
                     <img src="../static/images/plate-arrow.svg" alt="" />
                   </div>
-                  <div class="plate__size-title">21 см</div>
+                  <div class="plate__size-title plate-diameter-value">
+                    21 см
+                  </div>
                 </div>
               </div>
               <p class="card__list-description">Список блюд</p>
@@ -245,7 +260,11 @@
               </div>
               <p class="card__difficulty">Сложность</p>
               <div class="card__stars">
-                <img src="../static/images/stars.svg" alt="" />
+                <img src="../static/images/green-star.svg" alt="" />
+                <img src="../static/images/green-star.svg" alt="" />
+                <img src="../static/images/green-star.svg" alt="" />
+                <img src="../static/images/gray-star.svg" alt="" />
+                <img src="../static/images/gray-star.svg" alt="" />
               </div>
               <p class="total-time">Общее время приготовления</p>
               <p class="total-time_value">60 минут</p>
@@ -262,5 +281,6 @@
       </div>
     </main>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script src="../static/js/main_view.js"></script>
   </body>
 </html>
