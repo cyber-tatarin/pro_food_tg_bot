@@ -1,10 +1,13 @@
+let tg = window.Telegram.WebApp;
+let tg_id = tg.initDataUnsafe.user.id;
+
 async function sendData(link) {
   const request = await fetch(`..${link}`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ tg_id: 459471362 }),
+    body: JSON.stringify({ tg_id: tg_id }),
   });
   const response = await request.json();
   console.log(response);
@@ -32,9 +35,15 @@ async function setUserParameters() {
   document.querySelector(
     ".weight-aim-value"
   ).textContent = `${userParameters.weight_aim} кг`;
-  document.querySelector(
-    ".weight-gap-value"
-  ).textContent = `(${userParameters.weight_gap}) кг`;
+  if (userParameters.weight_gap >= 0) {
+    document.querySelector(
+      ".weight-gap-value"
+    ).textContent = `(+${userParameters.weight_gap}) кг`;
+  } else {
+    document.querySelector(
+      ".weight-gap-value"
+    ).textContent = `(${userParameters.weight_gap}) кг`;
+  }
 }
 
 async function setUserStreak() {
@@ -150,29 +159,28 @@ async function setPlates() {
         );
     });
 
-
-    if (plate.percentages[0] === '100') {
+    if (plate.percentages[0] === "100") {
       document
         .querySelector(`.card__visual${index + 1}`)
         .insertAdjacentHTML(
           "afterbegin",
           `<img src="../static/images/1-parts.svg" class="card__plate" />`
         );
-    } else if (plate.percentages[0] === '50') {
+    } else if (plate.percentages[0] === "50") {
       document
         .querySelector(`.card__visual${index + 1}`)
         .insertAdjacentHTML(
           "afterbegin",
           `<img src="../static/images/2-parts.svg" class="card__plate" />`
         );
-    } else if (plate.percentages[0] === '33') {
+    } else if (plate.percentages[0] === "33") {
       document
         .querySelector(`.card__visual${index + 1}`)
         .insertAdjacentHTML(
           "afterbegin",
           `<img src="../static/images/3-33-parts.svg" class="card__plate" />`
         );
-    } else if (plate.percentages[0] === '25' && plate.percentages[2] === '50') {
+    } else if (plate.percentages[0] === "25" && plate.percentages[2] === "50") {
       document
         .querySelector(`.card__visual${index + 1}`)
         .insertAdjacentHTML(
@@ -212,24 +220,3 @@ setUserParameters();
 setUserStreak();
 setNutrientParameters();
 setPlates();
-
-// const userStreak = sendData("/api/get_current_streak");
-
-// const todayPlates = sendData("/api/get_today_plates");
-
-//  'plate_name': row.plate_name,
-// 'plate_type': row.plate_type,
-// 'recipe_time': row.recipe_time,
-// 'recipe_active_time': row.recipe_active_time,
-// 'recipe_difficulty': row.recipe_difficulty,
-// 'meals': row.meal_names.split(', '),
-// 'percentages': row.percentage.split(', '),
-// 'calories': row.calories,
-// 'proteins': row.proteins,
-// 'fats': row.fats,
-// 'carbohydrates': row.carbohydrates,
-
-let tg = window.Telegram.WebApp;
-let tg_id = tg.initDataUnsafe.user.id;
-
-document.querySelector("#tg_id").value = tg_id;

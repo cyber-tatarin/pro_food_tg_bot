@@ -1,4 +1,6 @@
 let choicesCounter = 1;
+let tg = window.Telegram.WebApp;
+let tg_id = tg.initDataUnsafe.user.id;
 
 const elements = document.querySelectorAll(`.js-choice_type`);
 elements.forEach((el) => {
@@ -98,6 +100,7 @@ document
         selectedCheckbox = value;
       }
     });
+    data.tg_id = tg_id;
     console.log("fetched!!!!!!!!!!!!!!!!!");
     // data.delete("next_step");
     // data["next_step"] = selectedCheckboxValue;
@@ -137,6 +140,7 @@ document
         document.querySelector(".error").classList.remove("error_active");
       } else {
         document.querySelector(".error").classList.add("error_active");
+        document.querySelector(".error").textContent = response.error_message;
         console.log(response);
       }
     } catch (err) {
@@ -168,12 +172,4 @@ async function getData() {
   }
 }
 
-// Добавление обработчика события DOMContentLoaded
-document.addEventListener("DOMContentLoaded", function () {
-  getData(); // Вызывает функцию после полной загрузки HTML
-});
-
-let tg = window.Telegram.WebApp;
-let tg_id = tg.initDataUnsafe.user.id;
-
-document.querySelector("#tg_id").value = tg_id;
+getData();

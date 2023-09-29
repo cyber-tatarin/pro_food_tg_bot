@@ -398,13 +398,6 @@ body {
   display: flex;
   align-items: center;
   gap: 8px;
-  color: #303030;
-  text-align: center;
-  font-size: 12px;
-  font-style: normal;
-  font-weight: 700;
-  line-height: normal;
-  margin-bottom: 16px;
 }
 
 .eat__buttons-single {
@@ -424,6 +417,13 @@ body {
   min-height: 70px;
   border-radius: 20px;
   border: 1.5px dashed #303030;
+  color: #303030;
+  text-align: center;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: normal;
+  margin-bottom: 16px;
 }
 
 /* card */
@@ -479,6 +479,8 @@ body {
 }
 
 .card__visual {
+  margin-left: 20px;
+  margin-right: 20px;
   align-items: center;
   display: flex;
   justify-content: center;
@@ -487,6 +489,7 @@ body {
 }
 
 .card__plate_size {
+  min-width: 44px;
   display: flex;
   margin-left: 4px;
   align-items: center;
@@ -505,7 +508,6 @@ body {
   font-weight: 400;
   line-height: normal;
 }
-
 
 .card__list-description,
 .card__difficulty,
@@ -580,4 +582,10 @@ body {
   font-style: normal;
   font-weight: 700;
   line-height: normal;
+}
+
+@media (max-width: 360px) {
+  .plate__arrow img {
+    width: 80%;
+  }
 }
