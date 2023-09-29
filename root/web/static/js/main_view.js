@@ -4,7 +4,7 @@ async function sendData(link) {
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ tg_id: 983672566 }),
+    body: JSON.stringify({ tg_id: 459471362 }),
   });
   const response = await request.json();
   console.log(response);
@@ -104,12 +104,12 @@ async function setPlates() {
   const plates = await sendData("/api/get_today_plates");
   plates.forEach((plate, index) => {
     document.querySelector(".cards").insertAdjacentHTML(
-      "afterbegin",
+      "beforeend",
       `<div class="card card${index + 1}" name="${plate.plate_id}">
     <div class="card__type">${plate.plate_type}</div>
-    <div class="card__calories">Б: ${plate.proteins} Ж: ${plate.fats} У: ${
+    <div class="card__calories">Б: ${plate.proteins} / Ж: ${plate.fats} / У: ${
         plate.carbohydrates
-      } 310 ккал</div>
+      } / ${plate.calories} ккал</div>
     <div class="card__meal">“${plate.plate_name}”</div>
     <div class="card__visual card__visual${index + 1}">
      
@@ -141,38 +141,38 @@ async function setPlates() {
     </div>
   </div>`
     );
-    plate.meals.forEach((el) => {
+    plate.meals.forEach((el, i) => {
       document
         .querySelector(`.card__list${index + 1}`)
         .insertAdjacentHTML(
           "beforeend",
-          `<p class="card__list__item">${index + 1} ${el}</p>`
+          `<p class="card__list__item">${i + 1}. ${el}</p>`
         );
     });
 
-    [25, 25, 25, 25][(25, 25, 50)][(33, 33, 33)][(50, 50)][100];
-    if (plate.percentages[0] === 100) {
+
+    if (plate.percentages[0] === '100') {
       document
         .querySelector(`.card__visual${index + 1}`)
         .insertAdjacentHTML(
           "afterbegin",
           `<img src="../static/images/1-parts.svg" class="card__plate" />`
         );
-    } else if (plate.percentages[0] === 50) {
+    } else if (plate.percentages[0] === '50') {
       document
         .querySelector(`.card__visual${index + 1}`)
         .insertAdjacentHTML(
           "afterbegin",
           `<img src="../static/images/2-parts.svg" class="card__plate" />`
         );
-    } else if (plate.percentages[0] === 33) {
+    } else if (plate.percentages[0] === '33') {
       document
         .querySelector(`.card__visual${index + 1}`)
         .insertAdjacentHTML(
           "afterbegin",
           `<img src="../static/images/3-33-parts.svg" class="card__plate" />`
         );
-    } else if (plate.percentages[0] === 25 && plate.percentages[2] === 50) {
+    } else if (plate.percentages[0] === '25' && plate.percentages[2] === '50') {
       document
         .querySelector(`.card__visual${index + 1}`)
         .insertAdjacentHTML(

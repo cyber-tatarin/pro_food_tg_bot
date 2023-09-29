@@ -304,7 +304,8 @@ async def add_plate_post(request):
     try:
         result = await utils.get_nutrient_for_plates_by_ids(session3, [new_plate_id])
     
-        new_info = models.PlateNutrientsInfo(plate_id=new_plate_id, proteins=result[0].calories,
+        new_info = models.PlateNutrientsInfo(plate_id=new_plate_id, calories=result[0].calories,
+                                             proteins=result[0].proteins,
                                              fats=result[0].fats, carbohydrates=result[0].carbohydrates)
         session3.add(new_info)
         session3.commit()
@@ -379,6 +380,7 @@ async def get_nutrient_parameters(request):
             'day_proteins': user.day_proteins,
             'day_fats': user.day_fats,
             'day_carbohydrates': user.day_carbohydrates,
+            'eaten_calories': 1100,
             'eaten_proteins': 10,
             'eaten_fats': 10,
             'eaten_carbohydrates': 190

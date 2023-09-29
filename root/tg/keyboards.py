@@ -74,6 +74,12 @@ def get_admin_ikb():
 
     ikbb.adjust(1)
     return ikbb.as_markup()
+
+
+def get_main_view_ikb():
+    ikbb = InlineKeyboardBuilder()
+    ikbb.add(InlineKeyboardButton(text='Открыть профиль', web_app=WebAppInfo(url=f'{web_app_link}/main')))
+    return ikbb.as_markup()
     
     
     
