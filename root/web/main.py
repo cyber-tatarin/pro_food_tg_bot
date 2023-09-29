@@ -379,10 +379,9 @@ async def get_nutrient_parameters(request):
             'day_proteins': user.day_proteins,
             'day_fats': user.day_fats,
             'day_carbohydrates': user.day_carbohydrates,
-            'eaten_calories': 1100,                             # съеденные калории
             'eaten_proteins': 10,
             'eaten_fats': 10,
-            'eaten_carbohydrates': 190,
+            'eaten_carbohydrates': 190
         }
         
         return web.json_response(data)
@@ -402,7 +401,6 @@ async def get_today_plates(request):
     
     session = db.Session()
     try:
-        
         result = await utils.get_nutrient_for_plates_by_ids(session, plate_ids)
         result_list = list()
 
@@ -417,7 +415,6 @@ async def get_today_plates(request):
         
         for row in result:
             result_list.append({
-                'plate_id': row.plate_id,
                 'plate_name': row.plate_name,
                 'plate_type': row.plate_type,
                 'recipe_time': row.recipe_time,
@@ -538,8 +535,8 @@ async def has_eaten(request):
     data = await request.json()
     tg_id = data.get('tg_id')
     # calories =
-    
-    
+
+
 app = web.Application()
 
 app.router.add_static('/static/', path='root/web/static', name='static')
@@ -564,7 +561,6 @@ app.add_routes([
     web.post('/api/get_current_streak', get_current_streak),
     web.post('/api/get_nutrient_parameters', get_nutrient_parameters),
     web.post('/api/get_today_plates', get_today_plates),
-    web.post('/api/choose_plates_for_for_today', choose_plates_for_today),
 ])
 
 aiohttp_jinja2.setup(app, loader=env.loader, context_processors=[aiohttp_jinja2.request_processor])
