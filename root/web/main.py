@@ -282,7 +282,7 @@ async def add_plate_post(request):
         gsheet_thread = threading.Thread(target=gsh.add_to_sheet, args=('plate_meals',
                                                                         list_to_insert_into_gsheets))
         gsheet_thread.start()
-    
+        
     except Exception as x:
         session2.rollback()
         plate_to_delete = session2.query(models.Plate).filter(models.Plate.plate_id == new_plate_id).first()
@@ -299,6 +299,22 @@ async def add_plate_post(request):
         else:
             return web.json_response({'success': False,
                                       'error_message': str(x)})
+
+    session3 = db.Session()
+    try:
+        result = await utils.get_nutrient_for_plates_by_ids(session3, [new_plate_id])
+    
+        new_info = models.PlateNutrientsInfo(plate_id=new_plate_id, proteins=result[0].calories,
+                                             fats=result[0].fats, carbohydrates=result[0].carbohydrates)
+        session3.add(new_info)
+        session3.commit()
+
+    except Exception as x:
+        print(x)
+        return web.json_response({'success': False,
+                                  'error_message': 'Блюда сохранены, но произошла ошибка при высчитывании информации '
+                                                   'о питательных веществах. Пожалуйста, свяжитесь с разработчиком'})
+
     return web.json_response({'success': True})
 
 
@@ -340,7 +356,7 @@ async def get_current_streak(request):
     
     data = {
         'current_streak': 3,
-        'motivational text': 'Так держать! С каждым днём ты получаешь все больше монет и становишься ближе к своей цели!',
+        'motivational_text': 'Так держать! С каждым днём ты получаешь все больше монет и становишься ближе к своей цели!',
         'tasks': ['Составить рацион', 'Съесть рацион'],
         'coins_per_completed_task': 6,
         'coins_loss_for_inactivity': 2,
@@ -377,17 +393,6 @@ async def get_nutrient_parameters(request):
         if session.is_active:
             session.close()
 
-
-meal_db_func_dict = {
-    'mysql': "GROUP_CONCAT(meal_name SEPARATOR ', ')",
-    'postgresql': "string_agg(meal_name, ', ')"
-}
-
-percentage_db_func_dict = {
-    'mysql': "GROUP_CONCAT(CONVERT(percentage, CHAR) SEPARATOR ', ')",
-    'postgresql': "string_agg(cast(percentage as text), ', ')"
-}
-
             
 async def get_today_plates(request):
     data = await request.json()
@@ -397,45 +402,8 @@ async def get_today_plates(request):
     
     session = db.Session()
     try:
-        plate_ids_as_str = ', '.join([str(x) for x in plate_ids])
-        meal_agg_statement = meal_db_func_dict[os.getenv('DB_ENGINE')]
-        percentage_agg_statement = percentage_db_func_dict[os.getenv('DB_ENGINE')]
         
-        sql_query = text(f"""
-        select plate_name, plate_type, plate_id,
-        max(recipe_time) as recipe_time, sum(recipe_active_time) as recipe_active_time,
-        max(recipe_difficulty) as recipe_difficulty,
-        {percentage_agg_statement} as percentage,
-        {meal_agg_statement} as meal_names, sum(calories) as calories, sum(proteins) as proteins,
-        sum(fats) as fats, sum(carbohydrates) as carbohydrates
-        
-        from
-        
-        (
-          select plates.plate_name as plate_name, plate_type, meal_name,
-          recipe_time, recipe_active_time, recipe_difficulty, percentage,
-          sum(calories*amount) as calories, sum(proteins*amount) as proteins,
-          sum(fats*amount) as fats, sum(carbohydrates*amount) as carbohydrates,
-          plates.plate_id as plate_id
-          
-          from
-          
-          meals inner join meal_ingredients_association using(meal_id)
-          inner join ingredients using(ingredient_id)
-          inner join plate_meals_association using(meal_id)
-          inner join plates using(plate_id)
-          where plates.plate_id in ({plate_ids_as_str})
-          group by meals.meal_id, plates.plate_id, meal_name, plate_name, plate_type, recipe_time, recipe_active_time,
-          recipe_difficulty, percentage
-          order by percentage
-        ) as q1
-        
-        group by plate_name, plate_type, plate_id;
-        """)
-        
-        # Execute the query
-        result = session.execute(sql_query).fetchall()
-        print(result)
+        result = await utils.get_nutrient_for_plates_by_ids(session, plate_ids)
         result_list = list()
 
         custom_order = {
@@ -536,42 +504,7 @@ async def choose_plates_for_today(request):
     
     session = db.Session()
     try:
-        meal_agg_statement = meal_db_func_dict[os.getenv('DB_ENGINE')]
-        percentage_agg_statement = percentage_db_func_dict[os.getenv('DB_ENGINE')]
-        
-        sql_query = text(f"""
-        select plate_name, plate_type, plate_id,
-        max(recipe_time) as recipe_time, sum(recipe_active_time) as recipe_active_time,
-        max(recipe_difficulty) as recipe_difficulty,
-        {percentage_agg_statement} as percentage,
-        {meal_agg_statement} as meal_names, sum(calories) as calories, sum(proteins) as proteins,
-        sum(fats) as fats, sum(carbohydrates) as carbohydrates
-
-        from
-
-        (
-          select plates.plate_name as plate_name, plate_type, meal_name,
-          recipe_time, recipe_active_time, recipe_difficulty, percentage,
-          sum(calories*amount) as calories, sum(proteins*amount) as proteins,
-          sum(fats*amount) as fats, sum(carbohydrates*amount) as carbohydrates,
-          plates.plate_id as plate_id
-
-          from
-
-          meals inner join meal_ingredients_association using(meal_id)
-          inner join ingredients using(ingredient_id)
-          inner join plate_meals_association using(meal_id)
-          inner join plates using(plate_id)
-          group by meals.meal_id, plates.plate_id, meal_name, plate_name, plate_type, recipe_time, recipe_active_time,
-          recipe_difficulty, percentage
-          order by percentage
-        ) as q1
-
-        group by plate_name, plate_type, plate_id;
-        """)
-        
-        # Execute the query
-        result = session.execute(sql_query).fetchall()
+        result = await utils.get_nutrient_for_plates_by_ids(session)
         print(result)
         result_list = list()
         

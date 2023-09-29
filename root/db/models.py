@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from sqlalchemy import Column, String, Boolean, Date, Integer, DateTime, ForeignKey, Float, Text, UniqueConstraint, \
-    Table
+    Table, event
 from sqlalchemy.orm import DeclarativeBase, relationship
 
 from dotenv import load_dotenv, find_dotenv
@@ -119,6 +119,16 @@ class HasEaten(Base):
     plate_id = Column(Integer)
     tg_id = Column(Integer)
     date = Column(DateTime, default=datetime.now)
+    
+
+class PlateNutrientsInfo(Base):
+    __tablename__ = "plate_nutrients_info"
+    
+    plate_id = Column(Integer, primary_key=True)
+    calories = Column(Integer)
+    proteins = Column(Integer)
+    fats = Column(Integer)
+    carbohydrates = Column(Integer)
 
     
     
