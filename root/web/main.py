@@ -518,7 +518,7 @@ async def choose_plates_for_today(request):
             session.close()
             
 
-async def has_eaten(request):
+async def has_eaten_plate(request):
     data = await request.json()
     tg_id = data.get('tg_id')
     plate_id = data.get('plate_id')
@@ -571,6 +571,7 @@ app.add_routes([
     web.post('/api/get_current_streak', get_current_streak),
     web.post('/api/get_nutrient_parameters', get_nutrient_parameters),
     web.post('/api/get_today_plates', get_today_plates),
+    web.post('/api/has_eaten_plate', has_eaten_plate),
 ])
 
 aiohttp_jinja2.setup(app, loader=env.loader, context_processors=[aiohttp_jinja2.request_processor])

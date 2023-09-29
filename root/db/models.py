@@ -126,8 +126,19 @@ class HasEaten(Base):
     carbohydrates = Column(Integer, nullable=False)
     
     
+class UserPlatesDate(Base):
+    __tablename__ = "user_plates_date"
     
-
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    
+    tg_id = Column(Integer)
+    plate_id = Column(Integer)
+    plate_type = Column(Integer)
+    date = Column(Date, default=datetime.now)
+    
+    
+    
+    
 # class PlateNutrientsInfo(Base):
 #     __tablename__ = "plate_nutrients_info"
 #
