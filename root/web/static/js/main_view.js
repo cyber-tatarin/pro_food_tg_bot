@@ -22,7 +22,7 @@ async function setUserParameters() {
   diamert = userParameters.plate_diameter;
   document.querySelector(
     ".weight-value"
-  ).textContent = `${userParameters.weight} кг `;
+  ).textContent = `${userParameters.weight} кг`;
   document.querySelector(
     ".height-value"
   ).textContent = `${userParameters.height} см`;
@@ -31,7 +31,6 @@ async function setUserParameters() {
   document.querySelectorAll(".plate-diameter-value").forEach((el) => {
     el.textContent = `${userParameters.plate_diameter} см `;
   });
-
   document.querySelector(
     ".weight-aim-value"
   ).textContent = `${userParameters.weight_aim} кг`;
@@ -58,7 +57,6 @@ async function setUserStreak() {
   document.querySelector(
     ".notion__p-tomorrow"
   ).textContent = ` А завтра за все задания ты получишь ${userStreak.coins_per_completed_task_for_tomorrow} ЖИРкоинов!!`;
-
   document.querySelector(
     ".notion__p-completed"
   ).textContent = `Выполни сегодня все задания, чтобы получить ${userStreak.coins_per_completed_task} ЖИРкоинов`;
@@ -79,6 +77,19 @@ async function setUserStreak() {
 async function setNutrientParameters() {
   const nutrientStreak = await sendData("/api/get_nutrient_parameters");
   console.log(nutrientStreak);
+  const width = nutrientStreak.eaten_calories / nutrientStreak.day_calories;
+  if (width > 1) {
+    document.querySelector(".progress__foreground").style.width = "100%";
+    document.querySelector(".progress__foreground").style.borderTopRightRadius =
+      "3px";
+    document.querySelector(
+      ".progress__foreground"
+    ).style.borderBottomRightRadius = "3px";
+  } else {
+    document.querySelector(".progress__foreground").style.width = `${
+      width * 80
+    }%`;
+  }
   document.querySelector(
     ".day_calories"
   ).textContent = `${nutrientStreak.day_calories} ккал`;
@@ -88,7 +99,6 @@ async function setNutrientParameters() {
   document.querySelector(
     ".progress__end"
   ).textContent = `${nutrientStreak.day_calories}`;
-
   document.querySelector(
     ".day__proteins"
   ).textContent = `${nutrientStreak.day_proteins}`;
