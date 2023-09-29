@@ -11,9 +11,12 @@ async function sendData(link) {
   return response;
 }
 
+let diamert = 0;
+
 async function setUserParameters() {
   const userParameters = await sendData("/api/get_user_parameters");
   console.log(userParameters);
+  diamert = userParameters.plate_diameter;
   document.querySelector(
     ".weight-value"
   ).textContent = `${userParameters.weight} кг `;
@@ -42,7 +45,7 @@ async function setUserStreak() {
   ).textContent = `${userStreak.current_streak} дня подряд 🥳 `;
   document.querySelector(
     ".notion__p-motivation"
-  ).textContent = `${userStreak["motivational text"]}`;
+  ).textContent = `${userStreak.motivational_text}`;
   document.querySelector(
     ".notion__p-tomorrow"
   ).textContent = ` А завтра за все задания ты получишь ${userStreak.coins_per_completed_task_for_tomorrow} ЖИРкоинов!!`;
@@ -71,6 +74,9 @@ async function setNutrientParameters() {
     ".day_calories"
   ).textContent = `${nutrientStreak.day_calories} ккал`;
   document.querySelector(
+    ".eaten-calories"
+  ).textContent = `${nutrientStreak.eaten_calories}`;
+  document.querySelector(
     ".progress__end"
   ).textContent = `${nutrientStreak.day_calories}`;
 
@@ -96,54 +102,109 @@ async function setNutrientParameters() {
 
 async function setPlates() {
   const plates = await sendData("/api/get_today_plates");
-  plates.forEach((plate) => {
+  plates.forEach((plate, index) => {
     document.querySelector(".cards").insertAdjacentHTML(
       "afterbegin",
-      `<div class="card">
-    <div class="card__type">Завтрак</div>
-    <div class="card__calories">310 ккал</div>
-    <div class="card__meal">“Вареная курица с гречкой”</div>
-    <div class="card__visual">
-      <img src="../static/images/4-parts.svg" class="card__plate" />
+      `<div class="card card${index + 1}" name="${plate.plate_id}">
+    <div class="card__type">${plate.plate_type}</div>
+    <div class="card__calories">Б: ${plate.proteins} Ж: ${plate.fats} У: ${
+        plate.carbohydrates
+      } 310 ккал</div>
+    <div class="card__meal">“${plate.plate_name}”</div>
+    <div class="card__visual card__visual${index + 1}">
+     
       <div class="card__plate_frames"></div>
       <div class="card__plate_size">
         <div class="plate__arrow">
           <img src="../static/images/plate-arrow.svg" alt="" />
         </div>
         <div class="plate__size-title plate-diameter-value">
-          21 см
+          ${diamert} см
         </div>
       </div>
     </div>
     <p class="card__list-description">Список блюд</p>
-    <div class="card__list">
-      <p class="card__list__item">1. Вареная курица</p>
-      <p class="card__list__item">2. Вареная гречка</p>
-      <p class="card__list__item">3. Помидоры</p>
+    <div class="card__list card__list${index + 1}">
+   
     </div>
-    <p class="card__difficulty">Сложность</p>
-    <div class="card__stars">
-      <img src="../static/images/green-star.svg" alt="" />
-      <img src="../static/images/green-star.svg" alt="" />
-      <img src="../static/images/green-star.svg" alt="" />
-      <img src="../static/images/gray-star.svg" alt="" />
-      <img src="../static/images/gray-star.svg" alt="" />
+    <p class="card__difficulty card__difficulty${index + 1}">Сложность</p>
+    <div class="card__stars card__stars${index + 1}">
+     
     </div>
     <p class="total-time">Общее время приготовления</p>
-    <p class="total-time_value">60 минут</p>
+    <p class="total-time_value">${plate.recipe_time} минут</p>
     <p class="active-time">Активное время приготовления</p>
-    <p class="active-time_value">20 минут</p>
+    <p class="active-time_value">${plate.recipe_active_time} минут</p>
     <div class="card__buttons">
       <button class="card__button__recepi">Рецепт</button>
       <button class="card__button__choose">Выбрать</button>
     </div>
   </div>`
     );
-    document.querySelector(".card__meal").textContent = plate.plate_name;
-    document.querySelector(".card__type").textContent = plate.plate_type;
-    document.querySelector(".card__meal").textContent = plate.plate_name;
-    document.querySelector(".card__meal").textContent = plate.plate_name;
-    document.querySelector(".card__meal").textContent = plate.plate_name;
+    plate.meals.forEach((el) => {
+      document
+        .querySelector(`.card__list${index + 1}`)
+        .insertAdjacentHTML(
+          "beforeend",
+          `<p class="card__list__item">${index + 1} ${el}</p>`
+        );
+    });
+
+    [25, 25, 25, 25][(25, 25, 50)][(33, 33, 33)][(50, 50)][100];
+    if (plate.percentages[0] === 100) {
+      document
+        .querySelector(`.card__visual${index + 1}`)
+        .insertAdjacentHTML(
+          "afterbegin",
+          `<img src="../static/images/1-parts.svg" class="card__plate" />`
+        );
+    } else if (plate.percentages[0] === 50) {
+      document
+        .querySelector(`.card__visual${index + 1}`)
+        .insertAdjacentHTML(
+          "afterbegin",
+          `<img src="../static/images/2-parts.svg" class="card__plate" />`
+        );
+    } else if (plate.percentages[0] === 33) {
+      document
+        .querySelector(`.card__visual${index + 1}`)
+        .insertAdjacentHTML(
+          "afterbegin",
+          `<img src="../static/images/3-33-parts.svg" class="card__plate" />`
+        );
+    } else if (plate.percentages[0] === 25 && plate.percentages[2] === 50) {
+      document
+        .querySelector(`.card__visual${index + 1}`)
+        .insertAdjacentHTML(
+          "afterbegin",
+          `<img src="../static/images/3-parts.svg" class="card__plate" />`
+        );
+    } else {
+      document
+        .querySelector(`.card__visual${index + 1}`)
+        .insertAdjacentHTML(
+          "afterbegin",
+          `<img src="../static/images/4-parts.svg" class="card__plate" />`
+        );
+    }
+
+    for (let i = 1; i < 6; i++) {
+      if (i <= plate.recipe_difficulty) {
+        document
+          .querySelector(`.card__stars${index + 1}`)
+          .insertAdjacentHTML(
+            "beforeend",
+            `<img src="../static/images/green-star.svg" alt="" />`
+          );
+      } else {
+        document
+          .querySelector(`.card__stars${index + 1}`)
+          .insertAdjacentHTML(
+            "beforeend",
+            `<img src="../static/images/gray-star.svg" alt="" />`
+          );
+      }
+    }
   });
 }
 
