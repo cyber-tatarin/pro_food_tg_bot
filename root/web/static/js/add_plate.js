@@ -1,4 +1,6 @@
 let choicesCounter = 1;
+let tg = window.Telegram.WebApp;
+let tg_id = tg.initDataUnsafe.user.id;
 
 const elements = document.querySelectorAll(`.js-choice_type`);
 elements.forEach((el) => {
@@ -156,6 +158,8 @@ document
       data[key] = box[key];
     }
 
+    data.tg_id = tg_id;
+
     try {
       const request = await fetch("../api/add_plate", {
         method: "POST",
@@ -190,6 +194,7 @@ document
       } else {
         console.log(response);
         document.querySelector(".error").classList.add("error_active");
+        document.querySelector(".error").textContent = response.error_message;
       }
     } catch (err) {
       console.log(err);
@@ -247,8 +252,3 @@ function setTotalEnergy(data) {
 
   totalCalories.textContent = `Общее КБЖУ приема пищи: ${totalEnergy.calories}  /  ${totalEnergy.proteins}  /  ${totalEnergy.fats}  /  ${totalEnergy.carbohydrates}`;
 }
-
-let tg = window.Telegram.WebApp;
-let tg_id = tg.initDataUnsafe.user.id;
-
-document.querySelector("#tg_id").value = tg_id;
