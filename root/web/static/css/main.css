@@ -326,7 +326,7 @@ body {
 .progress__mark {
   top: 0;
   left: 0;
-  margin-left: 50%;
+  margin-left: 80%;
   position: absolute;
   height: 6px;
   width: 4px;
@@ -349,12 +349,49 @@ body {
 
 .progress__end {
   top: 0;
-  left: 50%;
+  left: calc(80% - 27px);
   position: absolute;
 }
 
-.fiet {
+.diet {
   margin-bottom: 12px;
+}
+
+.list {
+  margin-top: 8px;
+  margin-bottom: 12px;
+  color: #303030;
+  margin-left: 33px;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 16px; /* 133.333% */
+}
+
+.list__item {
+  position: relative;
+}
+
+.list__item__marker {
+  margin-left: -32px;
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  border: 1.5px solid #000000;
+  transition: background-color 0.3s ease;
+  border: #fff;
+  background-color: #fff;
+  height: 8px;
+  width: 8px;
+  border-radius: 3px;
+  box-shadow: 0px 0px 0px 1px;
+  border-width: 2px;
+  border: 1px solid #fff;
+}
+
+.list__item__marker_active {
+  background-color: #05ff00;
 }
 
 .eat__buttons {
@@ -370,6 +407,15 @@ body {
   margin-bottom: 16px;
 }
 
+.eat__buttons-single {
+  display: block;
+  margin-top: -8px;
+}
+.eat__buttons-single_hidden {
+  display: none;
+  margin-top: -8px;
+}
+
 .eat__button {
   display: flex;
   align-items: center;
@@ -382,6 +428,12 @@ body {
 
 /* card */
 
+.cards {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
 .card {
   border-radius: 36px;
   background: #fafafa;
@@ -391,10 +443,10 @@ body {
   padding: 16px 20px 20px;
 }
 
-.card__recomendation {
+.card__type {
   margin: 0 auto;
   width: fit-content;
-  padding: 4px 8px;
+  padding: 4px 12px;
   border-radius: 32px;
   background: #303030;
   color: #fff;
@@ -427,17 +479,16 @@ body {
 }
 
 .card__visual {
+  align-items: center;
+  display: flex;
+  justify-content: center;
   margin-bottom: 16px;
   position: relative;
 }
 
 .card__plate_size {
-  margin-top: 16px;
   display: flex;
-  margin-right: -20px;
-  position: absolute;
-  top: 0;
-  right: 0;
+  margin-left: 4px;
   align-items: center;
   justify-content: center;
 }
@@ -528,34 +579,4 @@ body {
   font-style: normal;
   font-weight: 700;
   line-height: normal;
-}
-
-input[type="radio"] {
-  display: none;
-}
-
-/* Создать стилизованные круглые radio-кнопки */
-input[type="radio"] + label {
-  position: relative;
-  padding-left: 18px; /* Регулируйте размер круглого курсора */
-  cursor: pointer;
-}
-
-/* Стилизованные круглые radio-кнопки */
-input[type="radio"] + label::before {
-  content: "";
-  position: absolute;
-  left: 0;
-  top: 2px;
-  width: 10px; /* Размер круглого курсора */
-  height: 10px; /* Размер круглого курсора */
-  border: 1.5px solid #000000; /* Цвет круглого курсора */
-  border-radius: 50%; /* Делаем курсор круглым */
-  transition: background-color 0.3s ease; /* Анимация при наведении */
-}
-
-/* Изменение цвета круглого курсора при наведении */
-input[type="radio"]:checked + label::before {
-  border: 1.5px solid #000000;
-  background-color: #05ff00; /* Новый цвет круглого курсора при выборе */
 }
