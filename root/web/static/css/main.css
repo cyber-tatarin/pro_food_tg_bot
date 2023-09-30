@@ -585,14 +585,14 @@ body {
   line-height: normal;
 }
 
-.card__button__choose__off {
-  background: #ffffff;
+.card__button__choose_off {
+  background: transparent;
   border: 2px solid #05ff00;
 }
 
 .card__button__favourites_off {
   color: #303030;
-  background: #ffffff;
+  background: transparent;
   border: 2px solid #303030;
 }
 
