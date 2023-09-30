@@ -1,5 +1,5 @@
 let tg = window.Telegram.WebApp;
-// let tg_id = tg.initDataUnsafe.user.id;
+let tg_id = tg.initDataUnsafe.user.id;
 
 async function sendData(link) {
   const request = await fetch(`..${link}`, {
@@ -7,7 +7,7 @@ async function sendData(link) {
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ tg_id: 459471362 }),
+    body: JSON.stringify({ tg_id: tg_id }),
   });
   const response = await request.json();
   console.log(response);
@@ -195,10 +195,10 @@ async function setPlates() {
     document
       .querySelector(`.card__button__choose${index + 1}`)
       .addEventListener("click", (el) => {
-        console.log("button", el.target);
+        // console.log("button", el.target);
         const data = {};
         data.plate_id = plate.plate_id;
-        data.tg_id = 459471362;
+        data.tg_id = tg_id;
         data.calories = plate.calories;
         data.proteins = plate.proteins;
         data.fats = plate.fats;
@@ -287,7 +287,7 @@ async function sendPlate(data, link, el) {
       body: JSON.stringify(data),
     });
     const response = await request.json();
-    console.log(response);
+    // console.log(response);
     if (response.success === true) {
       if (response.is_green === true) {
         el.classList.remove("card__button__choose_off");
