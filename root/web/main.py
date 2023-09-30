@@ -414,6 +414,8 @@ async def get_nutrient_parameters(request):
             'eaten_carbohydrates': sum_carbohydrates
         }
         
+        print(data)
+        
         return web.json_response(data)
     except Exception as x:
         print(x)
