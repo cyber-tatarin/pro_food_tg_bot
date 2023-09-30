@@ -195,7 +195,7 @@ async function setPlates() {
     document
       .querySelector(`.card__button__choose${index + 1}`)
       .addEventListener("click", (el) => {
-        console.log("button", el);
+        console.log("button", el.target);
         const data = {};
         data.plate_id = plate.plate_id;
         data.tg_id = 459471362;
@@ -203,7 +203,7 @@ async function setPlates() {
         data.proteins = plate.proteins;
         data.fats = plate.fats;
         data.carbohydrates = plate.carbohydrates;
-        sendPlate(data, "/api/has_eaten_plate", el);
+        sendPlate(data, "/api/has_eaten_plate", el.target);
       });
 
     if (plate.in_favorites === true) {
