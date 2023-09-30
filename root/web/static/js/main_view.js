@@ -293,7 +293,6 @@ async function sendPlate(data, link, el) {
       if (response.is_green === true) {
         el.classList.remove("card__button__choose_off");
         el.textContent = "Выбрать";
-
         document.querySelector(".eaten-calories").textContent = `${
           +document.querySelector(".eaten-calories").textContent - data.calories
         }`;
@@ -334,7 +333,7 @@ async function sendPlate(data, link, el) {
           ).style.borderBottomRightRadius = "0px";
           document.querySelector(
             ".progress__foreground"
-          ).style.backgroundColor = "#ff0831";
+          ).style.backgroundColor = "#05ff00";
         }
       } else {
         el.classList.add("card__button__choose_off");
@@ -366,7 +365,7 @@ async function sendPlate(data, link, el) {
           ).style.borderBottomRightRadius = "3px";
           document.querySelector(
             ".progress__foreground"
-          ).style.backgroundColor = "#05ff00";
+          ).style.backgroundColor = "#ff0831";
         } else {
           document.querySelector(".progress__foreground").style.width = `${
             width * 80
