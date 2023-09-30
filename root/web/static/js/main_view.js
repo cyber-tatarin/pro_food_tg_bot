@@ -15,6 +15,7 @@ async function sendData(link) {
 }
 
 let diamert = 0;
+let nutrientStreak = {};
 
 async function setUserParameters() {
   const userParameters = await sendData("/api/get_user_parameters");
@@ -85,7 +86,7 @@ async function setUserStreak() {
 }
 
 async function setNutrientParameters() {
-  const nutrientStreak = await sendData("/api/get_nutrient_parameters");
+  nutrientStreak = await sendData("/api/get_nutrient_parameters");
   console.log(nutrientStreak);
   const width = nutrientStreak.eaten_calories / nutrientStreak.day_calories;
   if (width > 1) {
@@ -292,9 +293,89 @@ async function sendPlate(data, link, el) {
       if (response.is_green === true) {
         el.classList.remove("card__button__choose_off");
         el.textContent = "Выбрать";
+        document.querySelector(".eaten-calories").textContent = `${
+          nutrientStreak.eaten_calories - data.calories
+        }`;
+        document.querySelector(".eaten__proteins").textContent = `${
+          nutrientStreak.eaten_proteins - data.proteins
+        }`;
+        document.querySelector(".eaten__fats").textContent = `${
+          nutrientStreak.eaten_fats - data.fats
+        }`;
+        document.querySelector(".eaten__carbohydrates").textContent = `${
+          nutrientStreak.eaten_carbohydrates - data.carbohydrates
+        }`;
+        const width =
+          (nutrientStreak.eaten_calories - data.calories) /
+          nutrientStreak.day_calories;
+        if (width > 1) {
+          document.querySelector(".progress__foreground").style.width = "100%";
+          document.querySelector(
+            ".progress__foreground"
+          ).style.borderTopRightRadius = "3px";
+          document.querySelector(
+            ".progress__foreground"
+          ).style.borderBottomRightRadius = "3px";
+          document.querySelector(
+            ".progress__foreground"
+          ).style.backgroundColor = "#ff0831";
+        } else {
+          document.querySelector(".progress__foreground").style.width = `${
+            width * 80
+          }%`;
+          document.querySelector(
+            ".progress__foreground"
+          ).style.borderTopRightRadius = "0px";
+          document.querySelector(
+            ".progress__foreground"
+          ).style.borderBottomRightRadius = "0px";
+          document.querySelector(
+            ".progress__foreground"
+          ).style.backgroundColor = "#ff0831";
+        }
       } else {
         el.classList.add("card__button__choose_off");
         el.textContent = "Не съел";
+        document.querySelector(".eaten-calories").textContent = `${
+          nutrientStreak.eaten_calories + data.calories
+        }`;
+        document.querySelector(".eaten__proteins").textContent = `${
+          nutrientStreak.eaten_proteins + data.proteins
+        }`;
+        document.querySelector(".eaten__fats").textContent = `${
+          nutrientStreak.eaten_fats + data.fats
+        }`;
+        document.querySelector(".eaten__carbohydrates").textContent = `${
+          nutrientStreak.eaten_carbohydrates + data.carbohydrates
+        }`;
+        const width =
+          (nutrientStreak.eaten_calories + data.calories) /
+          nutrientStreak.day_calories;
+        if (width > 1) {
+          document.querySelector(".progress__foreground").style.width = "100%";
+          document.querySelector(
+            ".progress__foreground"
+          ).style.borderTopRightRadius = "3px";
+          document.querySelector(
+            ".progress__foreground"
+          ).style.borderBottomRightRadius = "3px";
+          document.querySelector(
+            ".progress__foreground"
+          ).style.backgroundColor = "#05ff00";
+        } else {
+          document.querySelector(".progress__foreground").style.width = `${
+            width * 80
+          }%`;
+          document.querySelector(
+            ".progress__foreground"
+          ).style.borderTopRightRadius = "0px";
+          document.querySelector(
+            ".progress__foreground"
+          ).style.borderBottomRightRadius = "0px";
+          document.querySelector(
+            ".progress__foreground"
+          ).style.backgroundColor = "#05ff00";
+        }
       }
     }
   } catch (err) {
