@@ -82,6 +82,7 @@ async def get_nutrient_for_plates_by_ids(session, plate_ids=None, in_json=False)
         result_list = list()
         for row in result:
             result_list.append({
+                'plate_id': row.plate_id,
                 'plate_name': row.plate_name,
                 'plate_type': row.plate_type,
                 'recipe_time': row.recipe_time,
@@ -93,6 +94,14 @@ async def get_nutrient_for_plates_by_ids(session, plate_ids=None, in_json=False)
                 'proteins': row.proteins,
                 'fats': row.fats,
                 'carbohydrates': row.carbohydrates,
+                'is_eaten': False,
+                'in_favorites': False
             })
             
         return result_list
+    
+    
+async def set_is_eaten_true_for_plates_in_result_list(result_list, eaten_plate_ids):
+    for obj in result_list:
+        if int(obj['plate_id']) in eaten_plate_ids:
+            obj['eaten'] = True

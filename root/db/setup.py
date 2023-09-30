@@ -25,7 +25,8 @@ if __name__ == '__main__':
     # models.Ingredient.__table__.drop(bind=engine)
     # models.Meal.__table__.drop(bind=engine)
     # models.Plate.__table__.drop(bind=engine)
-    models.HasEaten.__table__.drop(bind=engine)
+    # models.HasEaten.__table__.drop(bind=engine)
+    # models.UserPlatesDate.__table__.drop(bind=engine)
 
     # models.User.__table__.create(bind=engine)
     # models.BodyMeasure.__table__.create(bind=engine)
@@ -34,7 +35,8 @@ if __name__ == '__main__':
     # models.Plate.__table__.create(bind=engine)
     # models.meal_ingredients_association.create(bind=engine)
     # models.plate_meals_association.create(bind=engine)
-    models.HasEaten.__table__.create(bind=engine)
+    # models.HasEaten.__table__.create(bind=engine)
+    models.UserPlatesDate.__table__.create(bind=engine)
     #
     # session = Session()
     # ingredient2 = models.Ingredient(ingredient_name="Ingredient 4", proteins=1)
@@ -60,3 +62,5 @@ if __name__ == '__main__':
     #
     # mealss = session.query(models.ingredient_measure_association).filter(models.ingredient_measure_association.c.meal == 3).all()
     # print(mealss)
+    
+    pass

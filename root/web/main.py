@@ -18,9 +18,7 @@ from root.tg.utils import get_age_from_birth_date
 from root.gsheets import main as gsh
 from . import utils
 
-
 load_dotenv(find_dotenv())
-
 
 env = jinja2.Environment(
     loader=jinja2.FileSystemLoader(os.path.join('root', 'web', 'templates')),
@@ -49,7 +47,7 @@ async def add_ingredient_post(request):
     await utils.is_admin_by_id(tg_id)
     
     name = data.get('name')
-
+    
     measure = data.get('measure')
     if measure == '' or measure is None:
         return web.json_response({'success': False, 'error_message': 'Вы не выбрали меру'})
@@ -73,13 +71,13 @@ async def add_ingredient_post(request):
         session.commit()
         session.refresh(new_ingredient)
         new_ingredient_id = new_ingredient.ingredient_id
-
+        
         gsheet_thread = threading.Thread(target=gsh.add_to_sheet, args=('ingredients',
                                                                         [[new_ingredient_id, name, measure,
                                                                           calories, proteins,
                                                                           fats, carbohydrates]]))
         gsheet_thread.start()
-        
+    
     except Exception as x:
         print(x)
         return web.json_response({'success': False,
@@ -129,7 +127,7 @@ async def add_meal_post(request):
         session1.refresh(new_meal)
         new_meal_id = new_meal.meal_id
         print("Obtained new_meal_id:", new_meal_id)
-   
+    
     except Exception as x:
         print('First exception:', x)
         return web.json_response({'success': False,
@@ -181,7 +179,7 @@ async def add_meal_post(request):
         gsheet_thread = threading.Thread(target=gsh.add_to_sheet, args=('meal_ingredients',
                                                                         list_to_insert_into_gsheets))
         gsheet_thread.start()
-        
+    
     except Exception as x:
         session2.rollback()
         meal_to_delete = session2.query(models.Meal).filter(models.Meal.meal_id == new_meal_id).first()
@@ -190,7 +188,7 @@ async def add_meal_post(request):
             session2.commit()
         except Exception as x:
             print(x)
-
+        
         if str(x) not in ['Вы выбрали 1 ингредиент несколько раз. Проверьте, пожалуйста']:
             return web.json_response({'success': False,
                                       'error_message': 'Вы ввели данные некорректно, проверьте пожалуйста'})
@@ -282,7 +280,7 @@ async def add_plate_post(request):
         gsheet_thread = threading.Thread(target=gsh.add_to_sheet, args=('plate_meals',
                                                                         list_to_insert_into_gsheets))
         gsheet_thread.start()
-        
+    
     except Exception as x:
         session2.rollback()
         plate_to_delete = session2.query(models.Plate).filter(models.Plate.plate_id == new_plate_id).first()
@@ -299,7 +297,7 @@ async def add_plate_post(request):
         else:
             return web.json_response({'success': False,
                                       'error_message': str(x)})
-
+    
     # session3 = db.Session()
     # try:
     #     result = await utils.get_nutrient_for_plates_by_ids(session3, [new_plate_id])
@@ -317,7 +315,7 @@ async def add_plate_post(request):
     #     return web.json_response({'success': False,
     #                               'error_message': 'Блюда сохранены, но произошла ошибка при высчитывании информации '
     #                                                'о питательных веществах. Пожалуйста, свяжитесь с разработчиком'})
-
+    
     return web.json_response({'success': True})
 
 
@@ -342,7 +340,7 @@ async def get_user_parameters(request):
             'age': get_age_from_birth_date(datetime.strftime(user.birth_date, "%d.%m.%Y")),
             'height': user.height,
             'weight_aim': user.weight_aim,
-            'weight_gap':  float(user.weight_aim) - float(latest_body_measure.weight),
+            'weight_gap': float(user.weight_aim) - float(latest_body_measure.weight),
             'plate_diameter': user.plate_diameter
         }
         
@@ -353,7 +351,7 @@ async def get_user_parameters(request):
     finally:
         if session.is_active:
             session.close()
-        
+
 
 async def get_current_streak(request):
     data = await request.json()
@@ -362,7 +360,16 @@ async def get_current_streak(request):
     data = {
         'current_streak': 3,
         'motivational_text': 'Так держать! С каждым днём ты получаешь все больше монет и становишься ближе к своей цели!',
-        'tasks': ['Составить рацион', 'Съесть рацион'],
+        'tasks': [
+            {
+                'text': 'Составить рацион',
+                'completed': True
+            },
+            {
+                'text': 'Съесть рацион',
+                'completed': False
+            }
+        ],
         'coins_per_completed_task': 6,
         'coins_loss_for_inactivity': 2,
         'coins_per_completed_task_for_tomorrow': 7
@@ -389,10 +396,10 @@ async def get_nutrient_parameters(request):
             models.HasEaten.date_time < today + timedelta(days=1),
             models.HasEaten.tg_id == tg_id
         )
-
+        
         # Fetch the results (returns a tuple with sum values)
         sums = all_today_has_eaten_query.one()
-
+        
         sum_calories, sum_proteins, sum_fats, sum_carbohydrates = sums
         
         data = {
@@ -414,34 +421,57 @@ async def get_nutrient_parameters(request):
         if session.is_active:
             session.close()
 
-            
+
 async def get_today_plates(request):
     data = await request.json()
     tg_id = data.get('tg_id')
     
-    plate_ids = [3, 6, 9]
-    
-    session = db.Session()
+    session1 = db.Session()
     try:
-        result_list = await utils.get_nutrient_for_plates_by_ids(session, plate_ids, in_json=True)
-
+        today = date.today()
+        today_plates_list = session1.query(models.UserPlatesDate).filter(models.UserPlatesDate.tg_id == tg_id,
+                                                                         models.UserPlatesDate.date == today,
+                                                                         ).all()
+    
+    except Exception as x:
+        print(x)
+        return web.HTTPBadGateway()
+    finally:
+        if session1.is_active:
+            session1.close()
+    
+    plate_ids = [element.plate_id for element in today_plates_list]
+    
+    session2 = db.Session()
+    try:
+        result_list = await utils.get_nutrient_for_plates_by_ids(session2, plate_ids, in_json=True)
+        all_today_has_eaten_plates = session2.query(models.HasEaten).filter(
+            models.HasEaten.date_time >= today,
+            models.HasEaten.date_time < today + timedelta(days=1),
+            models.HasEaten.tg_id == tg_id
+        ).all()
+        
+        eaten_plate_ids = [int(element.plate_id) for element in all_today_has_eaten_plates]
+        
+        await utils.set_is_eaten_true_for_plates_in_result_list(result_list, eaten_plate_ids)
+        
         # custom_order = {
         #     "Завтрак": 1,
         #     "Обед": 2,
         #     "Ужин": 3
         # }
-
+        
         # # Sort the objects based on the custom order of plate_type
         # result.sort(key=lambda obj: custom_order.get(obj.plate_type, float('inf')))
         
         return web.json_response(result_list)
-        
+    
     except Exception as x:
         print(x)
         return web.HTTPBadGateway()
     finally:
-        if session.is_active:
-            session.close()
+        if session2.is_active:
+            session2.close()
 
 
 async def get_ingredient_ids_names_properties_list(request):
@@ -516,18 +546,18 @@ async def choose_plates_for_today(request):
     finally:
         if session.is_active:
             session.close()
-            
+
 
 async def has_eaten_plate(request):
     data = await request.json()
     tg_id = data.get('tg_id')
     plate_id = data.get('plate_id')
-
+    
     calories = data.get('calories')
     proteins = data.get('proteins')
     fats = data.get('fats')
     carbohydrates = data.get('carbohydrates')
-
+    
     session = db.Session()
     try:
         new_has_eaten = models.HasEaten(tg_id=tg_id, plate_id=plate_id,
@@ -535,7 +565,7 @@ async def has_eaten_plate(request):
                                         fats=fats, carbohydrates=carbohydrates)
         session.add(new_has_eaten)
         session.commit()
-        
+    
     except Exception as x:
         print(x)
         return web.json_response({'success': False})
@@ -543,7 +573,7 @@ async def has_eaten_plate(request):
     finally:
         if session.is_active:
             session.close()
-
+    
     return web.json_response({'success': True})
 
 
