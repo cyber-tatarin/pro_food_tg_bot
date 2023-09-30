@@ -293,20 +293,23 @@ async function sendPlate(data, link, el) {
       if (response.is_green === true) {
         el.classList.remove("card__button__choose_off");
         el.textContent = "Выбрать";
+
         document.querySelector(".eaten-calories").textContent = `${
-          nutrientStreak.eaten_calories - data.calories
+          +document.querySelector(".eaten-calories").textContent - data.calories
         }`;
         document.querySelector(".eaten__proteins").textContent = `${
-          nutrientStreak.eaten_proteins - data.proteins
+          +document.querySelector(".eaten__proteins").textContent -
+          data.proteins
         }`;
         document.querySelector(".eaten__fats").textContent = `${
-          nutrientStreak.eaten_fats - data.fats
+          +document.querySelector(".eaten__fats").textContent - data.fats
         }`;
         document.querySelector(".eaten__carbohydrates").textContent = `${
-          nutrientStreak.eaten_carbohydrates - data.carbohydrates
+          +document.querySelector(".eaten__carbohydrates").textContent -
+          data.carbohydrates
         }`;
         const width =
-          (nutrientStreak.eaten_calories - data.calories) /
+          +document.querySelector(".eaten-calories").textContent /
           nutrientStreak.day_calories;
         if (width > 1) {
           document.querySelector(".progress__foreground").style.width = "100%";
@@ -337,19 +340,21 @@ async function sendPlate(data, link, el) {
         el.classList.add("card__button__choose_off");
         el.textContent = "Не съел";
         document.querySelector(".eaten-calories").textContent = `${
-          nutrientStreak.eaten_calories + data.calories
+          +document.querySelector(".eaten-calories").textContent + data.calories
         }`;
         document.querySelector(".eaten__proteins").textContent = `${
-          nutrientStreak.eaten_proteins + data.proteins
+          +document.querySelector(".eaten__proteins").textContent +
+          data.proteins
         }`;
         document.querySelector(".eaten__fats").textContent = `${
-          nutrientStreak.eaten_fats + data.fats
+          +document.querySelector(".eaten__fats").textContent + data.fats
         }`;
         document.querySelector(".eaten__carbohydrates").textContent = `${
-          nutrientStreak.eaten_carbohydrates + data.carbohydrates
+          +document.querySelector(".eaten__carbohydrates").textContent +
+          data.carbohydrates
         }`;
         const width =
-          (nutrientStreak.eaten_calories + data.calories) /
+          +document.querySelector(".eaten-calories").textContent /
           nutrientStreak.day_calories;
         if (width > 1) {
           document.querySelector(".progress__foreground").style.width = "100%";
