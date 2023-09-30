@@ -560,6 +560,7 @@ body {
 
 .card__button__recepi,
 .card__button__favourites {
+  height: 40px;
   padding: 12px 0px;
   width: 100%;
   border-radius: 32px;
@@ -573,6 +574,7 @@ body {
 }
 
 .card__button__choose {
+  height: 40px;
   padding: 12px 0px;
   width: 100%;
   border-radius: 32px;
