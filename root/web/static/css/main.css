@@ -397,16 +397,22 @@ body {
 .eat__buttons {
   display: flex;
   align-items: center;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.two__eat__buttons {
+  width: 100%;
+  display: flex;
   gap: 8px;
 }
 
 .eat__buttons-single {
   display: block;
-  margin-top: -8px;
+  width: 100%;
 }
 .eat__buttons-single_hidden {
   display: none;
-  margin-top: -8px;
 }
 
 .eat__button {
@@ -423,7 +429,6 @@ body {
   font-style: normal;
   font-weight: 700;
   line-height: normal;
-  margin-bottom: 16px;
 }
 
 /* card */
