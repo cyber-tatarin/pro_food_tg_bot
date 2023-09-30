@@ -468,6 +468,7 @@ async def get_today_plates(request):
         result_list.sort(key=lambda obj: custom_order.get(obj['plate_type'], float('inf')))
         
         return web.json_response(result_list)
+        # return web.json_response([])
     
     except Exception as x:
         print(x)
@@ -493,6 +494,7 @@ async def get_ingredient_ids_names_properties_list(request):
             for ingredient in all_ingredients]
         
         return web.json_response(data)
+
     except Exception as x:
         return web.HTTPBadGateway()
     finally:
@@ -610,6 +612,16 @@ async def choose_breakfast(request):
     return {}
 
 
+@aiohttp_jinja2.template('choose_lunch.html')
+async def choose_lunch(request):
+    return {}
+
+
+@aiohttp_jinja2.template('choose_dinner.html')
+async def choose_dinner(request):
+    return {}
+
+
 async def has_chosen_plate(request):
     data = await request.json()
     tg_id = data.get('tg_id')
@@ -646,6 +658,8 @@ app.add_routes([
     web.get('/api/get_ingredients_list', get_ingredient_ids_names_properties_list),
     web.get('/api/get_meals_list', get_meal_ids_names_properties_list),
     web.get('/choose_breakfast', choose_breakfast),
+    web.get('/choose_lunch', choose_lunch),
+    web.get('/choose_dinner', choose_dinner),
     
 ])
 
