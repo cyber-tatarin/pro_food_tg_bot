@@ -582,9 +582,19 @@ async def has_eaten_plate(request):
                                             fats=fats, carbohydrates=carbohydrates)
             session.add(new_has_eaten)
             session.commit()
+
+            return web.json_response({'success': True, 'is_green': False})
         
         else:
-            return web.json_response({'success': False})
+            session.rollback()
+            for eaten_plate in all_today_has_eaten_plates:
+                session.refresh(eaten_plate)
+                if eaten_plate.plate_id == plate_id:
+                    session.delete(eaten_plate)
+                    session.commit()
+                    break
+            
+            return web.json_response({'success': True, 'is_green': True})
     
     except Exception as x:
         print(x)
@@ -593,8 +603,6 @@ async def has_eaten_plate(request):
     finally:
         if session.is_active:
             session.close()
-    
-    return web.json_response({'success': True})
 
 
 @aiohttp_jinja2.template('choose_breakfast.html')
