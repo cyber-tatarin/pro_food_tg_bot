@@ -10,148 +10,138 @@
       href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap"
       rel="stylesheet"
     />
-
     <link rel="stylesheet" href="/static/css/reset.css" />
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/choices.js@9.0.1/public/assets/styles/choices.min.css"
-    />
     <link rel="stylesheet" href="/static/css/main.css" />
   </head>
   <body>
     <main class="main">
       <div class="container">
-        <form
-          action="../api/add_ingredient"
-          method="post"
-          enctype="multipart/form-data"
-        >
-          <section class="section-person">
-            <div class="coin">
-              <div class="coin__logo">
-                <img src="../static/images/coin.png" alt="" />
-              </div>
-              <div class="coin__amount">1000</div>
-              <a href="#" class="coin__help">Что это?</a>
+        <section class="section-person">
+          <div class="coin">
+            <div class="coin__logo">
+              <img src="../static/images/coin.png" alt="" />
             </div>
-            <hr class="hr" />
-            <div class="person-info">
-              <div class="person-info__item">
-                <div class="person-info__title">Вес</div>
-                <div class="person-info__value weight-value">72.0 кг</div>
-              </div>
-              <div class="person-info__item">
-                <div class="person-info__title">Возраст</div>
-                <div class="person-info__value age-value">22</div>
-              </div>
-              <div class="person-info__item">
-                <div class="person-info__title">Рост</div>
-                <div class="person-info__value height-value">173 см</div>
-              </div>
+            <div class="coin__amount">1000</div>
+            <a href="#" class="coin__help">Что это?</a>
+          </div>
+          <hr class="hr" />
+          <div class="person-info">
+            <div class="person-info__item">
+              <div class="person-info__title">Вес</div>
+              <div class="person-info__value weight-value">72.0 кг</div>
             </div>
-            <div class="edit">
-              <div class="edit__inner">
-                <div class="edit__line">
-                  <svg
-                    width="96"
-                    height="10"
-                    viewBox="0 0 96 10"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M95 8.99993L9.00003 8.99999C4.58554 9 1.01051 5.41448 1.02346 1V1"
-                      stroke="#D9D9D9"
-                      stroke-width="1.2"
-                      stroke-linecap="round"
-                    />
-                  </svg>
-                </div>
-                <a href="#" class="edit__link">Редактировать</a>
-                <div class="edit__line">
-                  <svg
-                    width="96"
-                    height="10"
-                    viewBox="0 0 96 10"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M1 8.99993L87 8.99999C91.4145 9 94.9895 5.41448 94.9765 1V1"
-                      stroke="#D9D9D9"
-                      stroke-width="1.2"
-                      stroke-linecap="round"
-                    />
-                  </svg>
-                </div>
-              </div>
+            <div class="person-info__item">
+              <div class="person-info__title">Возраст</div>
+              <div class="person-info__value age-value">22</div>
             </div>
-            <div class="goal">
-              <div class="goal__title">Цель</div>
-              <div class="goal__values">
-                <span class="goal__weight_current weight-aim-value"
-                  >180.0 кг</span
+            <div class="person-info__item">
+              <div class="person-info__title">Рост</div>
+              <div class="person-info__value height-value">173 см</div>
+            </div>
+          </div>
+          <div class="edit">
+            <div class="edit__inner">
+              <div class="edit__line">
+                <svg
+                  width="96"
+                  height="10"
+                  viewBox="0 0 96 10"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
                 >
-                <span class="goal__weight_remaining weight-gap-value"
-                  >(+18.0 кг)</span
+                  <path
+                    d="M95 8.99993L9.00003 8.99999C4.58554 9 1.01051 5.41448 1.02346 1V1"
+                    stroke="#D9D9D9"
+                    stroke-width="1.2"
+                    stroke-linecap="round"
+                  />
+                </svg>
+              </div>
+              <a href="#" class="edit__link">Редактировать</a>
+              <div class="edit__line">
+                <svg
+                  width="96"
+                  height="10"
+                  viewBox="0 0 96 10"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
                 >
+                  <path
+                    d="M1 8.99993L87 8.99999C91.4145 9 94.9895 5.41448 94.9765 1V1"
+                    stroke="#D9D9D9"
+                    stroke-width="1.2"
+                    stroke-linecap="round"
+                  />
+                </svg>
               </div>
             </div>
-            <div class="edit">
-              <div class="edit__inner">
-                <div class="edit__line">
-                  <svg
-                    width="96"
-                    height="10"
-                    viewBox="0 0 96 10"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M95 8.99993L9.00003 8.99999C4.58554 9 1.01051 5.41448 1.02346 1V1"
-                      stroke="#D9D9D9"
-                      stroke-width="1.2"
-                      stroke-linecap="round"
-                    />
-                  </svg>
-                </div>
-                <a href="#" class="edit__link">Редактировать</a>
-                <div class="edit__line">
-                  <svg
-                    width="96"
-                    height="10"
-                    viewBox="0 0 96 10"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M1 8.99993L87 8.99999C91.4145 9 94.9895 5.41448 94.9765 1V1"
-                      stroke="#D9D9D9"
-                      stroke-width="1.2"
-                      stroke-linecap="round"
-                    />
-                  </svg>
-                </div>
+          </div>
+          <div class="goal">
+            <div class="goal__title">Цель</div>
+            <div class="goal__values">
+              <span class="goal__weight_current weight-aim-value"
+                >180.0 кг</span
+              >
+              <span class="goal__weight_remaining weight-gap-value"
+                >(+18.0 кг)</span
+              >
+            </div>
+          </div>
+          <div class="edit">
+            <div class="edit__inner">
+              <div class="edit__line">
+                <svg
+                  width="96"
+                  height="10"
+                  viewBox="0 0 96 10"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M95 8.99993L9.00003 8.99999C4.58554 9 1.01051 5.41448 1.02346 1V1"
+                    stroke="#D9D9D9"
+                    stroke-width="1.2"
+                    stroke-linecap="round"
+                  />
+                </svg>
+              </div>
+              <a href="#" class="edit__link">Редактировать</a>
+              <div class="edit__line">
+                <svg
+                  width="96"
+                  height="10"
+                  viewBox="0 0 96 10"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M1 8.99993L87 8.99999C91.4145 9 94.9895 5.41448 94.9765 1V1"
+                    stroke="#D9D9D9"
+                    stroke-width="1.2"
+                    stroke-linecap="round"
+                  />
+                </svg>
               </div>
             </div>
-          </section>
-          <section class="section-benefit">
-            <div class="strick">
-              <div class="strick__title">Текущий стрик</div>
-              <div class="strick__time">3 дня подряд 🥳</div>
+          </div>
+        </section>
+        <section class="section-benefit">
+          <div class="strick">
+            <div class="strick__title">Текущий стрик</div>
+            <div class="strick__time">3 дня подряд 🥳</div>
+          </div>
+          <div class="notion">
+            <div class="flex-12">
+              <p class="notion__p notion__p-motivation">
+                Так держать! С каждым днём ты получаешь все больше монет и
+                становишься ближе к своей цели!
+              </p>
+              <p class="notion__p_bold notion__p-completed">
+                Выполни сегодня все задания, чтобы получить 12 ЖИРкоинов:
+              </p>
             </div>
-            <div class="notion">
-              <div class="flex-12">
-                <p class="notion__p notion__p-motivation">
-                  Так держать! С каждым днём ты получаешь все больше монет и
-                  становишься ближе к своей цели!
-                </p>
-                <p class="notion__p_bold notion__p-completed">
-                  Выполни сегодня все задания, чтобы получить 12 ЖИРкоинов:
-                </p>
-              </div>
-              <ol class="list">
-                <!-- <li class="list__item">
+            <ol class="list">
+              <!-- <li class="list__item">
                   <span class="list__item__marker"></span
                   ><span>Составить рацион</span>
                 </li>
@@ -161,83 +151,83 @@
                   ></span>
                   <span>Съесть рацион</span>
                 </li> -->
-              </ol>
-              <div class="flex-12">
-                <p class="notion__p_bold notion__p-inactivity">
-                  Если ты не выполнишь ни одно задание, то потеряешь 2 ЖИРкоина
-                </p>
-                <p class="notion__p notion__p-tomorrow">
-                  А завтра за все задания ты получишь 14 ЖИРкоинов!!
-                </p>
+            </ol>
+            <div class="flex-12">
+              <p class="notion__p_bold notion__p-inactivity">
+                Если ты не выполнишь ни одно задание, то потеряешь 2 ЖИРкоина
+              </p>
+              <p class="notion__p notion__p-tomorrow">
+                А завтра за все задания ты получишь 14 ЖИРкоинов!!
+              </p>
+            </div>
+          </div>
+          <hr class="hr" />
+          <div class="buttons">
+            <button class="button button_get-stats">
+              📊 Посмотреть статистику
+            </button>
+            <button class="button button_ask-question">
+              ❔ Задать вопрос эксперту
+            </button>
+          </div>
+          <div class="stats">
+            <div class="plate">
+              <p class="plate__size">Диаметр тарелки</p>
+              <p class="plate__size_value plate-diameter-value">21 см</p>
+            </div>
+            <div class="current-progress">
+              <div class="date">09.09.2023 — сегодня</div>
+              <div class="calories">
+                <span class="eaten-calories">1100</span><span> / </span
+                ><span class="day_calories">2400 ккал</span>
               </div>
             </div>
-            <hr class="hr" />
-            <div class="buttons">
-              <button class="button button_get-stats">
-                📊 Посмотреть статистику
-              </button>
-              <button class="button button_ask-question">
-                ❔ Задать вопрос эксперту
-              </button>
-            </div>
-            <div class="stats">
-              <div class="plate">
-                <p class="plate__size">Диаметр тарелки</p>
-                <p class="plate__size_value plate-diameter-value">21 см</p>
+            <div class="progress">
+              <hr class="progress__background" />
+              <hr class="progress__foreground" />
+              <hr class="progress__mark" />
+              <div class="progress__marks">
+                <p class="progress__start">0</p>
+                <p class="progress__end">2400</p>
               </div>
-              <div class="current-progress">
-                <div class="date">09.09.2023 — сегодня</div>
-                <div class="calories">
-                  <span class="eaten-calories">1100</span><span> / </span
-                  ><span class="day_calories">2400 ккал</span>
+            </div>
+            <div class="progress-info">
+              <div class="progress-info__item">
+                <div class="progress-info__title">Белки</div>
+                <div class="progress-info__value">
+                  <span class="eaten__proteins">10</span><span> / </span
+                  ><span class="day__proteins">200 </span>
                 </div>
               </div>
-              <div class="progress">
-                <hr class="progress__background" />
-                <hr class="progress__foreground" />
-                <hr class="progress__mark" />
-                <div class="progress__marks">
-                  <p class="progress__start">0</p>
-                  <p class="progress__end">2400</p>
+              <div class="progress-info__item">
+                <div class="progress-info__title">Жиры</div>
+                <div class="progress-info__value">
+                  <span class="eaten__fats">10</span><span> / </span
+                  ><span class="day__fats">200 </span>
                 </div>
               </div>
-              <div class="progress-info">
-                <div class="progress-info__item">
-                  <div class="progress-info__title">Белки</div>
-                  <div class="progress-info__value">
-                    <span class="eaten__proteins">10</span><span> / </span
-                    ><span class="day__proteins">200 </span>
-                  </div>
-                </div>
-                <div class="progress-info__item">
-                  <div class="progress-info__title">Жиры</div>
-                  <div class="progress-info__value">
-                    <span class="eaten__fats">10</span><span> / </span
-                    ><span class="day__fats">200 </span>
-                  </div>
-                </div>
-                <div class="progress-info__item">
-                  <div class="progress-info__title">Углеводы</div>
-                  <div class="progress-info__value">
-                    <span class="eaten__carbohydrates">10</span><span> / </span
-                    ><span class="day__carbohydrates">200 </span>
-                  </div>
+              <div class="progress-info__item">
+                <div class="progress-info__title">Углеводы</div>
+                <div class="progress-info__value">
+                  <span class="eaten__carbohydrates">10</span><span> / </span
+                  ><span class="day__carbohydrates">200 </span>
                 </div>
               </div>
-              <p class="diet">Рацион питания</p>
             </div>
-            <div class="eat__buttons">
-              <button class="eat__button">Я съел(-а)</button>
-              <button class="eat__button">Что можно<br />перекусить?</button>
-            </div>
-            <div
-              class="eat__buttons eat__buttons-single eat__buttons-single_hidden"
-            >
-              <button class="eat__button">Составить рацион на сегодня</button>
-            </div>
-          </section>
-          <section class="cards">
-            <!-- <div class="card">
+            <p class="diet">Рацион питания</p>
+          </div>
+          <div class="eat__buttons">
+            <button class="eat__button">Я съел(-а)</button>
+            <button class="eat__button">Что можно<br />перекусить?</button>
+          </div>
+          <div
+            class="eat__buttons eat__buttons-single eat__buttons-single_hidden"
+          >
+            <button class="eat__button">Составить рацион на сегодня</button>
+          </div>
+        </section>
+        <section class="cards">
+          <!-- <div class="card">
               <div class="card__type">Завтрак</div>
               <div class="card__calories">Б: 10 / Ж: 20 / У: 30 / 300 ккал</div>
               <div class="card__meal">“Вареная курица с гречкой”</div>
@@ -279,8 +269,7 @@
                 <button class="card__button__choose">Выбрать</button>
               </div>
             </div> -->
-          </section>
-        </form>
+        </section>
       </div>
     </main>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>

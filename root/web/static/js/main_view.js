@@ -206,7 +206,7 @@ async function setPlates() {
         .querySelector(`.card__visual${index + 1}`)
         .insertAdjacentHTML(
           "afterbegin",
-          `<img src="../static/images/1-parts.svg" class="card__plate" />`
+          `<img src="../static/images/1-part.svg" class="card__plate" />`
         );
     } else if (plate.percentages[0] === "50") {
       document
