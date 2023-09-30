@@ -682,5 +682,5 @@ app.add_routes([
 aiohttp_jinja2.setup(app, loader=env.loader, context_processors=[aiohttp_jinja2.request_processor])
 
 if __name__ == '__main__':
-    # web.run_app(app, host='0.0.0.0')
-    web.run_app(app, host='127.0.0.1', port=80)
+    web.run_app(app, host='0.0.0.0')
+    # web.run_app(app, host='127.0.0.1', port=80)
