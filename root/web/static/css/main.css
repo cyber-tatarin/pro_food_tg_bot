@@ -489,7 +489,7 @@ body {
 }
 
 .card__plate_size {
-  min-width: 44px;
+  min-width: 46px;
   display: flex;
   margin-left: 4px;
   align-items: center;
@@ -594,6 +594,22 @@ body {
   color: #303030;
   background: #ffffff;
   border: 2px solid #303030;
+}
+
+.meal-type {
+  color: #303030;
+  font-size: 20px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: normal;
+}
+
+.title-flex {
+  margin-left: 8px;
+  margin-bottom: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
 
 @media (max-width: 360px) {
