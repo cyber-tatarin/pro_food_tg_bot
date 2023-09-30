@@ -189,7 +189,7 @@ async function setPlates() {
         "Не съел";
       document
         .querySelector(`.card__button__choose${index + 1}`)
-        .classList.add("card__button__choose__off");
+        .classList.add("card__button__choose_off");
     }
 
     document
@@ -287,8 +287,11 @@ async function sendPlate(data, link, el) {
     });
     const response = await request.json();
     if (response.success === true) {
-      if (response.is_green === true)
-        el.classList.remove("card__button__choose__off");
+      if (response.is_green === true) {
+        el.classList.remove("card__button__choose_off");
+      } else {
+        el.classList.add("card__button__choose_off");
+      }
     }
   } catch (err) {
     console.log(err);
