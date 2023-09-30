@@ -387,10 +387,10 @@ async def get_nutrient_parameters(request):
         today = date.today()
         user = session.query(models.User).filter(models.User.tg_id == tg_id).first()
         all_today_has_eaten_query = session.query(
-            func.sum(models.HasEaten.calories),
-            func.sum(models.HasEaten.proteins),
-            func.sum(models.HasEaten.fats),
-            func.sum(models.HasEaten.carbohydrates)
+            func.coalesce(func.sum(models.HasEaten.calories), 0),
+            func.coalesce(func.sum(models.HasEaten.proteins), 0),
+            func.coalesce(func.sum(models.HasEaten.fats), 0),
+            func.coalesce(func.sum(models.HasEaten.carbohydrates), 0)
         ).filter(
             models.HasEaten.date_time >= today,
             models.HasEaten.date_time < today + timedelta(days=1),
@@ -577,6 +577,11 @@ async def has_eaten_plate(request):
     return web.json_response({'success': True})
 
 
+@aiohttp_jinja2.template('choose_breakfast.html')
+async def choose_breakfast(request):
+    return {}
+
+
 app = web.Application()
 
 app.router.add_static('/static/', path='root/web/static', name='static')
@@ -589,6 +594,8 @@ app.add_routes([
     web.get('/main', main_view),
     web.get('/api/get_ingredients_list', get_ingredient_ids_names_properties_list),
     web.get('/api/get_meals_list', get_meal_ids_names_properties_list),
+    web.get('/choose_breakfast', choose_breakfast),
+    
 ])
 
 app.add_routes([
@@ -602,6 +609,7 @@ app.add_routes([
     web.post('/api/get_nutrient_parameters', get_nutrient_parameters),
     web.post('/api/get_today_plates', get_today_plates),
     web.post('/api/has_eaten_plate', has_eaten_plate),
+    
 ])
 
 aiohttp_jinja2.setup(app, loader=env.loader, context_processors=[aiohttp_jinja2.request_processor])
