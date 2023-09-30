@@ -202,7 +202,7 @@ async function setPlates() {
         data.proteins = plate.proteins;
         data.fats = plate.fats;
         data.carbohydrates = plate.carbohydrates;
-        sendData(data, "/api/has_eaten_plate", el);
+        sendPlate(data, "/api/has_eaten_plate", el);
       });
 
     if (plate.in_favorites === true) {
