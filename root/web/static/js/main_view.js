@@ -192,6 +192,19 @@ async function setPlates() {
         .classList.add("card__button__choose__off");
     }
 
+    document
+      .querySelector(`.card__button__choose${index + 1}`)
+      .addEventListener("click", (el) => {
+        const data = {};
+        data.plate_id = plate.plate_id;
+        data.tg_id = tg_id;
+        data.calories = plate.calories;
+        data.proteins = plate.proteins;
+        data.fats = plate.fats;
+        data.carbohydrates = plate.carbohydrates;
+        sendPlate(data, "/api/has_eaten_plate", el);
+      });
+
     if (plate.in_favorites === true) {
       document.querySelector(
         `.card__button__favourites${index + 1}`
@@ -262,3 +275,22 @@ setUserParameters();
 setUserStreak();
 setNutrientParameters();
 setPlates();
+
+async function sendPlate(data, link, el) {
+  try {
+    const request = await fetch(`..${link}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
+    const response = await request.json();
+    if (response.success === true) {
+      if (response.is_green === true)
+        el.classList.remove("card__button__choose__off");
+    }
+  } catch (err) {
+    console.log(err);
+  }
+}
