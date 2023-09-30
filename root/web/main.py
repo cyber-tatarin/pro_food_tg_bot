@@ -408,13 +408,11 @@ async def get_nutrient_parameters(request):
             'day_proteins': user.day_proteins,
             'day_fats': user.day_fats,
             'day_carbohydrates': user.day_carbohydrates,
-            'eaten_calories': sum_calories,
-            'eaten_proteins': sum_proteins,
-            'eaten_fats': sum_fats,
-            'eaten_carbohydrates': sum_carbohydrates
+            'eaten_calories': int(sum_calories),
+            'eaten_proteins': int(sum_proteins),
+            'eaten_fats': int(sum_fats),
+            'eaten_carbohydrates': int(sum_carbohydrates)
         }
-        
-        print(data)
         
         return web.json_response(data)
     except Exception as x:
