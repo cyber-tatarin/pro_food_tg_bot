@@ -1,5 +1,5 @@
 let tg = window.Telegram.WebApp;
-let tg_id = tg.initDataUnsafe.user.id;
+// let tg_id = tg.initDataUnsafe.user.id;
 
 async function sendData(link) {
   const request = await fetch(`..${link}`, {
@@ -7,7 +7,7 @@ async function sendData(link) {
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ tg_id: tg_id }),
+    body: JSON.stringify({ tg_id: 459471362 }),
   });
   const response = await request.json();
   console.log(response);
@@ -198,7 +198,7 @@ async function setPlates() {
         // console.log("button", el.target);
         const data = {};
         data.plate_id = plate.plate_id;
-        data.tg_id = tg_id;
+        data.tg_id = 459471362;
         data.calories = plate.calories;
         data.proteins = plate.proteins;
         data.fats = plate.fats;
