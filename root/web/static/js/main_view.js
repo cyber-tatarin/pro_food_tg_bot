@@ -64,13 +64,23 @@ async function setUserStreak() {
     ".notion__p-inactivity"
   ).textContent = `Если ты не выполнишь ни одно задание, то потеряешь ${userStreak.coins_loss_for_inactivity}  ЖИРкоина`;
   userStreak.tasks.forEach((el) => {
-    document.querySelector(".list").insertAdjacentHTML(
-      "beforeend",
-      `
+    if (el.completed === true) {
+      document.querySelector(".list").insertAdjacentHTML(
+        "beforeend",
+        `
       <li class="list__item">
-        <span class="list__item__marker"></span>${el}
+        <span class="list__item__marker list__item__marker_active"></span>${el.text}
       </li>`
-    );
+      );
+    } else {
+      document.querySelector(".list").insertAdjacentHTML(
+        "beforeend",
+        `
+        <li class="list__item">
+          <span class="list__item__marker"></span>${el.text}
+        </li>`
+      );
+    }
   });
 }
 
@@ -85,6 +95,8 @@ async function setNutrientParameters() {
     document.querySelector(
       ".progress__foreground"
     ).style.borderBottomRightRadius = "3px";
+    document.querySelector(".progress__foreground").style.backgroundColor =
+      "#ff0831";
   } else {
     document.querySelector(".progress__foreground").style.width = `${
       width * 80
@@ -131,7 +143,6 @@ async function setPlates() {
       } / ${plate.calories} ккал</div>
     <div class="card__meal">“${plate.plate_name}”</div>
     <div class="card__visual card__visual${index + 1}">
-     
       <div class="card__plate_frames"></div>
       <div class="card__plate_size">
         <div class="plate__arrow">
@@ -144,11 +155,9 @@ async function setPlates() {
     </div>
     <p class="card__list-description">Список блюд</p>
     <div class="card__list card__list${index + 1}">
-   
     </div>
     <p class="card__difficulty card__difficulty${index + 1}">Сложность</p>
     <div class="card__stars card__stars${index + 1}">
-     
     </div>
     <p class="total-time">Общее время приготовления</p>
     <p class="total-time_value">${plate.recipe_time} минут</p>
@@ -156,10 +165,16 @@ async function setPlates() {
     <p class="active-time_value">${plate.recipe_active_time} минут</p>
     <div class="card__buttons">
       <button class="card__button__recepi">Рецепт</button>
-      <button class="card__button__choose">Выбрать</button>
+      <button class="card__button__favourites card__button__favourites${
+        index + 1
+      }">Добавить в избранное</button>
+      <button class="card__button__choose card__button__choose${
+        index + 1
+      }">Выбрать</button>
     </div>
   </div>`
     );
+
     plate.meals.forEach((el, i) => {
       document
         .querySelector(`.card__list${index + 1}`)
@@ -168,6 +183,23 @@ async function setPlates() {
           `<p class="card__list__item">${i + 1}. ${el}</p>`
         );
     });
+
+    if (plate.is_eaten === true) {
+      document.querySelector(`.card__button__choose${index + 1}`).textContent =
+        "Не съел";
+      document
+        .querySelector(`.card__button__choose${index + 1}`)
+        .classList.add("card__button__choose__off");
+    }
+
+    if (plate.in_favorites === true) {
+      document.querySelector(
+        `.card__button__favourites${index + 1}`
+      ).textContent = "Удалить из избранного";
+      document
+        .querySelector(`.card__button__favourites${index + 1}`)
+        .classList.add("card__button__favourites_off");
+    }
 
     if (plate.percentages[0] === "100") {
       document

@@ -558,7 +558,8 @@ body {
   gap: 8px;
 }
 
-.card__button__recepi {
+.card__button__recepi,
+.card__button__favourites {
   padding: 12px 0px;
   width: 100%;
   border-radius: 32px;
@@ -582,6 +583,17 @@ body {
   font-style: normal;
   font-weight: 700;
   line-height: normal;
+}
+
+.card__button__choose__off {
+  background: #ffffff;
+  border: 2px solid #05ff00;
+}
+
+.card__button__favourites_off {
+  color: #303030;
+  background: #ffffff;
+  border: 2px solid #303030;
 }
 
 @media (max-width: 360px) {
