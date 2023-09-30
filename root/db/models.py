@@ -133,10 +133,12 @@ class UserPlatesDate(Base):
     
     tg_id = Column(Integer)
     plate_id = Column(Integer)
-    plate_type = Column(Integer)
+    plate_type = Column(String(30))
     date = Column(Date, default=datetime.now)
     
-    
+    __table_args__ = (
+        UniqueConstraint('tg_id', 'plate_id', 'plate_type', 'date', name='unique_user_plate_type_date'),
+    )
     
     
 # class PlateNutrientsInfo(Base):

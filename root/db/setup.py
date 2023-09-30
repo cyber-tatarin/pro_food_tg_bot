@@ -26,7 +26,7 @@ if __name__ == '__main__':
     # models.Meal.__table__.drop(bind=engine)
     # models.Plate.__table__.drop(bind=engine)
     # models.HasEaten.__table__.drop(bind=engine)
-    # models.UserPlatesDate.__table__.drop(bind=engine)
+    models.UserPlatesDate.__table__.drop(bind=engine)
 
     # models.User.__table__.create(bind=engine)
     # models.BodyMeasure.__table__.create(bind=engine)

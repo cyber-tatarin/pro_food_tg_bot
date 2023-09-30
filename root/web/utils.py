@@ -36,7 +36,11 @@ percentage_db_func_dict = {
 
 
 async def get_nutrient_for_plates_by_ids(session, plate_ids=None, in_json=False) -> list:
-    plate_ids_as_str = ', '.join([str(x) for x in plate_ids])
+    if plate_ids:
+        plate_ids_as_str = ', '.join([str(x) for x in plate_ids])
+    else:
+        plate_ids_as_str = ''
+        
     meal_agg_statement = meal_db_func_dict[os.getenv('DB_ENGINE')]
     percentage_agg_statement = percentage_db_func_dict[os.getenv('DB_ENGINE')]
     
@@ -75,33 +79,44 @@ async def get_nutrient_for_plates_by_ids(session, plate_ids=None, in_json=False)
     # Execute the query
     result = session.execute(sql_query).fetchall()
     
+    print(result)
+    
     if not in_json:
         return result
     
     else:
         result_list = list()
-        for row in result:
-            result_list.append({
-                'plate_id': row.plate_id,
-                'plate_name': row.plate_name,
-                'plate_type': row.plate_type,
-                'recipe_time': row.recipe_time,
-                'recipe_active_time': row.recipe_active_time,
-                'recipe_difficulty': row.recipe_difficulty,
-                'meals': row.meal_names.split(', '),
-                'percentages': row.percentage.split(', '),
-                'calories': row.calories,
-                'proteins': row.proteins,
-                'fats': row.fats,
-                'carbohydrates': row.carbohydrates,
-                'is_eaten': False,
-                'in_favorites': False
-            })
-            
+        if result:
+            for row in result:
+                result_list.append({
+                    'plate_id': row.plate_id,
+                    'plate_name': row.plate_name,
+                    'plate_type': None,
+                    'recipe_time': row.recipe_time,
+                    'recipe_active_time': row.recipe_active_time,
+                    'recipe_difficulty': row.recipe_difficulty,
+                    'meals': row.meal_names.split(', '),
+                    'percentages': row.percentage.split(', '),
+                    'calories': row.calories,
+                    'proteins': row.proteins,
+                    'fats': row.fats,
+                    'carbohydrates': row.carbohydrates,
+                    'is_eaten': False,
+                    'in_favorites': False
+                })
+                
         return result_list
     
     
 async def set_is_eaten_true_for_plates_in_result_list(result_list, eaten_plate_ids):
     for obj in result_list:
         if int(obj['plate_id']) in eaten_plate_ids:
-            obj['eaten'] = True
+            obj['is_eaten'] = True
+
+
+async def set_plate_type(result_list, user_type_plate_date_query):
+    plate_id_to_value = {obj.plate_id: obj.plate_type for obj in user_type_plate_date_query}
+    for element in result_list:
+        if element['plate_id'] in plate_id_to_value:
+            element['plate_type'] = plate_id_to_value[element['plate_id']]
+    

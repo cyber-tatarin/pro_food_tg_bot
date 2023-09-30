@@ -9,6 +9,7 @@ import jinja2
 import aiohttp_jinja2
 from sqlalchemy import func, select, text
 from dotenv import load_dotenv, find_dotenv
+from sqlalchemy.exc import IntegrityError
 
 from root.db import setup as db
 from root.db import models
@@ -440,7 +441,7 @@ async def get_today_plates(request):
         if session1.is_active:
             session1.close()
     
-    plate_ids = [element.plate_id for element in today_plates_list]
+    plate_ids = [int(element.plate_id) for element in today_plates_list]
     
     session2 = db.Session()
     try:
@@ -451,18 +452,20 @@ async def get_today_plates(request):
             models.HasEaten.tg_id == tg_id
         ).all()
         
-        eaten_plate_ids = [int(element.plate_id) for element in all_today_has_eaten_plates]
+        eaten_plate_ids = [int(element.plate_id) for element in all_today_has_eaten_plates if element.plate_id is not None]
         
         await utils.set_is_eaten_true_for_plates_in_result_list(result_list, eaten_plate_ids)
-        
-        # custom_order = {
-        #     "Завтрак": 1,
-        #     "Обед": 2,
-        #     "Ужин": 3
-        # }
+
+        await utils.set_plate_type(result_list, today_plates_list)
+
+        custom_order = {
+            "Завтрак": 1,
+            "Обед": 2,
+            "Ужин": 3
+        }
         
         # # Sort the objects based on the custom order of plate_type
-        # result.sort(key=lambda obj: custom_order.get(obj.plate_type, float('inf')))
+        result_list.sort(key=lambda obj: custom_order.get(obj['plate_type'], float('inf')))
         
         return web.json_response(result_list)
     
@@ -531,12 +534,15 @@ async def get_meal_ids_names_properties_list(request):
             session.close()
 
 
-async def choose_plates_for_today(request):
+async def get_all_plates_to_choose(request):
     data = await request.json()
     tg_id = data.get('tg_id')
+    plate_type = data.get('plate_type')
+    plate_id = data.get('plate_id')
     
     session = db.Session()
     try:
+        print('inside')
         result_list = await utils.get_nutrient_for_plates_by_ids(session, in_json=True)
         return web.json_response(result_list)
     
@@ -560,11 +566,25 @@ async def has_eaten_plate(request):
     
     session = db.Session()
     try:
-        new_has_eaten = models.HasEaten(tg_id=tg_id, plate_id=plate_id,
-                                        calories=calories, proteins=proteins,
-                                        fats=fats, carbohydrates=carbohydrates)
-        session.add(new_has_eaten)
-        session.commit()
+        today = date.today()
+        all_today_has_eaten_plates = session.query(models.HasEaten).filter(
+            models.HasEaten.date_time >= today,
+            models.HasEaten.date_time < today + timedelta(days=1),
+            models.HasEaten.tg_id == tg_id
+        ).all()
+    
+        eaten_plate_ids = [int(element.plate_id) for element in all_today_has_eaten_plates if
+                           element.plate_id is not None]
+        
+        if int(plate_id) not in eaten_plate_ids:
+            new_has_eaten = models.HasEaten(tg_id=tg_id, plate_id=plate_id,
+                                            calories=calories, proteins=proteins,
+                                            fats=fats, carbohydrates=carbohydrates)
+            session.add(new_has_eaten)
+            session.commit()
+        
+        else:
+            return web.json_response({'success': False})
     
     except Exception as x:
         print(x)
@@ -580,6 +600,29 @@ async def has_eaten_plate(request):
 @aiohttp_jinja2.template('choose_breakfast.html')
 async def choose_breakfast(request):
     return {}
+
+
+async def has_chosen_plate(request):
+    data = await request.json()
+    tg_id = data.get('tg_id')
+    plate_type = data.get('plate_type')
+    plate_id = data.get('plate_id')
+    
+    session = db.Session()
+    try:
+        new_user_plate_date = models.UserPlatesDate(tg_id=tg_id, plate_type=plate_type, plate_id=plate_id)
+        session.add(new_user_plate_date)
+        session.commit()
+    except IntegrityError:
+        return web.json_response({'success': False, 'error_message': 'Эта тарелка уже добавлена в сегодняшний рацион'})
+    except Exception as x:
+        print(x)
+        return web.HTTPBadGateway()
+    finally:
+        if session.is_active:
+            session.close()
+            
+    return web.json_response({'success': True})
 
 
 app = web.Application()
@@ -609,6 +652,8 @@ app.add_routes([
     web.post('/api/get_nutrient_parameters', get_nutrient_parameters),
     web.post('/api/get_today_plates', get_today_plates),
     web.post('/api/has_eaten_plate', has_eaten_plate),
+    web.post('/api/get_all_plates_to_choose', get_all_plates_to_choose),
+    web.post('/api/has_chosen_plate', has_chosen_plate),
     
 ])
 
