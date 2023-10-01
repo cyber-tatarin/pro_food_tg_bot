@@ -26,7 +26,7 @@
         </div>
         <section class="cards">
           <div class="card">
-            <div class="card__type">Завтрак</div>
+            <div class="card__type">Выбрано</div>
             <div class="card__calories">Б: 10 / Ж: 20 / У: 30 / 300 ккал</div>
             <div class="card__meal">“Вареная курица с гречкой”</div>
             <div class="card__visual">
@@ -62,11 +62,11 @@
               <button class="card__button__favourites">
                 Добавить в избранное
               </button>
-              <button class="card__button__choose">Выбрать</button>
+              <!-- <button class="card__button__choose">Выбрать</button> -->
             </div>
           </div>
           <div class="card">
-            <div class="card__type">Завтрак</div>
+            <div class="card__type">Рекомендуем</div>
             <div class="card__calories">Б: 10 / Ж: 20 / У: 30 / 300 ккал</div>
             <div class="card__meal">“Вареная курица с гречкой”</div>
             <div class="card__visual">
@@ -106,9 +106,89 @@
             </div>
           </div>
         </section>
+        <hr class="hr hr-20" />
+        <div class="title-flex title-flex-8">
+          <p class="goal__title">Все блюда</p>
+          <p class="sort-title">Сортировать по:</p>
+        </div>
+        <select class="js-choice_type" name="plate_type">
+          <option value="1" selected>Сложные > простые</option>
+          <option value="2">Простые > сложные</option>
+          <option value="3">По рекомендуемым</option>
+        </select>
+
+        <section class="cards cards-mini">
+          <div class="card card-mini">
+            <!-- <div class="card__type">Завтрак</div> -->
+            <div class="card__calories">Б: 10 / Ж: 20 / У: 30 / 300 ккал</div>
+            <div class="card__meal card__meal-mini">
+              “Вареная курица с гречкой”
+            </div>
+
+            <p class="card__list-description">Список блюд</p>
+            <div class="card__list">
+              <p class="card__list__item">1. Вареная курица</p>
+              <p class="card__list__item">2. Вареная гречка</p>
+              <p class="card__list__item">3. Помидоры</p>
+            </div>
+            <p class="card__difficulty">Сложность</p>
+            <div class="card__stars">
+              <img src="../static/images/green-star.svg" alt="" />
+              <img src="../static/images/green-star.svg" alt="" />
+              <img src="../static/images/green-star.svg" alt="" />
+              <img src="../static/images/gray-star.svg" alt="" />
+              <img src="../static/images/gray-star.svg" alt="" />
+            </div>
+            <p class="total-time">Общее время приготовления</p>
+            <p class="total-time_value">60 минут</p>
+            <p class="active-time">Активное время приготовления</p>
+            <p class="active-time_value">20 минут</p>
+            <div class="card__buttons">
+              <button class="card__button__recepi">Рецепт</button>
+              <button class="card__button__favourites">
+                Добавить в избранное
+              </button>
+              <button class="card__button__choose">Выбрать</button>
+            </div>
+          </div>
+          <div class="card card-mini">
+            <!-- <div class="card__type">Завтрак</div> -->
+            <div class="card__calories">Б: 10 / Ж: 20 / У: 30 / 300 ккал</div>
+            <div class="card__meal card__meal-mini">
+              “Вареная курица с гречкой”
+            </div>
+
+            <p class="card__list-description">Список блюд</p>
+            <div class="card__list">
+              <p class="card__list__item">1. Вареная курица</p>
+              <p class="card__list__item">2. Вареная гречка</p>
+              <p class="card__list__item">3. Помидоры</p>
+            </div>
+            <p class="card__difficulty">Сложность</p>
+            <div class="card__stars">
+              <img src="../static/images/green-star.svg" alt="" />
+              <img src="../static/images/green-star.svg" alt="" />
+              <img src="../static/images/green-star.svg" alt="" />
+              <img src="../static/images/gray-star.svg" alt="" />
+              <img src="../static/images/gray-star.svg" alt="" />
+            </div>
+            <p class="total-time">Общее время приготовления</p>
+            <p class="total-time_value">60 минут</p>
+            <p class="active-time">Активное время приготовления</p>
+            <p class="active-time_value">20 минут</p>
+            <div class="card__buttons">
+              <button class="card__button__recepi">Рецепт</button>
+              <button class="card__button__favourites">
+                Добавить в избранное
+              </button>
+              <button class="card__button__choose">Выбрать</button>
+            </div>
+          </div>
+        </section>
       </div>
     </main>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <script src="../static/js/main_view.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/choices.js@9.0.1/public/assets/scripts/choices.min.js"></script>
+    <script src="../static/js/choose_brekfast.js"></script>
   </body>
 </html>
