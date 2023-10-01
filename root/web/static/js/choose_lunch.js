@@ -456,7 +456,7 @@ async function sendPlate(data, link, el) {
     const response = await request.json();
     console.log(response);
     if (response.success === true) {
-      window.location.href = "../choose_lunch";
+      window.location.href = "../choose_dinner";
     }
   } catch (e) {}
 }
