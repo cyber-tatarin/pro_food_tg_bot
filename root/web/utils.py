@@ -91,7 +91,6 @@ async def get_nutrient_for_plates_by_ids(session, plate_ids=None, in_json=False)
                 result_list.append({
                     'plate_id': row.plate_id,
                     'plate_name': row.plate_name,
-                    'plate_type': None,
                     'recipe_time': row.recipe_time,
                     'recipe_active_time': row.recipe_active_time,
                     'recipe_difficulty': row.recipe_difficulty,
@@ -101,7 +100,6 @@ async def get_nutrient_for_plates_by_ids(session, plate_ids=None, in_json=False)
                     'proteins': row.proteins,
                     'fats': row.fats,
                     'carbohydrates': row.carbohydrates,
-                    'is_eaten': False,
                     'in_favorites': False
                 })
                 
@@ -119,4 +117,28 @@ async def set_plate_type(result_list, user_type_plate_date_query):
     for element in result_list:
         if element['plate_id'] in plate_id_to_value:
             element['plate_type'] = plate_id_to_value[element['plate_id']]
+            
+
+async def put_chosen_plate_to_0_index_if_exists(result_list, chosen_plate):
+    
+    if chosen_plate is not None:
+        index = None
+        for i, obj in enumerate(result_list):
+            if obj['plate_id'] == chosen_plate.plate_id:
+                index = i
+                break
+        
+        # Check if the dictionary is in the list
+        if index is not None:
+            # Remove the dictionary from its current position
+            removed_dict = result_list.pop(index)
+            
+            # Insert it at position 0
+            result_list.insert(0, removed_dict)
+        else:
+            # If the dictionary is not in the list, insert None at position 0
+            result_list.insert(0, None)
+    else:
+        # If the dictionary is not in the list, insert None at position 0
+        result_list.insert(0, None)
     

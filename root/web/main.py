@@ -452,12 +452,13 @@ async def get_today_plates(request):
             models.HasEaten.tg_id == tg_id
         ).all()
         
-        eaten_plate_ids = [int(element.plate_id) for element in all_today_has_eaten_plates if element.plate_id is not None]
+        eaten_plate_ids = [int(element.plate_id) for element in all_today_has_eaten_plates if
+                           element.plate_id is not None]
         
         await utils.set_is_eaten_true_for_plates_in_result_list(result_list, eaten_plate_ids)
-
+        
         await utils.set_plate_type(result_list, today_plates_list)
-
+        
         custom_order = {
             "Завтрак": 1,
             "Обед": 2,
@@ -494,7 +495,7 @@ async def get_ingredient_ids_names_properties_list(request):
             for ingredient in all_ingredients]
         
         return web.json_response(data)
-
+    
     except Exception as x:
         return web.HTTPBadGateway()
     finally:
@@ -540,13 +541,25 @@ async def get_all_plates_to_choose(request):
     data = await request.json()
     tg_id = data.get('tg_id')
     plate_type = data.get('plate_type')
-    plate_id = data.get('plate_id')
     
     session = db.Session()
     try:
+        today = date.today()
+        chosen_plate = session.query(models.UserPlatesDate).filter(models.UserPlatesDate.tg_id == tg_id,
+                                                                   models.UserPlatesDate.plate_id == plate_type,
+                                                                   models.UserPlatesDate.date == today).first()
         print('inside')
         result_list = await utils.get_nutrient_for_plates_by_ids(session, in_json=True)
-        return web.json_response(result_list)
+        await utils.put_chosen_plate_to_0_index_if_exists(result_list, chosen_plate)
+        
+        if len(result_list) > 4:
+            return web.json_response({
+                'chosen_plate': result_list[0],
+                'recommended_plates': result_list[1:4],
+                'all_plates': result_list[4:]
+            })
+        else:
+            return web.HTTPBadGateway()
     
     except Exception as x:
         print(x)
@@ -574,7 +587,7 @@ async def has_eaten_plate(request):
             models.HasEaten.date_time < today + timedelta(days=1),
             models.HasEaten.tg_id == tg_id
         ).all()
-    
+        
         eaten_plate_ids = [int(element.plate_id) for element in all_today_has_eaten_plates if
                            element.plate_id is not None]
         
@@ -584,7 +597,7 @@ async def has_eaten_plate(request):
                                             fats=fats, carbohydrates=carbohydrates)
             session.add(new_has_eaten)
             session.commit()
-
+            
             return web.json_response({'success': True, 'is_green': False})
         
         else:
@@ -641,7 +654,7 @@ async def has_chosen_plate(request):
     finally:
         if session.is_active:
             session.close()
-            
+    
     return web.json_response({'success': True})
 
 
@@ -660,7 +673,7 @@ app.add_routes([
     web.get('/choose_breakfast', choose_breakfast),
     web.get('/choose_lunch', choose_lunch),
     web.get('/choose_dinner', choose_dinner),
-    
+
 ])
 
 app.add_routes([
@@ -676,11 +689,11 @@ app.add_routes([
     web.post('/api/has_eaten_plate', has_eaten_plate),
     web.post('/api/get_all_plates_to_choose', get_all_plates_to_choose),
     web.post('/api/has_chosen_plate', has_chosen_plate),
-    
+
 ])
 
 aiohttp_jinja2.setup(app, loader=env.loader, context_processors=[aiohttp_jinja2.request_processor])
 
 if __name__ == '__main__':
     # web.run_app(app, host='0.0.0.0')
-    web.run_app(app, host='127.0.0.1', port=8000)
+    web.run_app(app, host='127.0.0.1', port=80)
