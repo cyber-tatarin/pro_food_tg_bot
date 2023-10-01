@@ -14,13 +14,13 @@ async function sendData(link) {
   return response;
 }
 
-let diamert = 0;
+let diameter = 0;
 let nutrientStreak = {};
 
 async function setUserParameters() {
   const userParameters = await sendData("/api/get_user_parameters");
   console.log(userParameters);
-  diamert = userParameters.plate_diameter;
+  diameter = userParameters.plate_diameter;
   document.querySelector(
     ".weight-value"
   ).textContent = `${userParameters.weight} кг`;
@@ -155,7 +155,7 @@ async function setPlates() {
           <img src="../static/images/plate-arrow.svg" alt="" />
         </div>
         <div class="plate__size-title plate-diameter-value">
-          ${diamert} см
+          ${diameter} см
         </div>
       </div>
     </div>
