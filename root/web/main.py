@@ -441,42 +441,46 @@ async def get_today_plates(request):
         if session1.is_active:
             session1.close()
     
-    plate_ids = [int(element.plate_id) for element in today_plates_list]
-    
-    session2 = db.Session()
-    try:
-        result_list = await utils.get_nutrient_for_plates_by_ids(session2, plate_ids, in_json=True)
-        all_today_has_eaten_plates = session2.query(models.HasEaten).filter(
-            models.HasEaten.date_time >= today,
-            models.HasEaten.date_time < today + timedelta(days=1),
-            models.HasEaten.tg_id == tg_id
-        ).all()
+    if today_plates_list:
+        plate_ids = [int(element.plate_id) for element in today_plates_list]
         
-        eaten_plate_ids = [int(element.plate_id) for element in all_today_has_eaten_plates if
-                           element.plate_id is not None]
+        session2 = db.Session()
+        try:
+            result_list = await utils.get_nutrient_for_plates_by_ids(session2, plate_ids, in_json=True)
+            all_today_has_eaten_plates = session2.query(models.HasEaten).filter(
+                models.HasEaten.date_time >= today,
+                models.HasEaten.date_time < today + timedelta(days=1),
+                models.HasEaten.tg_id == tg_id
+            ).all()
+            
+            eaten_plate_ids = [int(element.plate_id) for element in all_today_has_eaten_plates if
+                               element.plate_id is not None]
+            
+            await utils.set_is_eaten_true_for_plates_in_result_list(result_list, eaten_plate_ids)
+            
+            await utils.set_plate_type(result_list, today_plates_list)
+            
+            custom_order = {
+                "Завтрак": 1,
+                "Обед": 2,
+                "Ужин": 3
+            }
+            
+            # # Sort the objects based on the custom order of plate_type
+            result_list.sort(key=lambda obj: custom_order.get(obj['plate_type'], float('inf')))
+            
+            return web.json_response(result_list)
+            # return web.json_response([])
         
-        await utils.set_is_eaten_true_for_plates_in_result_list(result_list, eaten_plate_ids)
-        
-        await utils.set_plate_type(result_list, today_plates_list)
-        
-        custom_order = {
-            "Завтрак": 1,
-            "Обед": 2,
-            "Ужин": 3
-        }
-        
-        # # Sort the objects based on the custom order of plate_type
-        result_list.sort(key=lambda obj: custom_order.get(obj['plate_type'], float('inf')))
-        
-        return web.json_response(result_list)
-        # return web.json_response([])
-    
-    except Exception as x:
-        print(x)
-        return web.HTTPBadGateway()
-    finally:
-        if session2.is_active:
-            session2.close()
+        except Exception as x:
+            print(x)
+            return web.HTTPBadGateway()
+        finally:
+            if session2.is_active:
+                session2.close()
+                
+    else:
+        return web.json_response([])
 
 
 async def get_ingredient_ids_names_properties_list(request):
@@ -546,7 +550,7 @@ async def get_all_plates_to_choose(request):
     try:
         today = date.today()
         chosen_plate = session.query(models.UserPlatesDate).filter(models.UserPlatesDate.tg_id == tg_id,
-                                                                   models.UserPlatesDate.plate_id == plate_type,
+                                                                   models.UserPlatesDate.plate_type == plate_type,
                                                                    models.UserPlatesDate.date == today).first()
         print('inside')
         result_list = await utils.get_nutrient_for_plates_by_ids(session, in_json=True)

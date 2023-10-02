@@ -36,14 +36,18 @@ async function getDiameter() {
   });
   const response = await request.json();
   console.log(response);
-  diametr = response.plate_diameter;
+  diameter = response.plate_diameter;
   return response.plate_diameter;
 }
 
+
 async function setPlates() {
+ await getDiameter();
+
   const plates = await sendData("/api/get_all_plates_to_choose");
 
   plates.recommended_plates.forEach((plate, index) => {
+  console.log(plate)
     document.querySelector(".cards").insertAdjacentHTML(
       "beforeend",
       `<div class="card card${index + 1}" name="${plate.plate_id}">
@@ -126,6 +130,7 @@ async function setPlates() {
     }
 
     if (plate.percentages[0] === "100") {
+    console.log(1)
       document
         .querySelector(`.card__visual${index + 1}`)
         .insertAdjacentHTML(
@@ -133,6 +138,8 @@ async function setPlates() {
           `<img src="../static/images/1-part.svg" class="card__plate" />`
         );
     } else if (plate.percentages[0] === "50") {
+        console.log(2)
+
       document
         .querySelector(`.card__visual${index + 1}`)
         .insertAdjacentHTML(
@@ -140,6 +147,8 @@ async function setPlates() {
           `<img src="../static/images/2-parts.svg" class="card__plate" />`
         );
     } else if (plate.percentages[0] === "33") {
+        console.log(3)
+
       document
         .querySelector(`.card__visual${index + 1}`)
         .insertAdjacentHTML(
@@ -147,13 +156,16 @@ async function setPlates() {
           `<img src="../static/images/3-33-parts.svg" class="card__plate" />`
         );
     } else if (plate.percentages[0] === "25" && plate.percentages[2] === "50") {
+        console.log(4)
+
       document
         .querySelector(`.card__visual${index + 1}`)
         .insertAdjacentHTML(
           "afterbegin",
           `<img src="../static/images/3-parts.svg" class="card__plate" />`
         );
-    } else {
+    } else if(plate.percentages[0] === '25' && plate.percentages[1] === '25'){
+        console.log(5)
       document
         .querySelector(`.card__visual${index + 1}`)
         .insertAdjacentHTML(
@@ -164,6 +176,7 @@ async function setPlates() {
 
     for (let i = 1; i < 6; i++) {
       if (i <= plate.recipe_difficulty) {
+      console.log('green-star')
         document
           .querySelector(`.card__stars${index + 1}`)
           .insertAdjacentHTML(
@@ -171,6 +184,7 @@ async function setPlates() {
             `<img src="../static/images/green-star.svg" alt="" />`
           );
       } else {
+      console.log('grey-star')
         document
           .querySelector(`.card__stars${index + 1}`)
           .insertAdjacentHTML(
@@ -182,6 +196,8 @@ async function setPlates() {
   });
 
   if (plates.chosen_plate !== null) {
+    console.log('chosen plate',plate)
+
     document.querySelector(".cards").insertAdjacentHTML(
       "afterbegin",
       `<div class="card" name="${plates.chosen_plate.plate_id}">
@@ -313,6 +329,7 @@ async function setPlates() {
   }
 
   plates.all_plates.forEach((plate, index) => {
+  console.log('all plates', plate)
     document.querySelector(".cards-mini").insertAdjacentHTML(
       "beforeend",
       `<div class="card card-mini card-mini${index + 1}" name="${
@@ -385,65 +402,12 @@ async function setPlates() {
         .classList.add("card__button__favourites_off");
     }
 
-    if (plate.percentages[0] === "100") {
-      document
-        .querySelector(`.card__visual${index + 1}`)
-        .insertAdjacentHTML(
-          "afterbegin",
-          `<img src="../static/images/1-part.svg" class="card__plate" />`
-        );
-    } else if (plate.percentages[0] === "50") {
-      document
-        .querySelector(`.card__visual${index + 1}`)
-        .insertAdjacentHTML(
-          "afterbegin",
-          `<img src="../static/images/2-parts.svg" class="card__plate" />`
-        );
-    } else if (plate.percentages[0] === "33") {
-      document
-        .querySelector(`.card__visual${index + 1}`)
-        .insertAdjacentHTML(
-          "afterbegin",
-          `<img src="../static/images/3-33-parts.svg" class="card__plate" />`
-        );
-    } else if (plate.percentages[0] === "25" && plate.percentages[2] === "50") {
-      document
-        .querySelector(`.card__visual${index + 1}`)
-        .insertAdjacentHTML(
-          "afterbegin",
-          `<img src="../static/images/3-parts.svg" class="card__plate" />`
-        );
-    } else {
-      document
-        .querySelector(`.card__visual${index + 1}`)
-        .insertAdjacentHTML(
-          "afterbegin",
-          `<img src="../static/images/4-parts.svg" class="card__plate" />`
-        );
-    }
 
-    for (let i = 1; i < 6; i++) {
-      if (i <= plate.recipe_difficulty) {
-        document
-          .querySelector(`.card__stars${index + 1}`)
-          .insertAdjacentHTML(
-            "beforeend",
-            `<img src="../static/images/green-star.svg" alt="" />`
-          );
-      } else {
-        document
-          .querySelector(`.card__stars${index + 1}`)
-          .insertAdjacentHTML(
-            "beforeend",
-            `<img src="../static/images/gray-star.svg" alt="" />`
-          );
-      }
-    }
   });
 }
 
 setPlates();
-
+//
 async function sendPlate(data, link, el) {
   try {
     const request = await fetch(`..${link}`, {
