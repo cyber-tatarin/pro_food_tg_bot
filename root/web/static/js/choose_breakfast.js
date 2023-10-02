@@ -40,14 +40,13 @@ async function getDiameter() {
   return response.plate_diameter;
 }
 
-
 async function setPlates() {
- await getDiameter();
+  await getDiameter();
 
   const plates = await sendData("/api/get_all_plates_to_choose");
 
   plates.recommended_plates.forEach((plate, index) => {
-  console.log(plate)
+    console.log(plate);
     document.querySelector(".cards").insertAdjacentHTML(
       "beforeend",
       `<div class="card card${index + 1}" name="${plate.plate_id}">
@@ -113,11 +112,12 @@ async function setPlates() {
         const data = {};
         data.plate_id = plate.plate_id;
         data.tg_id = 459471362;
+        data.plate_type = "Завтрак";
         data.calories = plate.calories;
         data.proteins = plate.proteins;
         data.fats = plate.fats;
         data.carbohydrates = plate.carbohydrates;
-        sendPlate(data, "/api/has_eaten_plate", el.target);
+        sendPlate(data, "/api/has_chosen_plate", el.target);
       });
 
     if (plate.in_favorites === true) {
@@ -130,7 +130,7 @@ async function setPlates() {
     }
 
     if (plate.percentages[0] === "100") {
-    console.log(1)
+      console.log(1);
       document
         .querySelector(`.card__visual${index + 1}`)
         .insertAdjacentHTML(
@@ -138,7 +138,7 @@ async function setPlates() {
           `<img src="../static/images/1-part.svg" class="card__plate" />`
         );
     } else if (plate.percentages[0] === "50") {
-        console.log(2)
+      console.log(2);
 
       document
         .querySelector(`.card__visual${index + 1}`)
@@ -147,7 +147,7 @@ async function setPlates() {
           `<img src="../static/images/2-parts.svg" class="card__plate" />`
         );
     } else if (plate.percentages[0] === "33") {
-        console.log(3)
+      console.log(3);
 
       document
         .querySelector(`.card__visual${index + 1}`)
@@ -156,7 +156,7 @@ async function setPlates() {
           `<img src="../static/images/3-33-parts.svg" class="card__plate" />`
         );
     } else if (plate.percentages[0] === "25" && plate.percentages[2] === "50") {
-        console.log(4)
+      console.log(4);
 
       document
         .querySelector(`.card__visual${index + 1}`)
@@ -164,8 +164,8 @@ async function setPlates() {
           "afterbegin",
           `<img src="../static/images/3-parts.svg" class="card__plate" />`
         );
-    } else if(plate.percentages[0] === '25' && plate.percentages[1] === '25'){
-        console.log(5)
+    } else if (plate.percentages[0] === "25" && plate.percentages[1] === "25") {
+      console.log(5);
       document
         .querySelector(`.card__visual${index + 1}`)
         .insertAdjacentHTML(
@@ -176,7 +176,7 @@ async function setPlates() {
 
     for (let i = 1; i < 6; i++) {
       if (i <= plate.recipe_difficulty) {
-      console.log('green-star')
+        console.log("green-star");
         document
           .querySelector(`.card__stars${index + 1}`)
           .insertAdjacentHTML(
@@ -184,7 +184,7 @@ async function setPlates() {
             `<img src="../static/images/green-star.svg" alt="" />`
           );
       } else {
-      console.log('grey-star')
+        console.log("grey-star");
         document
           .querySelector(`.card__stars${index + 1}`)
           .insertAdjacentHTML(
@@ -196,7 +196,7 @@ async function setPlates() {
   });
 
   if (plates.chosen_plate !== null) {
-    console.log('chosen plate',plate)
+    console.log("chosen plate", plate);
 
     document.querySelector(".cards").insertAdjacentHTML(
       "afterbegin",
@@ -329,7 +329,7 @@ async function setPlates() {
   }
 
   plates.all_plates.forEach((plate, index) => {
-  console.log('all plates', plate)
+    console.log("all plates", plate);
     document.querySelector(".cards-mini").insertAdjacentHTML(
       "beforeend",
       `<div class="card card-mini card-mini${index + 1}" name="${
@@ -386,11 +386,12 @@ async function setPlates() {
         const data = {};
         data.plate_id = plate.plate_id;
         data.tg_id = 459471362;
+        data.plate_type = "Завтрак";
         data.calories = plate.calories;
         data.proteins = plate.proteins;
         data.fats = plate.fats;
         data.carbohydrates = plate.carbohydrates;
-        sendPlate(data, "/api/has_eaten_plate", el.target);
+        sendPlate(data, "/api/has_chosen_plate", el.target);
       });
 
     if (plate.in_favorites === true) {
@@ -401,8 +402,6 @@ async function setPlates() {
         .querySelector(`.card__button__favourites${index + 1}`)
         .classList.add("card__button__favourites_off");
     }
-
-
   });
 }
 

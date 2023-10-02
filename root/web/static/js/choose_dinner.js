@@ -36,11 +36,12 @@ async function getDiameter() {
   });
   const response = await request.json();
   console.log(response);
-  diametr = response.plate_diameter;
+  diameter = response.plate_diameter;
   return response.plate_diameter;
 }
 
 async function setPlates() {
+  await getDiameter();
   const plates = await sendData("/api/get_all_plates_to_choose");
 
   plates.recommended_plates.forEach((plate, index) => {
@@ -109,11 +110,12 @@ async function setPlates() {
         const data = {};
         data.plate_id = plate.plate_id;
         data.tg_id = 459471362;
+        data.plate_type = "Ужин";
         data.calories = plate.calories;
         data.proteins = plate.proteins;
         data.fats = plate.fats;
         data.carbohydrates = plate.carbohydrates;
-        sendPlate(data, "/api/has_eaten_plate", el.target);
+        sendPlate(data, "/api/has_chosen_plate", el.target);
       });
 
     if (plate.in_favorites === true) {
@@ -369,11 +371,12 @@ async function setPlates() {
         const data = {};
         data.plate_id = plate.plate_id;
         data.tg_id = 459471362;
+        data.plate_type = "Ужин";
         data.calories = plate.calories;
         data.proteins = plate.proteins;
         data.fats = plate.fats;
         data.carbohydrates = plate.carbohydrates;
-        sendPlate(data, "/api/has_eaten_plate", el.target);
+        sendPlate(data, "/api/has_chosen_plate", el.target);
       });
 
     if (plate.in_favorites === true) {
@@ -383,61 +386,6 @@ async function setPlates() {
       document
         .querySelector(`.card__button__favourites${index + 1}`)
         .classList.add("card__button__favourites_off");
-    }
-
-    if (plate.percentages[0] === "100") {
-      document
-        .querySelector(`.card__visual${index + 1}`)
-        .insertAdjacentHTML(
-          "afterbegin",
-          `<img src="../static/images/1-part.svg" class="card__plate" />`
-        );
-    } else if (plate.percentages[0] === "50") {
-      document
-        .querySelector(`.card__visual${index + 1}`)
-        .insertAdjacentHTML(
-          "afterbegin",
-          `<img src="../static/images/2-parts.svg" class="card__plate" />`
-        );
-    } else if (plate.percentages[0] === "33") {
-      document
-        .querySelector(`.card__visual${index + 1}`)
-        .insertAdjacentHTML(
-          "afterbegin",
-          `<img src="../static/images/3-33-parts.svg" class="card__plate" />`
-        );
-    } else if (plate.percentages[0] === "25" && plate.percentages[2] === "50") {
-      document
-        .querySelector(`.card__visual${index + 1}`)
-        .insertAdjacentHTML(
-          "afterbegin",
-          `<img src="../static/images/3-parts.svg" class="card__plate" />`
-        );
-    } else {
-      document
-        .querySelector(`.card__visual${index + 1}`)
-        .insertAdjacentHTML(
-          "afterbegin",
-          `<img src="../static/images/4-parts.svg" class="card__plate" />`
-        );
-    }
-
-    for (let i = 1; i < 6; i++) {
-      if (i <= plate.recipe_difficulty) {
-        document
-          .querySelector(`.card__stars${index + 1}`)
-          .insertAdjacentHTML(
-            "beforeend",
-            `<img src="../static/images/green-star.svg" alt="" />`
-          );
-      } else {
-        document
-          .querySelector(`.card__stars${index + 1}`)
-          .insertAdjacentHTML(
-            "beforeend",
-            `<img src="../static/images/gray-star.svg" alt="" />`
-          );
-      }
     }
   });
 }
