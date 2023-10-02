@@ -192,7 +192,6 @@ async function setPlates() {
   });
 
   if (plates.chosen_plate !== null) {
-    console.log("chosen plate", plate);
 
     document.querySelector(".cards").insertAdjacentHTML(
       "afterbegin",

@@ -453,12 +453,11 @@ async def get_today_plates(request):
                 models.HasEaten.tg_id == tg_id
             ).all()
             
-            eaten_plate_ids = [int(element.plate_id) for element in all_today_has_eaten_plates if
-                               element.plate_id is not None]
+            all_favorites = session2.query(models.Favorites).filter(models.Favorites.tg_id == tg_id).all()
             
-            await utils.set_is_eaten_true_for_plates_in_result_list(result_list, eaten_plate_ids)
-            
+            await utils.set_is_eaten_true_for_plates_in_result_list(result_list, all_today_has_eaten_plates)
             await utils.set_plate_type(result_list, today_plates_list)
+            await utils.set_in_favorites_true_for_plates_in_result_list(result_list, all_favorites)
             
             custom_order = {
                 "Завтрак": 1,
@@ -552,9 +551,13 @@ async def get_all_plates_to_choose(request):
         chosen_plate = session.query(models.UserPlatesDate).filter(models.UserPlatesDate.tg_id == tg_id,
                                                                    models.UserPlatesDate.plate_type == plate_type,
                                                                    models.UserPlatesDate.date == today).first()
+
+        all_favorites = session.query(models.Favorites).filter(models.Favorites.tg_id == tg_id).all()
+        
         print('inside')
         result_list = await utils.get_nutrient_for_plates_by_ids(session, in_json=True)
         await utils.put_chosen_plate_to_0_index_if_exists(result_list, chosen_plate)
+        await utils.set_in_favorites_true_for_plates_in_result_list(result_list, all_favorites)
         
         if len(result_list) > 4:
             return web.json_response({
