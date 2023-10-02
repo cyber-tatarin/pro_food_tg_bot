@@ -111,10 +111,6 @@ async function setPlates() {
         data.plate_id = plate.plate_id;
         data.tg_id = 459471362;
         data.plate_type = "Ужин";
-        data.calories = plate.calories;
-        data.proteins = plate.proteins;
-        data.fats = plate.fats;
-        data.carbohydrates = plate.carbohydrates;
         sendPlate(data, "/api/has_chosen_plate", el.target);
       });
 
@@ -326,10 +322,10 @@ async function setPlates() {
       } / ${plate.calories} ккал</div>
     <div class="card__meal card__meal-mini">“${plate.plate_name}”</div>
     <p class="card__list-description">Список блюд</p>
-    <div class="card__list card__list${index + 1}">
+    <div class="card__list card__list-mini${index + 1}">
     </div>
-    <p class="card__difficulty card__difficulty${index + 1}">Сложность</p>
-    <div class="card__stars card__stars${index + 1}">
+    <p class="card__difficulty card__difficulty-mini${index + 1}">Сложность</p>
+    <div class="card__stars card__stars-mini${index + 1}">
     </div>
     <p class="total-time">Общее время приготовления</p>
     <p class="total-time_value">${plate.recipe_time} минут</p>
@@ -337,10 +333,10 @@ async function setPlates() {
     <p class="active-time_value">${plate.recipe_active_time} минут</p>
     <div class="card__buttons">
       <button class="card__button__recepi">Рецепт</button>
-      <button class="card__button__favourites card__button__favourites${
+      <button class="card__button__favourites card__button__favourites-mini${
         index + 1
       }">Добавить в избранное</button>
-      <button class="card__button__choose card__button__choose${
+      <button class="card__button__choose card__button__choose-mini${
         index + 1
       }">Выбрать</button>
     </div>
@@ -349,7 +345,7 @@ async function setPlates() {
 
     plate.meals.forEach((el, i) => {
       document
-        .querySelector(`.card__list${index + 1}`)
+        .querySelector(`.card__list-mini${index + 1}`)
         .insertAdjacentHTML(
           "beforeend",
           `<p class="card__list__item">${i + 1}. ${el}</p>`
@@ -357,35 +353,52 @@ async function setPlates() {
     });
 
     if (plate.is_eaten === true) {
-      document.querySelector(`.card__button__choose${index + 1}`).textContent =
-        "Не съел";
+      document.querySelector(
+        `.card__button__choose-mini${index + 1}`
+      ).textContent = "Не съел";
       document
-        .querySelector(`.card__button__choose${index + 1}`)
+        .querySelector(`.card__button__choose-mini${index + 1}`)
         .classList.add("card__button__choose_off");
     }
 
     document
-      .querySelector(`.card__button__choose${index + 1}`)
+      .querySelector(`.card__button__choose-mini${index + 1}`)
       .addEventListener("click", (el) => {
         // console.log("button", el.target);
         const data = {};
         data.plate_id = plate.plate_id;
         data.tg_id = 459471362;
         data.plate_type = "Ужин";
-        data.calories = plate.calories;
-        data.proteins = plate.proteins;
-        data.fats = plate.fats;
-        data.carbohydrates = plate.carbohydrates;
         sendPlate(data, "/api/has_chosen_plate", el.target);
       });
 
     if (plate.in_favorites === true) {
       document.querySelector(
-        `.card__button__favourites${index + 1}`
+        `.card__button__favourites-mini${index + 1}`
       ).textContent = "Удалить из избранного";
       document
-        .querySelector(`.card__button__favourites${index + 1}`)
+        .querySelector(`.card__button__favourites-mini${index + 1}`)
         .classList.add("card__button__favourites_off");
+    }
+
+    for (let i = 1; i < 6; i++) {
+      if (i <= plate.recipe_difficulty) {
+        console.log("green-star");
+        document
+          .querySelector(`.card__stars-mini${index + 1}`)
+          .insertAdjacentHTML(
+            "beforeend",
+            `<img src="../static/images/green-star.svg" alt="" />`
+          );
+      } else {
+        console.log("grey-star");
+        document
+          .querySelector(`.card__stars-mini${index + 1}`)
+          .insertAdjacentHTML(
+            "beforeend",
+            `<img src="../static/images/gray-star.svg" alt="" />`
+          );
+      }
     }
   });
 }
