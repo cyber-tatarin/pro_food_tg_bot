@@ -141,11 +141,12 @@ class UserPlatesDate(Base):
     )
     
     
-class Farorites(Base):
-    __tablename__ = "faforites"
+class Favorites(Base):
+    __tablename__ = "favorites"
     
-    tg_id = Column(Integer)
-    plate_id = Column(Integer)
+    tg_id = Column(Integer, primary_key=True)
+    plate_id = Column(Integer, primary_key=True)
+    
     
     
 # class PlateNutrientsInfo(Base):
