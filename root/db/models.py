@@ -141,6 +141,13 @@ class UserPlatesDate(Base):
     )
     
     
+class Farorites(Base):
+    __tablename__ = "faforites"
+    
+    tg_id = Column(Integer)
+    plate_id = Column(Integer)
+    
+    
 # class PlateNutrientsInfo(Base):
 #     __tablename__ = "plate_nutrients_info"
 #
