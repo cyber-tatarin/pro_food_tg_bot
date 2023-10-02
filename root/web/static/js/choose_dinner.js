@@ -278,7 +278,7 @@ async function setPlates() {
     <div class="card__type">Выбрано</div>
     <div class="card__calories">Б: ${plates.chosen_plate.proteins} / Ж: ${plates.chosen_plate.fats} / У: ${plates.chosen_plate.carbohydrates} / ${plates.chosen_plate.calories} ккал</div>
     <div class="card__meal">“${plates.chosen_plate.plate_name}”</div>
-    <div class="card__visual-chosen">
+    <div class="card__visual card__visual-chosen">
       <div class="card__plate_frames"></div>
       <div class="card__plate_size">
         <div class="plate__arrow">
