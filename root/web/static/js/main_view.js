@@ -227,7 +227,7 @@ async function setPlates() {
           const data = {};
           data.plate_id = plate.plate_id;
           data.tg_id = 459471362;
-          sendChosenPlate(data, "/api/add_to_favorites", el.target);
+          sendFavoritePlate(data, "/api/add_to_favorites", el.target);
         });
 
       if (plate.percentages[0] === "100") {
@@ -296,7 +296,7 @@ setUserStreak();
 setNutrientParameters();
 setPlates();
 
-async function sendChosenPlate(data, link, el) {
+async function sendFavoritePlate(data, link, el) {
   try {
     const request = await fetch(`..${link}`, {
       method: "POST",
@@ -308,11 +308,13 @@ async function sendChosenPlate(data, link, el) {
     const response = await request.json();
     // console.log(response);
     if (response.success === true) {
-      el.textContent = "Удалить из избранного";
-      el.classList.add("card__button__favourites_off");
-    } else {
-      el.textContent = "Добавить в избранное";
-      el.classList.remove("card__button__favourites_off");
+      if (response.is_black === true) {
+        el.textContent = "Добавить в избранное";
+        el.classList.remove("card__button__favourites_off");
+      } else {
+        el.textContent = "Удалить из избранного";
+        el.classList.add("card__button__favourites_off");
+      }
     }
   } catch (err) {
     console.log(err);
