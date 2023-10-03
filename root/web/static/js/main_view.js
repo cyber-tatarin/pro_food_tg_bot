@@ -226,9 +226,8 @@ async function setPlates() {
         .addEventListener("click", (el) => {
           const data = {};
           data.plate_id = plate.plate_id;
-          data.plate_type = plate.plate_type;
           data.tg_id = 459471362;
-          sendChosenPlate(data, "/api/has_chosen_plate", el.target);
+          sendChosenPlate(data, "/api/add_to_favorites", el.target);
         });
 
       if (plate.percentages[0] === "100") {
