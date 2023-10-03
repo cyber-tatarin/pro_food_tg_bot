@@ -639,40 +639,44 @@ async def add_to_favorites(request):
         session.add(new_favorite)
         session.commit()
         
-        return web.json_response({'success': True})
+        print('after xommit')
+        
+        return web.json_response({'success': True, 'is_black': False})
     
     except Exception as x:
         try:
+            session.rollback()
             favorite_to_delete = session.query(models.Favorites).filter(models.Favorites.tg_id == tg_id,
                                                                         models.Favorites.plate_id == plate_id).first()
+            print(favorite_to_delete.tg_id)
             session.delete(favorite_to_delete)
             session.commit()
 
-            return web.json_response({'success': True})
+            return web.json_response({'success': True, 'is_black': True})
             
         except Exception as x:
             print(x)
             return web.json_response({'success': False})
 
 
-async def remove_from_favorites(request):
-    data = await request.json()
-    
-    plate_id = data.get('plate_id')
-    tg_id = data.get('tg_id')
-    
-    session = db.Session()
-    try:
-        favorite_to_delete = session.query(models.Favorites).filter(models.Favorites.tg_id == tg_id,
-                                                                    models.Favorites.plate_id == plate_id).first()
-        session.delete(favorite_to_delete)
-        session.commit()
-        
-        return web.json_response({'success': True})
-    
-    except Exception as x:
-        print(x)
-        return web.json_response({'success': False})
+# async def remove_from_favorites(request):
+#     data = await request.json()
+#
+#     plate_id = data.get('plate_id')
+#     tg_id = data.get('tg_id')
+#
+#     session = db.Session()
+#     try:
+#         favorite_to_delete = session.query(models.Favorites).filter(models.Favorites.tg_id == tg_id,
+#                                                                     models.Favorites.plate_id == plate_id).first()
+#         session.delete(favorite_to_delete)
+#         session.commit()
+#
+#         return web.json_response({'success': True})
+#
+#     except Exception as x:
+#         print(x)
+#         return web.json_response({'success': False})
 
 
 async def get_all_favorites(request):
