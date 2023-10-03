@@ -642,8 +642,17 @@ async def add_to_favorites(request):
         return web.json_response({'success': True})
     
     except Exception as x:
-        print(x)
-        return web.json_response({'success': False})
+        try:
+            favorite_to_delete = session.query(models.Favorites).filter(models.Favorites.tg_id == tg_id,
+                                                                        models.Favorites.plate_id == plate_id).first()
+            session.delete(favorite_to_delete)
+            session.commit()
+
+            return web.json_response({'success': True})
+            
+        except Exception as x:
+            print(x)
+            return web.json_response({'success': False})
 
 
 async def remove_from_favorites(request):
@@ -766,7 +775,7 @@ app.add_routes([
     web.post('/api/get_all_plates_to_choose', get_all_plates_to_choose),
     web.post('/api/has_chosen_plate', has_chosen_plate),
     web.post('/api/add_to_favorites', add_to_favorites),
-    web.post('/api/remove_from_favorites', remove_from_favorites),
+    # web.post('/api/remove_from_favorites', remove_from_favorites),
 
 ])
 
