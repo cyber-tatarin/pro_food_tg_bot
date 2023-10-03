@@ -202,7 +202,6 @@ async function setPlates() {
       document
         .querySelector(`.card__button__choose${index + 1}`)
         .addEventListener("click", (el) => {
-          // console.log("button", el.target);
           const data = {};
           data.plate_id = plate.plate_id;
           data.tg_id = 459471362;
@@ -221,6 +220,16 @@ async function setPlates() {
           .querySelector(`.card__button__favourites${index + 1}`)
           .classList.add("card__button__favourites_off");
       }
+
+      document
+        .querySelector(`.card__button__favourites${index + 1}`)
+        .addEventListener("click", (el) => {
+          const data = {};
+          data.plate_id = plate.plate_id;
+          data.plate_type = plate.plate_type;
+          data.tg_id = 459471362;
+          sendChosenPlate(data, "/api/has_chosen_plate", el.target);
+        });
 
       if (plate.percentages[0] === "100") {
         document
@@ -287,6 +296,29 @@ setUserParameters();
 setUserStreak();
 setNutrientParameters();
 setPlates();
+
+async function sendChosenPlate(data, link, el) {
+  try {
+    const request = await fetch(`..${link}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
+    const response = await request.json();
+    // console.log(response);
+    if (response.success === true) {
+      el.textContent = "Удалить из избранного";
+      el.classList.add("card__button__favourites_off");
+    } else {
+      el.textContent = "Добавить в избранное";
+      el.classList.remove("card__button__favourites_off");
+    }
+  } catch (err) {
+    console.log(err);
+  }
+}
 
 async function sendPlate(data, link, el) {
   try {
