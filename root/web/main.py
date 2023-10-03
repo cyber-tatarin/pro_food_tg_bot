@@ -477,7 +477,7 @@ async def get_today_plates(request):
         finally:
             if session2.is_active:
                 session2.close()
-                
+    
     else:
         return web.json_response([])
 
@@ -551,7 +551,7 @@ async def get_all_plates_to_choose(request):
         chosen_plate = session.query(models.UserPlatesDate).filter(models.UserPlatesDate.tg_id == tg_id,
                                                                    models.UserPlatesDate.plate_type == plate_type,
                                                                    models.UserPlatesDate.date == today).first()
-
+        
         all_favorites = session.query(models.Favorites).filter(models.Favorites.tg_id == tg_id).all()
         
         print('inside')
@@ -625,8 +625,8 @@ async def has_eaten_plate(request):
     finally:
         if session.is_active:
             session.close()
-            
-            
+
+
 async def add_to_favorites(request):
     data = await request.json()
     
@@ -679,7 +679,7 @@ async def get_all_favorites(request):
     except Exception as x:
         print(x)
         return web.json_response({'success': False})
-        
+
 
 @aiohttp_jinja2.template('choose_breakfast.html')
 async def choose_breakfast(request):
@@ -707,8 +707,23 @@ async def has_chosen_plate(request):
         new_user_plate_date = models.UserPlatesDate(tg_id=tg_id, plate_type=plate_type, plate_id=plate_id)
         session.add(new_user_plate_date)
         session.commit()
+    
     except IntegrityError:
-        return web.json_response({'success': False, 'error_message': 'Эта тарелка уже добавлена в сегодняшний рацион'})
+        new_session = db.Session()
+        try:
+            obj_to_edit = new_session.query(models.UserPlatesDate).filter(models.UserPlatesDate.tg_id == tg_id,
+                                                                          models.UserPlatesDate.plate_type == plate_type,
+                                                                          models.UserPlatesDate.date == date.today()).first()
+            obj_to_edit.plate_id = plate_id
+            new_session.commit()
+        except Exception as x:
+            print(x)
+            return web.HTTPBadGateway()
+        finally:
+            if session.is_active:
+                session.close()
+        return web.json_response({'success': True})
+    
     except Exception as x:
         print(x)
         return web.HTTPBadGateway()

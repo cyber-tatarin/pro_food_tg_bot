@@ -137,7 +137,7 @@ class UserPlatesDate(Base):
     date = Column(Date, default=datetime.now)
     
     __table_args__ = (
-        UniqueConstraint('tg_id', 'plate_id', 'plate_type', 'date', name='unique_user_plate_type_date'),
+        UniqueConstraint('tg_id', 'plate_type', 'date', name='unique_user_plate_type_date'),
     )
     
     

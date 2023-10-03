@@ -107,18 +107,20 @@ async def get_nutrient_for_plates_by_ids(session, plate_ids=None, in_json=False)
 
 
 async def set_is_eaten_true_for_plates_in_result_list(result_list, all_today_has_eaten_plates_query):
-    eaten_plate_ids = [int(element.plate_id) for element in all_today_has_eaten_plates_query if
-                       element.plate_id is not None]
-    for obj in result_list:
-        if int(obj['plate_id']) in eaten_plate_ids:
-            obj['is_eaten'] = True
+    if all_today_has_eaten_plates_query:
+        eaten_plate_ids = [int(element.plate_id) for element in all_today_has_eaten_plates_query if
+                           element.plate_id is not None]
+        for obj in result_list:
+            if int(obj['plate_id']) in eaten_plate_ids:
+                obj['is_eaten'] = True
 
 
 async def set_plate_type(result_list, user_type_plate_date_query):
-    plate_id_to_value = {obj.plate_id: obj.plate_type for obj in user_type_plate_date_query}
-    for element in result_list:
-        if element['plate_id'] in plate_id_to_value:
-            element['plate_type'] = plate_id_to_value[element['plate_id']]
+    if user_type_plate_date_query:
+        plate_id_to_value = {obj.plate_id: obj.plate_type for obj in user_type_plate_date_query}
+        for element in result_list:
+            if element['plate_id'] in plate_id_to_value:
+                element['plate_type'] = plate_id_to_value[element['plate_id']]
 
 
 async def put_chosen_plate_to_0_index_if_exists(result_list, chosen_plate):
@@ -145,8 +147,9 @@ async def put_chosen_plate_to_0_index_if_exists(result_list, chosen_plate):
 
 
 async def set_in_favorites_true_for_plates_in_result_list(result_list, all_favorites_query):
-    favorite_plate_ids = [int(element.plate_id) for element in all_favorites_query if
-                          element.plate_id is not None]
-    for obj in result_list:
-        if int(obj['plate_id']) in favorite_plate_ids:
-            obj['in_favorites'] = True
+    if all_favorites_query:
+        favorite_plate_ids = [int(element.plate_id) for element in all_favorites_query if
+                              element.plate_id is not None]
+        for obj in result_list:
+            if int(obj['plate_id']) in favorite_plate_ids:
+                obj['in_favorites'] = True
