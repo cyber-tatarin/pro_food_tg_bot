@@ -284,6 +284,7 @@ async function setPlates() {
   });
 
   if (plates.chosen_plate !== null) {
+
     document.querySelector(".cards").insertAdjacentHTML(
       "afterbegin",
       `<div class="card" name="${plates.chosen_plate.plate_id}">

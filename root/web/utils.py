@@ -13,8 +13,8 @@ async def is_admin_post(request):
         return web.json_response({'is_admin': 'true'})
     else:
         return web.json_response({'is_admin': 'false'})
- 
- 
+
+
 async def is_admin_by_id(tg_id):
     try:
         if int(tg_id) not in admin_ids:
@@ -40,7 +40,7 @@ async def get_nutrient_for_plates_by_ids(session, plate_ids=None, in_json=False)
         plate_ids_as_str = ', '.join([str(x) for x in plate_ids])
     else:
         plate_ids_as_str = ''
-        
+    
     meal_agg_statement = meal_db_func_dict[os.getenv('DB_ENGINE')]
     percentage_agg_statement = percentage_db_func_dict[os.getenv('DB_ENGINE')]
     
@@ -102,11 +102,13 @@ async def get_nutrient_for_plates_by_ids(session, plate_ids=None, in_json=False)
                     'carbohydrates': row.carbohydrates,
                     'in_favorites': False
                 })
-                
+        
         return result_list
-    
-    
-async def set_is_eaten_true_for_plates_in_result_list(result_list, eaten_plate_ids):
+
+
+async def set_is_eaten_true_for_plates_in_result_list(result_list, all_today_has_eaten_plates_query):
+    eaten_plate_ids = [int(element.plate_id) for element in all_today_has_eaten_plates_query if
+                       element.plate_id is not None]
     for obj in result_list:
         if int(obj['plate_id']) in eaten_plate_ids:
             obj['is_eaten'] = True
@@ -117,10 +119,9 @@ async def set_plate_type(result_list, user_type_plate_date_query):
     for element in result_list:
         if element['plate_id'] in plate_id_to_value:
             element['plate_type'] = plate_id_to_value[element['plate_id']]
-            
+
 
 async def put_chosen_plate_to_0_index_if_exists(result_list, chosen_plate):
-    
     if chosen_plate is not None:
         index = None
         for i, obj in enumerate(result_list):
@@ -141,4 +142,11 @@ async def put_chosen_plate_to_0_index_if_exists(result_list, chosen_plate):
     else:
         # If the dictionary is not in the list, insert None at position 0
         result_list.insert(0, None)
-    
+
+
+async def set_in_favorites_true_for_plates_in_result_list(result_list, all_favorites_query):
+    favorite_plate_ids = [int(element.plate_id) for element in all_favorites_query if
+                          element.plate_id is not None]
+    for obj in result_list:
+        if int(obj['plate_id']) in favorite_plate_ids:
+            obj['in_favorites'] = True

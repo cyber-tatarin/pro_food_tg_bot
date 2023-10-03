@@ -141,6 +141,14 @@ class UserPlatesDate(Base):
     )
     
     
+class Favorites(Base):
+    __tablename__ = "favorites"
+    
+    tg_id = Column(Integer, primary_key=True)
+    plate_id = Column(Integer, primary_key=True)
+    
+    
+    
 # class PlateNutrientsInfo(Base):
 #     __tablename__ = "plate_nutrients_info"
 #
