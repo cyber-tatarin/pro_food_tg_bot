@@ -91,15 +91,15 @@ async def get_nutrient_for_plates_by_ids(session, plate_ids=None, in_json=False)
                 result_list.append({
                     'plate_id': row.plate_id,
                     'plate_name': row.plate_name,
-                    'recipe_time': row.recipe_time,
-                    'recipe_active_time': row.recipe_active_time,
-                    'recipe_difficulty': row.recipe_difficulty,
+                    'recipe_time': int(row.recipe_time),
+                    'recipe_active_time': int(row.recipe_active_time),
+                    'recipe_difficulty': int(row.recipe_difficulty),
                     'meals': row.meal_names.split(', '),
                     'percentages': row.percentage.split(', '),
-                    'calories': row.calories,
-                    'proteins': row.proteins,
-                    'fats': row.fats,
-                    'carbohydrates': row.carbohydrates,
+                    'calories': int(row.calories),
+                    'proteins': int(row.proteins),
+                    'fats': int(row.fats),
+                    'carbohydrates': int(row.carbohydrates),
                     'in_favorites': False
                 })
         
