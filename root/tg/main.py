@@ -64,6 +64,11 @@ async def admin(message: types.Message):
 @dp.message(Command('profile'))
 async def admin(message: types.Message):
     await message.answer('Профиль', reply_markup=keyboards.get_main_view_ikb())
+    
+
+@dp.message(Command('choose'))
+async def admin(message: types.Message):
+    await message.answer('Составить рацион', reply_markup=keyboards.get_main_view_ikb())
 
 
 @dp.callback_query(F.data == 'get_user_start_data')

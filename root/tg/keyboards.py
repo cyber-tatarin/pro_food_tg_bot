@@ -80,6 +80,12 @@ def get_main_view_ikb():
     ikbb = InlineKeyboardBuilder()
     ikbb.add(InlineKeyboardButton(text='Открыть профиль', web_app=WebAppInfo(url=f'{web_app_link}/main')))
     return ikbb.as_markup()
+
+
+def get_choose_plates_ikb():
+    ikbb = InlineKeyboardBuilder()
+    ikbb.add(InlineKeyboardButton(text='Выбрать', web_app=WebAppInfo(url=f'{web_app_link}/choose_breakfast')))
+    return ikbb.as_markup()
     
     
     
