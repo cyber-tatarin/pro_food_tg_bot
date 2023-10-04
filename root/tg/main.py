@@ -61,7 +61,7 @@ async def admin(message: types.Message):
     await message.answer('Панель администратора', reply_markup=keyboards.get_admin_ikb())
     
 
-@dp.message(Command('profile'), F.from_user.id.in_(admin_ids))
+@dp.message(Command('profile'))
 async def admin(message: types.Message):
     await message.answer('Профиль', reply_markup=keyboards.get_main_view_ikb())
 
