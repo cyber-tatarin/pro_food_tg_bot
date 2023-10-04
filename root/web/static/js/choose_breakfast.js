@@ -1,5 +1,5 @@
 let tg = window.Telegram.WebApp;
- let tg_id = tg.initDataUnsafe.user.id;
+let tg_id = tg.initDataUnsafe.user.id;
 
 const elements = document.querySelectorAll(`.js-choice_type`);
 elements.forEach((el) => {
@@ -124,6 +124,15 @@ async function setPlates() {
         .querySelector(`.card__button__favourites${index + 1}`)
         .classList.add("card__button__favourites_off");
     }
+
+    document
+      .querySelector(`.card__button__favourites${index + 1}`)
+      .addEventListener("click", (el) => {
+        const data = {};
+        data.plate_id = plate.plate_id;
+        data.tg_id = tg_id;
+        sendFavoritePlate(data, "/api/add_to_favorites", el.target);
+      });
 
     if (plate.percentages[0] === "100") {
       console.log(1);
@@ -262,6 +271,15 @@ async function setPlates() {
         .classList.add("card__button__favourites_off");
     }
 
+    document
+      .querySelector(`.card__button__favourites${index + 1}`)
+      .addEventListener("click", (el) => {
+        const data = {};
+        data.plate_id = plate.plate_id;
+        data.tg_id = tg_id;
+        sendFavoritePlate(data, "/api/add_to_favorites", el.target);
+      });
+
     for (let i = 1; i < 6; i++) {
       if (i <= plate.recipe_difficulty) {
         console.log("green-star");
@@ -284,7 +302,6 @@ async function setPlates() {
   });
 
   if (plates.chosen_plate !== null) {
-
     document.querySelector(".cards").insertAdjacentHTML(
       "afterbegin",
       `<div class="card" name="${plates.chosen_plate.plate_id}">
@@ -397,7 +414,32 @@ async function setPlates() {
 }
 
 setPlates();
-//
+
+async function sendFavoritePlate(data, link, el) {
+  try {
+    const request = await fetch(`..${link}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
+    const response = await request.json();
+    // console.log(response);
+    if (response.success === true) {
+      if (response.is_black === true) {
+        el.textContent = "Добавить в избранное";
+        el.classList.remove("card__button__favourites_off");
+      } else {
+        el.textContent = "Удалить из избранного";
+        el.classList.add("card__button__favourites_off");
+      }
+    }
+  } catch (err) {
+    console.log(err);
+  }
+}
+
 async function sendPlate(data, link, el) {
   try {
     const request = await fetch(`..${link}`, {
