@@ -260,7 +260,7 @@ async function setPlates() {
     }
 
     document
-      .querySelector(`.card__button__favourites${index + 1}`)
+      .querySelector(`.card__button__favourites-mini${index + 1}`)
       .addEventListener("click", (el) => {
         const data = {};
         data.plate_id = plate.plate_id;

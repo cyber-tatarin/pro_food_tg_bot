@@ -259,6 +259,15 @@ async function setPlates() {
         .classList.add("card__button__favourites_off");
     }
 
+    document
+      .querySelector(`.card__button__favourites-mini${index + 1}`)
+      .addEventListener("click", (el) => {
+        const data = {};
+        data.plate_id = plate.plate_id;
+        data.tg_id = tg_id;
+        sendFavoritePlate(data, "/api/add_to_favorites", el.target);
+      });
+
     for (let i = 1; i < 6; i++) {
       if (i <= plate.recipe_difficulty) {
         console.log("green-star");
@@ -331,15 +340,6 @@ async function setPlates() {
         .querySelector(`.card__button__favourites-chosen`)
         .classList.add("card__button__favourites_off");
     }
-
-    document
-      .querySelector(`.card__button__favourites${index + 1}`)
-      .addEventListener("click", (el) => {
-        const data = {};
-        data.plate_id = plate.plate_id;
-        data.tg_id = tg_id;
-        sendFavoritePlate(data, "/api/add_to_favorites", el.target);
-      });
 
     if (plates.chosen_plate.percentages[0] === "100") {
       document
