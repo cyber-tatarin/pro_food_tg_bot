@@ -556,6 +556,8 @@ async def get_all_plates_to_choose(request):
                                                                    models.UserPlatesDate.plate_type == plate_type,
                                                                    models.UserPlatesDate.date == today).first()
         
+        logger.info(f'chosen plate! {tg_id}: {chosen_plate.id if chosen_plate else "no chosen plate"}')
+        
         all_favorites = session.query(models.Favorites).filter(models.Favorites.tg_id == tg_id).all()
         
         print('inside')
@@ -716,6 +718,8 @@ async def has_chosen_plate(request):
     plate_type = data.get('plate_type')
     plate_id = data.get('plate_id')
     
+    logger.info(f'in has_chosen {tg_id} {plate_id} {plate_type}')
+    
     session = db.Session()
     try:
         new_user_plate_date = models.UserPlatesDate(tg_id=tg_id, plate_type=plate_type, plate_id=plate_id)
@@ -723,6 +727,7 @@ async def has_chosen_plate(request):
         session.commit()
     
     except IntegrityError:
+        logger.info('today plate already exists')
         new_session = db.Session()
         try:
             obj_to_edit = new_session.query(models.UserPlatesDate).filter(models.UserPlatesDate.tg_id == tg_id,
@@ -739,6 +744,7 @@ async def has_chosen_plate(request):
         return web.json_response({'success': True})
     
     except Exception as x:
+        logger.exception(x)
         print(x)
         return web.HTTPBadGateway()
     finally:
