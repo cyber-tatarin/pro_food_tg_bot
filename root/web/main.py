@@ -445,6 +445,7 @@ async def get_today_plates(request):
     
     if today_plates_list:
         plate_ids = [int(element.plate_id) for element in today_plates_list]
+        logger.info(plate_ids)
         
         session2 = db.Session()
         try:
