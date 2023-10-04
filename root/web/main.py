@@ -426,6 +426,7 @@ async def get_nutrient_parameters(request):
 async def get_today_plates(request):
     data = await request.json()
     tg_id = data.get('tg_id')
+    print(tg_id)
     
     session1 = db.Session()
     try:
@@ -433,6 +434,7 @@ async def get_today_plates(request):
         today_plates_list = session1.query(models.UserPlatesDate).filter(models.UserPlatesDate.tg_id == tg_id,
                                                                          models.UserPlatesDate.date == today,
                                                                          ).all()
+        print(today_plates_list)
     
     except Exception as x:
         print(x)
