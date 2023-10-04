@@ -547,6 +547,7 @@ async def get_all_plates_to_choose(request):
     
     session = db.Session()
     try:
+        print('before db')
         today = date.today()
         chosen_plate = session.query(models.UserPlatesDate).filter(models.UserPlatesDate.tg_id == tg_id,
                                                                    models.UserPlatesDate.plate_type == plate_type,
