@@ -639,8 +639,6 @@ async def add_to_favorites(request):
         session.add(new_favorite)
         session.commit()
         
-        print('after xommit')
-        
         return web.json_response({'success': True, 'is_black': False})
     
     except Exception as x:
@@ -648,7 +646,6 @@ async def add_to_favorites(request):
             session.rollback()
             favorite_to_delete = session.query(models.Favorites).filter(models.Favorites.tg_id == tg_id,
                                                                         models.Favorites.plate_id == plate_id).first()
-            print(favorite_to_delete.tg_id)
             session.delete(favorite_to_delete)
             session.commit()
 
