@@ -175,7 +175,7 @@ async def restore_duplicate_plate_if_exists(result_list, plate_ids):
                     if plate_ids.count(element['plate_id']) > 1:
                         result_list.insert(0, element.copy())
                         result_list[0]['plate_type'] = lacking_plate_type
-                        lacking_plate_type_as_list.remove(lacking_plate_type)
+                        
                         plate_ids.remove(element['plate_id'])  # remove this plate_id from ids to avoid infinite loop
                     
     except Exception as x:
