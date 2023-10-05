@@ -158,17 +158,26 @@ async def set_in_favorites_true_for_plates_in_result_list(result_list, all_favor
 async def restore_duplicate_plate_if_exists(result_list, plate_ids):
     if len(result_list) < 3:
         existing_plate_types = [element['plate_type'] for element in result_list]
-        plate_type_as_list = [element for element in existing_plate_types if element not in ['Завтрак', 'Обед', 'Ужин']]
+        lacking_plate_type_as_list = [element for element in existing_plate_types if element not in ['Завтрак', 'Обед', 'Ужин']]
         
-        index = 0
-        while index < len(result_list):
-            plate_id = result_list[index]['plate_id']
-            if plate_ids.count(plate_id) > 1:
-                result_list.append(result_list[index].copy())
-                result_list[-1]['plate_type'] = plate_type_as_list[0]
-                plate_ids.remove(plate_id)  # remove this plate_id from ids to avoid infinite loop
-                break
-            index += 1
+        for lacking_plate_type in lacking_plate_type_as_list:
+            for element in result_list:
+                if plate_ids.count(element['plate_id']) > 1:
+                    result_list.insert(0, element.copy())
+                    result_list[0]['plate_type'] = lacking_plate_type
+                    lacking_plate_type_as_list.remove(lacking_plate_type)
+                    plate_ids.remove(element['plate_id'])  # remove this plate_id from ids to avoid infinite loop
+                
+        
+        # index = 0
+        # while index < len(result_list):
+        #     plate_id = result_list[index]['plate_id']
+        #     if plate_ids.count(plate_id) > 1:
+        #         result_list.insert(0, result_list[index].copy())
+        #         result_list[0]['plate_type'] = plate_type_as_list[0]
+        #         plate_type_as_list.pop(0)
+        #         plate_ids.remove(plate_id)  # remove this plate_id from ids to avoid infinite loop
+        #     index += 1
         
         
         

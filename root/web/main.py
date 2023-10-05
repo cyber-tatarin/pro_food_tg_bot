@@ -459,10 +459,14 @@ async def get_today_plates(request):
             
             all_favorites = session2.query(models.Favorites).filter(models.Favorites.tg_id == tg_id).all()
             
+            logger.info(result_list)
+            
             await utils.set_is_eaten_true_for_plates_in_result_list(result_list, all_today_has_eaten_plates)
             await utils.set_plate_type(result_list, today_plates_list)
             await utils.set_in_favorites_true_for_plates_in_result_list(result_list, all_favorites)
             await utils.restore_duplicate_plate_if_exists(result_list, plate_ids)
+            
+            logger.info(result_list)
             
             custom_order = {
                 "Завтрак": 1,
