@@ -11,6 +11,17 @@ elements.forEach((el) => {
   });
 });
 
+function setMealsList(meals, containerSelector, index) {
+  meals.forEach((el, i) => {
+    document
+      .querySelector(`.${containerSelector}${index + 1}`)
+      .insertAdjacentHTML(
+        "beforeend",
+        `<p class="card__list__item">${i + 1}. ${el}</p>`
+      );
+  });
+}
+
 async function sendData(link) {
   const request = await fetch(`..${link}`, {
     method: "POST",
@@ -119,14 +130,7 @@ async function setPlates() {
   </div>`
     );
 
-    plate.meals.forEach((el, i) => {
-      document
-        .querySelector(`.card__list${index + 1}`)
-        .insertAdjacentHTML(
-          "beforeend",
-          `<p class="card__list__item">${i + 1}. ${el}</p>`
-        );
-    });
+    setMealsList(plate.meals, "card__list", index);
 
     if (plate.is_eaten === true) {
       document.querySelector(`.card__button__choose${index + 1}`).textContent =
@@ -201,14 +205,7 @@ async function setPlates() {
   </div>`
     );
 
-    plate.meals.forEach((el, i) => {
-      document
-        .querySelector(`.card__list-mini${index + 1}`)
-        .insertAdjacentHTML(
-          "beforeend",
-          `<p class="card__list__item">${i + 1}. ${el}</p>`
-        );
-    });
+    setMealsList(plate.meals, "card__list-mini", index);
 
     if (plate.is_eaten === true) {
       document.querySelector(
@@ -286,14 +283,7 @@ async function setPlates() {
   </div>`
     );
 
-    plates.chosen_plate.meals.forEach((el, i) => {
-      document
-        .querySelector(`.card__list-chosen`)
-        .insertAdjacentHTML(
-          "beforeend",
-          `<p class="card__list__item">${i + 1}. ${el}</p>`
-        );
-    });
+    setMealsList(plates.chosen_plate.meals, "card__list-chosen", index);
 
     setPlateImgae("card__visual-chosen", plates.chosen_plate, index);
     setPlateStars("card__stars-chosen", plates.chosen_plate, index);
