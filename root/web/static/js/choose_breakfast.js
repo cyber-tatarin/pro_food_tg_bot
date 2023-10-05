@@ -1,5 +1,5 @@
-let tg = window.Telegram.WebApp;
- let tg_id = tg.initDataUnsafe.user.id;
+const tg = window.Telegram.WebApp;
+const tg_id = tg.initDataUnsafe.user.id;
 
 const elements = document.querySelectorAll(`.js-choice_type`);
 elements.forEach((el) => {
@@ -24,6 +24,17 @@ async function sendData(link) {
   return response;
 }
 
+function setMealsList(meals, containerSelector, index) {
+  meals.forEach((el, i) => {
+    document
+      .querySelector(`.${containerSelector}${index + 1}`)
+      .insertAdjacentHTML(
+        "beforeend",
+        `<p class="card__list__item">${i + 1}. ${el}</p>`
+      );
+  });
+}
+
 let diameter;
 
 async function getDiameter() {
@@ -38,6 +49,39 @@ async function getDiameter() {
   console.log(response);
   diameter = response.plate_diameter;
   return response.plate_diameter;
+}
+
+function setPlateImgae(className, plate, index) {
+  let imagePath = "";
+  if (plate.percentages[0] === "100") {
+    imagePath = "../static/images/1-part.svg";
+  } else if (plate.percentages[0] === "50") {
+    imagePath = "../static/images/2-parts.svg";
+  } else if (plate.percentages[0] === "33") {
+    imagePath = "../static/images/3-33-parts.svg";
+  } else if (plate.percentages[0] === "25" && plate.percentages[2] === "50") {
+    imagePath = "../static/images/3-parts.svg";
+  } else {
+    imagePath = "../static/images/4-parts.svg";
+  }
+  document
+    .querySelector(`.${className}${index + 1}`)
+    .insertAdjacentHTML(
+      "afterbegin",
+      `<img src="${imagePath}" class="card__plate" />`
+    );
+}
+
+function setPlateStars(className, plate, index) {
+  const cardStarsElement = document.querySelector(`.${className}${index + 1}`);
+  const greenStarImage = '<img src="../static/images/green-star.svg" alt="" />';
+  const grayStarImage = '<img src="../static/images/gray-star.svg" alt="" />';
+
+  for (let i = 1; i < 6; i++) {
+    const starImage =
+      i <= plate.recipe_difficulty ? greenStarImage : grayStarImage;
+    cardStarsElement.insertAdjacentHTML("beforeend", starImage);
+  }
 }
 
 async function setPlates() {
@@ -88,14 +132,7 @@ async function setPlates() {
   </div>`
     );
 
-    plate.meals.forEach((el, i) => {
-      document
-        .querySelector(`.card__list${index + 1}`)
-        .insertAdjacentHTML(
-          "beforeend",
-          `<p class="card__list__item">${i + 1}. ${el}</p>`
-        );
-    });
+    setMealsList(plate.meals, "card__list", index);
 
     if (plate.is_eaten === true) {
       document.querySelector(`.card__button__choose${index + 1}`).textContent =
@@ -108,7 +145,6 @@ async function setPlates() {
     document
       .querySelector(`.card__button__choose${index + 1}`)
       .addEventListener("click", (el) => {
-        // console.log("button", el.target);
         const data = {};
         data.plate_id = plate.plate_id;
         data.tg_id = tg_id;
@@ -125,70 +161,17 @@ async function setPlates() {
         .classList.add("card__button__favourites_off");
     }
 
-    if (plate.percentages[0] === "100") {
-      console.log(1);
-      document
-        .querySelector(`.card__visual${index + 1}`)
-        .insertAdjacentHTML(
-          "afterbegin",
-          `<img src="../static/images/1-part.svg" class="card__plate" />`
-        );
-    } else if (plate.percentages[0] === "50") {
-      console.log(2);
+    document
+      .querySelector(`.card__button__favourites${index + 1}`)
+      .addEventListener("click", (el) => {
+        const data = {};
+        data.plate_id = plate.plate_id;
+        data.tg_id = tg_id;
+        sendFavoritePlate(data, "/api/add_to_favorites", el.target);
 
-      document
-        .querySelector(`.card__visual${index + 1}`)
-        .insertAdjacentHTML(
-          "afterbegin",
-          `<img src="../static/images/2-parts.svg" class="card__plate" />`
-        );
-    } else if (plate.percentages[0] === "33") {
-      console.log(3);
-
-      document
-        .querySelector(`.card__visual${index + 1}`)
-        .insertAdjacentHTML(
-          "afterbegin",
-          `<img src="../static/images/3-33-parts.svg" class="card__plate" />`
-        );
-    } else if (plate.percentages[0] === "25" && plate.percentages[2] === "50") {
-      console.log(4);
-
-      document
-        .querySelector(`.card__visual${index + 1}`)
-        .insertAdjacentHTML(
-          "afterbegin",
-          `<img src="../static/images/3-parts.svg" class="card__plate" />`
-        );
-    } else if (plate.percentages[0] === "25" && plate.percentages[1] === "25") {
-      console.log(5);
-      document
-        .querySelector(`.card__visual${index + 1}`)
-        .insertAdjacentHTML(
-          "afterbegin",
-          `<img src="../static/images/4-parts.svg" class="card__plate" />`
-        );
-    }
-
-    for (let i = 1; i < 6; i++) {
-      if (i <= plate.recipe_difficulty) {
-        console.log("green-star");
-        document
-          .querySelector(`.card__stars${index + 1}`)
-          .insertAdjacentHTML(
-            "beforeend",
-            `<img src="../static/images/green-star.svg" alt="" />`
-          );
-      } else {
-        console.log("grey-star");
-        document
-          .querySelector(`.card__stars${index + 1}`)
-          .insertAdjacentHTML(
-            "beforeend",
-            `<img src="../static/images/gray-star.svg" alt="" />`
-          );
-      }
-    }
+        setPlateImgae("card__visual", plate, index);
+        setPlateStars("card__stars", plate, index);
+      });
   });
 
   plates.all_plates.forEach((plate, index) => {
@@ -224,14 +207,7 @@ async function setPlates() {
   </div>`
     );
 
-    plate.meals.forEach((el, i) => {
-      document
-        .querySelector(`.card__list-mini${index + 1}`)
-        .insertAdjacentHTML(
-          "beforeend",
-          `<p class="card__list__item">${i + 1}. ${el}</p>`
-        );
-    });
+    setMealsList(plate.meals, "card__list-mini", index);
 
     if (plate.is_eaten === true) {
       document.querySelector(
@@ -245,7 +221,6 @@ async function setPlates() {
     document
       .querySelector(`.card__button__choose-mini${index + 1}`)
       .addEventListener("click", (el) => {
-        // console.log("button", el.target);
         const data = {};
         data.plate_id = plate.plate_id;
         data.tg_id = tg_id;
@@ -262,29 +237,19 @@ async function setPlates() {
         .classList.add("card__button__favourites_off");
     }
 
-    for (let i = 1; i < 6; i++) {
-      if (i <= plate.recipe_difficulty) {
-        console.log("green-star");
-        document
-          .querySelector(`.card__stars-mini${index + 1}`)
-          .insertAdjacentHTML(
-            "beforeend",
-            `<img src="../static/images/green-star.svg" alt="" />`
-          );
-      } else {
-        console.log("grey-star");
-        document
-          .querySelector(`.card__stars-mini${index + 1}`)
-          .insertAdjacentHTML(
-            "beforeend",
-            `<img src="../static/images/gray-star.svg" alt="" />`
-          );
-      }
-    }
+    document
+      .querySelector(`.card__button__favourites-mini${index + 1}`)
+      .addEventListener("click", (el) => {
+        const data = {};
+        data.plate_id = plate.plate_id;
+        data.tg_id = tg_id;
+        sendFavoritePlate(data, "/api/add_to_favorites", el.target);
+      });
+
+    setPlateStars("card__stars-mini", plate, index);
   });
 
   if (plates.chosen_plate !== null) {
-
     document.querySelector(".cards").insertAdjacentHTML(
       "afterbegin",
       `<div class="card" name="${plates.chosen_plate.plate_id}">
@@ -319,14 +284,7 @@ async function setPlates() {
   </div>`
     );
 
-    plates.chosen_plate.meals.forEach((el, i) => {
-      document
-        .querySelector(`.card__list-chosen`)
-        .insertAdjacentHTML(
-          "beforeend",
-          `<p class="card__list__item">${i + 1}. ${el}</p>`
-        );
-    });
+    setMealsList(plates.chosen_plate.meals, "card__list-chosen", index);
 
     if (plates.chosen_plate.in_favorites === true) {
       document.querySelector(`.card__button__favourites-chosen`).textContent =
@@ -335,69 +293,37 @@ async function setPlates() {
         .querySelector(`.card__button__favourites-chosen`)
         .classList.add("card__button__favourites_off");
     }
-
-    if (plates.chosen_plate.percentages[0] === "100") {
-      document
-        .querySelector(`.card__visual-chosen`)
-        .insertAdjacentHTML(
-          "afterbegin",
-          `<img src="../static/images/1-part.svg" class="card__plate" />`
-        );
-    } else if (plates.chosen_plate.percentages[0] === "50") {
-      document
-        .querySelector(`.card__visual-chosen`)
-        .insertAdjacentHTML(
-          "afterbegin",
-          `<img src="../static/images/2-parts.svg" class="card__plate" />`
-        );
-    } else if (plates.chosen_plate.percentages[0] === "33") {
-      document
-        .querySelector(`.card__visual-chosen`)
-        .insertAdjacentHTML(
-          "afterbegin",
-          `<img src="../static/images/3-33-parts.svg" class="card__plate" />`
-        );
-    } else if (
-      plates.chosen_plate.percentages[0] === "25" &&
-      plates.chosen_plate.percentages[2] === "50"
-    ) {
-      document
-        .querySelector(`.card__visual-chosen`)
-        .insertAdjacentHTML(
-          "afterbegin",
-          `<img src="../static/images/3-parts.svg" class="card__plate" />`
-        );
-    } else {
-      document
-        .querySelector(`.card__visual-chosen`)
-        .insertAdjacentHTML(
-          "afterbegin",
-          `<img src="../static/images/4-parts.svg" class="card__plate" />`
-        );
-    }
-
-    for (let i = 1; i < 6; i++) {
-      if (i <= plates.chosen_plate.recipe_difficulty) {
-        document
-          .querySelector(`.card__stars-chosen`)
-          .insertAdjacentHTML(
-            "beforeend",
-            `<img src="../static/images/green-star.svg" alt="" />`
-          );
-      } else {
-        document
-          .querySelector(`.card__stars-chosen`)
-          .insertAdjacentHTML(
-            "beforeend",
-            `<img src="../static/images/gray-star.svg" alt="" />`
-          );
-      }
-    }
+    setPlateImgae("card__visual-chosen", plates.chosen_plate, index);
+    setPlateStars("card__stars-chosen", plates.chosen_plate, index);
   }
 }
 
 setPlates();
-//
+
+async function sendFavoritePlate(data, link, el) {
+  try {
+    const request = await fetch(`..${link}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
+    const response = await request.json();
+    if (response.success === true) {
+      if (response.is_black === true) {
+        el.textContent = "Добавить в избранное";
+        el.classList.remove("card__button__favourites_off");
+      } else {
+        el.textContent = "Удалить из избранного";
+        el.classList.add("card__button__favourites_off");
+      }
+    }
+  } catch (err) {
+    console.log(err);
+  }
+}
+
 async function sendPlate(data, link, el) {
   try {
     const request = await fetch(`..${link}`, {

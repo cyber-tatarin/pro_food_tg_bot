@@ -1,8 +1,8 @@
-let tg = window.Telegram.WebApp;
-let tg_id = tg.initDataUnsafe.user.id;
+const tg = window.Telegram.WebApp;
+const tg_id = tg.initDataUnsafe.user.id;
 
 async function sendData(link) {
-	console.log(tg_id)
+  console.log(tg_id);
   const request = await fetch(`..${link}`, {
     method: "POST",
     headers: {
@@ -17,6 +17,39 @@ async function sendData(link) {
 
 let diameter = 0;
 let nutrientStreak = {};
+
+function setPlateImgae(className, plate, index) {
+  let imagePath = "";
+  if (plate.percentages[0] === "100") {
+    imagePath = "../static/images/1-part.svg";
+  } else if (plate.percentages[0] === "50") {
+    imagePath = "../static/images/2-parts.svg";
+  } else if (plate.percentages[0] === "33") {
+    imagePath = "../static/images/3-33-parts.svg";
+  } else if (plate.percentages[0] === "25" && plate.percentages[2] === "50") {
+    imagePath = "../static/images/3-parts.svg";
+  } else {
+    imagePath = "../static/images/4-parts.svg";
+  }
+  document
+    .querySelector(`.${className}${index + 1}`)
+    .insertAdjacentHTML(
+      "afterbegin",
+      `<img src="${imagePath}" class="card__plate" />`
+    );
+}
+
+function setPlateStars(className, plate, index) {
+  const cardStarsElement = document.querySelector(`.${className}${index + 1}`);
+  const greenStarImage = '<img src="../static/images/green-star.svg" alt="" />';
+  const grayStarImage = '<img src="../static/images/gray-star.svg" alt="" />';
+
+  for (let i = 1; i < 6; i++) {
+    const starImage =
+      i <= plate.recipe_difficulty ? greenStarImage : grayStarImage;
+    cardStarsElement.insertAdjacentHTML("beforeend", starImage);
+  }
+}
 
 async function setUserParameters() {
   const userParameters = await sendData("/api/get_user_parameters");
@@ -231,63 +264,8 @@ async function setPlates() {
           sendFavoritePlate(data, "/api/add_to_favorites", el.target);
         });
 
-      if (plate.percentages[0] === "100") {
-        document
-          .querySelector(`.card__visual${index + 1}`)
-          .insertAdjacentHTML(
-            "afterbegin",
-            `<img src="../static/images/1-part.svg" class="card__plate" />`
-          );
-      } else if (plate.percentages[0] === "50") {
-        document
-          .querySelector(`.card__visual${index + 1}`)
-          .insertAdjacentHTML(
-            "afterbegin",
-            `<img src="../static/images/2-parts.svg" class="card__plate" />`
-          );
-      } else if (plate.percentages[0] === "33") {
-        document
-          .querySelector(`.card__visual${index + 1}`)
-          .insertAdjacentHTML(
-            "afterbegin",
-            `<img src="../static/images/3-33-parts.svg" class="card__plate" />`
-          );
-      } else if (
-        plate.percentages[0] === "25" &&
-        plate.percentages[2] === "50"
-      ) {
-        document
-          .querySelector(`.card__visual${index + 1}`)
-          .insertAdjacentHTML(
-            "afterbegin",
-            `<img src="../static/images/3-parts.svg" class="card__plate" />`
-          );
-      } else {
-        document
-          .querySelector(`.card__visual${index + 1}`)
-          .insertAdjacentHTML(
-            "afterbegin",
-            `<img src="../static/images/4-parts.svg" class="card__plate" />`
-          );
-      }
-
-      for (let i = 1; i < 6; i++) {
-        if (i <= plate.recipe_difficulty) {
-          document
-            .querySelector(`.card__stars${index + 1}`)
-            .insertAdjacentHTML(
-              "beforeend",
-              `<img src="../static/images/green-star.svg" alt="" />`
-            );
-        } else {
-          document
-            .querySelector(`.card__stars${index + 1}`)
-            .insertAdjacentHTML(
-              "beforeend",
-              `<img src="../static/images/gray-star.svg" alt="" />`
-            );
-        }
-      }
+      setPlateImgae("card__visual", plate, index);
+      setPlateStars("card__stars", plate, index);
     });
   }
 }
@@ -307,15 +285,13 @@ async function sendFavoritePlate(data, link, el) {
       body: JSON.stringify(data),
     });
     const response = await request.json();
-    // console.log(response);
+
     if (response.success === true) {
-      if (response.is_black === true) {
-        el.textContent = "Добавить в избранное";
-        el.classList.remove("card__button__favourites_off");
-      } else {
-        el.textContent = "Удалить из избранного";
-        el.classList.add("card__button__favourites_off");
-      }
+      const buttonText = response.is_black
+        ? "Удалить из избранного"
+        : "Добавить в избранное";
+      el.textContent = buttonText;
+      el.classList.toggle("card__button__favourites_off", !response.is_black);
     }
   } catch (err) {
     console.log(err);
@@ -332,99 +308,40 @@ async function sendPlate(data, link, el) {
       body: JSON.stringify(data),
     });
     const response = await request.json();
-    // console.log(response);
+
     if (response.success === true) {
-      if (response.is_green === true) {
-        el.classList.remove("card__button__choose_off");
-        el.textContent = "Выбрать";
-        document.querySelector(".eaten-calories").textContent = `${
-          +document.querySelector(".eaten-calories").textContent - data.calories
-        }`;
-        document.querySelector(".eaten__proteins").textContent = `${
-          +document.querySelector(".eaten__proteins").textContent -
-          data.proteins
-        }`;
-        document.querySelector(".eaten__fats").textContent = `${
-          +document.querySelector(".eaten__fats").textContent - data.fats
-        }`;
-        document.querySelector(".eaten__carbohydrates").textContent = `${
-          +document.querySelector(".eaten__carbohydrates").textContent -
-          data.carbohydrates
-        }`;
-        const width =
-          +document.querySelector(".eaten-calories").textContent /
-          nutrientStreak.day_calories;
-        if (width > 1) {
-          document.querySelector(".progress__foreground").style.width = "100%";
-          document.querySelector(
-            ".progress__foreground"
-          ).style.borderTopRightRadius = "3px";
-          document.querySelector(
-            ".progress__foreground"
-          ).style.borderBottomRightRadius = "3px";
-          document.querySelector(
-            ".progress__foreground"
-          ).style.backgroundColor = "#ff0831";
-        } else {
-          document.querySelector(".progress__foreground").style.width = `${
-            width * 80
-          }%`;
-          document.querySelector(
-            ".progress__foreground"
-          ).style.borderTopRightRadius = "0px";
-          document.querySelector(
-            ".progress__foreground"
-          ).style.borderBottomRightRadius = "0px";
-          document.querySelector(
-            ".progress__foreground"
-          ).style.backgroundColor = "#05ff00";
-        }
-      } else {
-        el.classList.add("card__button__choose_off");
-        el.textContent = "Не съел";
-        document.querySelector(".eaten-calories").textContent = `${
-          +document.querySelector(".eaten-calories").textContent + data.calories
-        }`;
-        document.querySelector(".eaten__proteins").textContent = `${
-          +document.querySelector(".eaten__proteins").textContent +
-          data.proteins
-        }`;
-        document.querySelector(".eaten__fats").textContent = `${
-          +document.querySelector(".eaten__fats").textContent + data.fats
-        }`;
-        document.querySelector(".eaten__carbohydrates").textContent = `${
-          +document.querySelector(".eaten__carbohydrates").textContent +
-          data.carbohydrates
-        }`;
-        const width =
-          +document.querySelector(".eaten-calories").textContent /
-          nutrientStreak.day_calories;
-        if (width > 1) {
-          document.querySelector(".progress__foreground").style.width = "100%";
-          document.querySelector(
-            ".progress__foreground"
-          ).style.borderTopRightRadius = "3px";
-          document.querySelector(
-            ".progress__foreground"
-          ).style.borderBottomRightRadius = "3px";
-          document.querySelector(
-            ".progress__foreground"
-          ).style.backgroundColor = "#ff0831";
-        } else {
-          document.querySelector(".progress__foreground").style.width = `${
-            width * 80
-          }%`;
-          document.querySelector(
-            ".progress__foreground"
-          ).style.borderTopRightRadius = "0px";
-          document.querySelector(
-            ".progress__foreground"
-          ).style.borderBottomRightRadius = "0px";
-          document.querySelector(
-            ".progress__foreground"
-          ).style.backgroundColor = "#05ff00";
-        }
-      }
+      const eatenCaloriesEl = document.querySelector(".eaten-calories");
+      const eatenProteinsEl = document.querySelector(".eaten__proteins");
+      const eatenFatsEl = document.querySelector(".eaten__fats");
+      const eatenCarbohydratesEl = document.querySelector(
+        ".eaten__carbohydrates"
+      );
+      const progressForeground = document.querySelector(
+        ".progress__foreground"
+      );
+
+      el.textContent = response.is_green ? "Выбрать" : "Не съел";
+      el.classList.toggle("card__button__choose_off", !response.is_green);
+
+      eatenCaloriesEl.textContent =
+        +eatenCaloriesEl.textContent +
+        (response.is_green ? -data.calories : data.calories);
+      eatenProteinsEl.textContent =
+        +eatenProteinsEl.textContent +
+        (response.is_green ? -data.proteins : data.proteins);
+      eatenFatsEl.textContent =
+        +eatenFatsEl.textContent + (response.is_green ? -data.fats : data.fats);
+      eatenCarbohydratesEl.textContent =
+        +eatenCarbohydratesEl.textContent +
+        (response.is_green ? -data.carbohydrates : data.carbohydrates);
+
+      const width = +eatenCaloriesEl.textContent / nutrientStreak.day_calories;
+      const progressBarStyle = progressForeground.style;
+
+      progressBarStyle.width = width > 1 ? "100%" : `${width * 80}%`;
+      progressBarStyle.borderTopRightRadius =
+        progressBarStyle.borderBottomRightRadius = width > 1 ? "3px" : "0px";
+      progressBarStyle.backgroundColor = width > 1 ? "#ff0831" : "#05ff00";
     }
   } catch (err) {
     console.log(err);
