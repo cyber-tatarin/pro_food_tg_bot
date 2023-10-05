@@ -2,6 +2,7 @@ import os
 
 from aiohttp import web
 from sqlalchemy import text
+from root.logger.config import logger
 
 from root.tg.main import admin_ids
 
@@ -157,11 +158,17 @@ async def set_in_favorites_true_for_plates_in_result_list(result_list, all_favor
 
 async def restore_duplicate_plate_if_exists(result_list, plate_ids):
     if len(result_list) < 3:
+        logger.info('inside < 3')
         existing_plate_types = [element['plate_type'] for element in result_list]
         lacking_plate_type_as_list = [element for element in existing_plate_types if element not in ['Завтрак', 'Обед', 'Ужин']]
         
+        logger.info(plate_ids)
+        logger.info(f'{existing_plate_types} existing')
+        logger.info(f'{lacking_plate_type_as_list} lacking')
+        
         for lacking_plate_type in lacking_plate_type_as_list:
             for element in result_list:
+                logger.info(f'{plate_ids.count(element["plate_id"])} {element["plate_id"]}')
                 if plate_ids.count(element['plate_id']) > 1:
                     result_list.insert(0, element.copy())
                     result_list[0]['plate_type'] = lacking_plate_type
