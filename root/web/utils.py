@@ -160,7 +160,7 @@ async def restore_duplicate_plate_if_exists(result_list, plate_ids):
     if len(result_list) < 3:
         logger.info('inside < 3')
         existing_plate_types = [element['plate_type'] for element in result_list]
-        lacking_plate_type_as_list = [element for element in existing_plate_types if element not in ['Завтрак', 'Обед', 'Ужин']]
+        lacking_plate_type_as_list = [element for element in ['Завтрак', 'Обед', 'Ужин'] if element not in existing_plate_types]
         
         logger.info(plate_ids)
         logger.info(f'{existing_plate_types} existing')
