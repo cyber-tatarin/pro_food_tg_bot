@@ -724,6 +724,11 @@ async def choose_dinner(request):
     return {}
 
 
+@aiohttp_jinja2.template('favorites.html')
+async def favorites(request):
+    return {}
+
+
 async def has_chosen_plate(request):
     data = await request.json()
     tg_id = data.get('tg_id')
@@ -781,6 +786,7 @@ app.add_routes([
     web.get('/choose_breakfast', choose_breakfast),
     web.get('/choose_lunch', choose_lunch),
     web.get('/choose_dinner', choose_dinner),
+    web.get('/favorites', favorites),
 
 ])
 
