@@ -1,6 +1,7 @@
 const tg = window.Telegram.WebApp;
 const tg_id = 459471362 || tg.initDataUnsafe.user.id;
 
+
 async function sendData(link) {
   console.log(tg_id);
   const request = await fetch(`..${link}`, {

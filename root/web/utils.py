@@ -112,13 +112,15 @@ async def set_is_eaten_true_for_plates_in_result_list(result_list, all_today_has
         eaten_plate_types = [element.plate_type for element in all_today_has_eaten_plates_query if
                              element.plate_type is not None]
         for obj in result_list:
-            if int(obj['plate_type']) in eaten_plate_types:
+            if obj['plate_type'] in eaten_plate_types:
                 obj['is_eaten'] = True
 
 
 async def set_plate_type(result_list, user_type_plate_date_query):
     if user_type_plate_date_query:
+        logger.info(user_type_plate_date_query)
         plate_id_to_value = {obj.plate_id: obj.plate_type for obj in user_type_plate_date_query}
+        logger.info(plate_id_to_value)
         for element in result_list:
             if element['plate_id'] in plate_id_to_value:
                 element['plate_type'] = plate_id_to_value[element['plate_id']]
@@ -171,6 +173,7 @@ async def restore_duplicate_plate_if_exists(result_list, plate_ids):
                         result_list[0]['plate_type'] = lacking_plate_type
                         
                         plate_ids.remove(element['plate_id'])  # remove this plate_id from ids to avoid infinite loop
+                        break
     
     except Exception as x:
         logger.exception(x)
