@@ -18,7 +18,7 @@ async function sendData(link) {
 let diameter = 0;
 let nutrientStreak = {};
 
-function setPlateImgae(className, plate, index) {
+function setPlateImage(className, plate, index) {
   let imagePath = "";
   if (plate.percentages[0] === "100") {
     imagePath = "../static/images/1-part.svg";
@@ -264,7 +264,7 @@ async function setPlates() {
           sendFavoritePlate(data, "/api/add_to_favorites", el.target);
         });
 
-      setPlateImgae("card__visual", plate, index);
+      setPlateImage("card__visual", plate, index);
       setPlateStars("card__stars", plate, index);
     });
   }

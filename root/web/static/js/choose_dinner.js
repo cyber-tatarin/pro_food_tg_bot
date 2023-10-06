@@ -35,7 +35,7 @@ async function sendData(link) {
   return response;
 }
 
-function setPlateImgae(className, plate, index) {
+function setPlateImage(className, plate, index) {
   let imagePath = "";
   if (plate.percentages[0] === "100") {
     imagePath = "../static/images/1-part.svg";
@@ -168,7 +168,7 @@ async function setPlates() {
         sendFavoritePlate(data, "/api/add_to_favorites", el.target);
       });
 
-    setPlateImgae("card__visual", plate, index);
+    setPlateImage("card__visual", plate, index);
     setPlateStars("card__stars", plate, index);
   });
 
@@ -255,7 +255,7 @@ async function setPlates() {
     <div class="card__type">Выбрано</div>
     <div class="card__calories">Б: ${plates.chosen_plate.proteins} / Ж: ${plates.chosen_plate.fats} / У: ${plates.chosen_plate.carbohydrates} / ${plates.chosen_plate.calories} ккал</div>
     <div class="card__meal">“${plates.chosen_plate.plate_name}”</div>
-    <div class="card__visual card__visual-chosen">
+    <div class="card__visual card__visual-chosen card__visual-chosen1">
       <div class="card__plate_frames"></div>
       <div class="card__plate_size">
         <div class="plate__arrow">
@@ -285,7 +285,7 @@ async function setPlates() {
 
     setMealsList(plates.chosen_plate.meals, "card__list-chosen", index);
 
-    setPlateImgae("card__visual-chosen", plates.chosen_plate, index);
+    setPlateImage("card__visual-chosen", plates.chosen_plate, 1);
     setPlateStars("card__stars-chosen", plates.chosen_plate, index);
   }
 }
