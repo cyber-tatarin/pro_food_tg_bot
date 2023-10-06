@@ -109,10 +109,10 @@ async def get_nutrient_for_plates_by_ids(session, plate_ids=None, in_json=False)
 
 async def set_is_eaten_true_for_plates_in_result_list(result_list, all_today_has_eaten_plates_query):
     if all_today_has_eaten_plates_query:
-        eaten_plate_ids = [int(element.plate_id) for element in all_today_has_eaten_plates_query if
-                           element.plate_id is not None]
+        eaten_plate_types = [element.plate_type for element in all_today_has_eaten_plates_query if
+                             element.plate_type is not None]
         for obj in result_list:
-            if int(obj['plate_id']) in eaten_plate_ids:
+            if int(obj['plate_type']) in eaten_plate_types:
                 obj['is_eaten'] = True
 
 
@@ -159,25 +159,19 @@ async def set_in_favorites_true_for_plates_in_result_list(result_list, all_favor
 async def restore_duplicate_plate_if_exists(result_list, plate_ids):
     try:
         if len(result_list) < 3:
-            logger.info('inside < 3')
             existing_plate_types = [element['plate_type'] for element in result_list]
-            lacking_plate_type_as_list = [element for element in ['Завтрак', 'Обед', 'Ужин'] if element not in existing_plate_types]
-            
-            logger.info(plate_ids)
-            logger.info(f'{existing_plate_types} existing')
-            logger.info(f'{lacking_plate_type_as_list} lacking')
+            lacking_plate_type_as_list = [element for element in ['Завтрак', 'Обед', 'Ужин'] if
+                                          element not in existing_plate_types]
             
             for lacking_plate_type in lacking_plate_type_as_list:
                 for element in result_list:
-                    
-                    logger.info(f'{plate_ids.count(element["plate_id"])} {element["plate_id"]}')
                     
                     if plate_ids.count(element['plate_id']) > 1:
                         result_list.insert(0, element.copy())
                         result_list[0]['plate_type'] = lacking_plate_type
                         
                         plate_ids.remove(element['plate_id'])  # remove this plate_id from ids to avoid infinite loop
-                    
+    
     except Exception as x:
         logger.exception(x)
         
@@ -190,6 +184,3 @@ async def restore_duplicate_plate_if_exists(result_list, plate_ids):
         #         plate_type_as_list.pop(0)
         #         plate_ids.remove(plate_id)  # remove this plate_id from ids to avoid infinite loop
         #     index += 1
-        
-        
-        

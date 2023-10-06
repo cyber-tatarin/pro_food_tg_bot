@@ -35,8 +35,8 @@ if __name__ == '__main__':
     # models.Plate.__table__.create(bind=engine)
     # models.meal_ingredients_association.create(bind=engine)
     # models.plate_meals_association.create(bind=engine)
-    # models.HasEaten.__table__.create(bind=engine)
-    models.UserPlatesDate.__table__.create(bind=engine)
+    models.HasEaten.__table__.create(bind=engine)
+    # models.UserPlatesDate.__table__.create(bind=engine)
     # models.Favorites.__table__.create(bind=engine)
 
     # session = Session()

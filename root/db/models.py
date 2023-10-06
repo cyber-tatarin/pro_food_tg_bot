@@ -110,7 +110,11 @@ class Plate(Base):
     
     meals = relationship("Meal", secondary=plate_meals_association, back_populates="plates")
     
-    
+
+def date_time_to_date(context):
+    return context.current_parameters['date_time'].date()
+
+
 class HasEaten(Base):
     __tablename__ = "has_eaten"
     
@@ -119,11 +123,17 @@ class HasEaten(Base):
     plate_id = Column(Integer)
     tg_id = Column(Integer)
     date_time = Column(DateTime, default=datetime.now)
+    plate_type = Column(String(30))
+    date = Column(Date, default=date_time_to_date)
     
     calories = Column(Integer, nullable=False)
     proteins = Column(Integer, nullable=False)
     fats = Column(Integer, nullable=False)
     carbohydrates = Column(Integer, nullable=False)
+    
+    __table_args__ = (
+        UniqueConstraint('tg_id', 'plate_type', 'date', name='unique_eaten_user_plate_type_date'),
+    )
     
     
 class UserPlatesDate(Base):

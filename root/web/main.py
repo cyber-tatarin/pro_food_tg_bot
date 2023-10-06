@@ -461,8 +461,8 @@ async def get_today_plates(request):
             
             logger.info(result_list)
             
-            await utils.set_is_eaten_true_for_plates_in_result_list(result_list, all_today_has_eaten_plates)
             await utils.set_plate_type(result_list, today_plates_list)
+            await utils.set_is_eaten_true_for_plates_in_result_list(result_list, all_today_has_eaten_plates)
             await utils.set_in_favorites_true_for_plates_in_result_list(result_list, all_favorites)
             await utils.restore_duplicate_plate_if_exists(result_list, plate_ids)
             
@@ -592,6 +592,7 @@ async def has_eaten_plate(request):
     data = await request.json()
     tg_id = data.get('tg_id')
     plate_id = data.get('plate_id')
+    plate_type = data.get('plate_type')
     
     calories = data.get('calories')
     proteins = data.get('proteins')
@@ -601,32 +602,36 @@ async def has_eaten_plate(request):
     session = db.Session()
     try:
         today = date.today()
-        all_today_has_eaten_plates = session.query(models.HasEaten).filter(
-            models.HasEaten.date_time >= today,
-            models.HasEaten.date_time < today + timedelta(days=1),
-            models.HasEaten.tg_id == tg_id
-        ).all()
+        eaten_plate = session.query(models.HasEaten).filter(
+            models.HasEaten.date == today,
+            models.HasEaten.tg_id == tg_id,
+            models.HasEaten.plate_type == plate_type
+        ).first()
         
-        eaten_plate_ids = [int(element.plate_id) for element in all_today_has_eaten_plates if
-                           element.plate_id is not None]
+        # eaten_plate_ids = [int(element.plate_id) for element in all_today_has_eaten_plates if
+        #                    element.plate_id is not None]
+        #
+        # if int(plate_id) not in eaten_plate_ids:
+        #     new_has_eaten = models.HasEaten(tg_id=tg_id, plate_id=plate_id,
+        #                                     calories=calories, proteins=proteins,
+        #                                     fats=fats, carbohydrates=carbohydrates)
+        #     session.add(new_has_eaten)
+        #     session.commit()
+        #
+        #     return web.json_response({'success': True, 'is_green': False})
         
-        if int(plate_id) not in eaten_plate_ids:
+        if eaten_plate is None:
             new_has_eaten = models.HasEaten(tg_id=tg_id, plate_id=plate_id,
                                             calories=calories, proteins=proteins,
-                                            fats=fats, carbohydrates=carbohydrates)
+                                            fats=fats, carbohydrates=carbohydrates, plate_type=plate_type)
             session.add(new_has_eaten)
             session.commit()
             
             return web.json_response({'success': True, 'is_green': False})
         
         else:
-            session.rollback()
-            for eaten_plate in all_today_has_eaten_plates:
-                session.refresh(eaten_plate)
-                if eaten_plate.plate_id == plate_id:
-                    session.delete(eaten_plate)
-                    session.commit()
-                    break
+            session.delete(eaten_plate)
+            session.commit()
             
             return web.json_response({'success': True, 'is_green': True})
     
@@ -660,9 +665,9 @@ async def add_to_favorites(request):
                                                                         models.Favorites.plate_id == plate_id).first()
             session.delete(favorite_to_delete)
             session.commit()
-
-            return web.json_response({'success': True, 'is_black': True})
             
+            return web.json_response({'success': True, 'is_black': True})
+        
         except Exception as x:
             print(x)
             return web.json_response({'success': False})
