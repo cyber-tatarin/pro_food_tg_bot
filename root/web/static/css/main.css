@@ -444,6 +444,15 @@ body {
   display: none;
 }
 
+.empty-list {
+  color: #d9d9d9;
+  font-size: 20px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: normal;
+  margin-left: 8px;
+}
+
 /* card */
 
 .cards,
