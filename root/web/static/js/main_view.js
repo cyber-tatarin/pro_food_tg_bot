@@ -173,6 +173,11 @@ async function setPlates() {
       .querySelector(".eat__buttons-single")
       .classList.remove("eat__buttons-single_hidden");
   } else {
+    document
+      .querySelector(".eat__buttons-single")
+      .classList.remove("eat__buttons-single_hidden");
+    document.querySelector(".eat__buttons-single").textContent =
+      "Изменить рацион";
     plates.forEach((plate, index) => {
       document.querySelector(".cards").insertAdjacentHTML(
         "beforeend",
@@ -243,6 +248,7 @@ async function setPlates() {
           data.proteins = plate.proteins;
           data.fats = plate.fats;
           data.carbohydrates = plate.carbohydrates;
+          data.plate_type = plate.plate_type;
           sendPlate(data, "/api/has_eaten_plate", el.target);
         });
 
