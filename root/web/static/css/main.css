@@ -418,12 +418,18 @@ body {
   gap: 8px;
 }
 
+.eat__buttons-single {
+  display: block;
+  width: 100%;
+}
+
 .eat__button {
   display: flex;
   align-items: center;
   justify-content: center;
   width: 100%;
   min-height: 70px;
+  padding: 0 28px;
   border-radius: 20px;
   border: 1.5px dashed #303030;
   color: #303030;
@@ -432,11 +438,6 @@ body {
   font-style: normal;
   font-weight: 700;
   line-height: normal;
-}
-
-.eat__buttons-single {
-  display: block;
-  width: 100%;
 }
 
 .eat__buttons-single_hidden {
