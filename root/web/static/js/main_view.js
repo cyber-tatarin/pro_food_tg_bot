@@ -295,7 +295,7 @@ async function sendFavoritePlate(data, link, el) {
     if (response.success === true) {
       const cards = document.querySelectorAll(".card");
       cards.forEach((card) => {
-        if (data.plate_id === card.getAttribute("name")) {
+        if (String(data.plate_id) === String(card.getAttribute("name"))) {
           const buttonText = response.is_black
             ? "Удалить из избранного"
             : "Добавить в избранное";
