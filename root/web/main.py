@@ -569,8 +569,8 @@ async def get_all_plates_to_choose(request):
         
         print('inside')
         result_list = await utils.get_nutrient_for_plates_by_ids(session, in_json=True)
-        await utils.put_chosen_plate_to_0_index_if_exists(result_list, chosen_plate)
         await utils.set_in_favorites_true_for_plates_in_result_list(result_list, all_favorites)
+        await utils.put_chosen_plate_to_0_index_if_exists(result_list, chosen_plate)
         
         if len(result_list) > 4:
             return web.json_response({
@@ -694,19 +694,19 @@ async def add_to_favorites(request):
 #         return web.json_response({'success': False})
 
 
-async def get_all_favorites(request):
-    data = await request.json()
-    
-    tg_id = data.get('tg_id')
-    
-    session = db.Session()
-    try:
-        all_favorites = session.query(models.Favorites).filter(models.Favorites.tg_id == tg_id).all()
-        return web.json_response({'success': True})
-    
-    except Exception as x:
-        print(x)
-        return web.json_response({'success': False})
+# async def get_all_favorites(request):
+#     data = await request.json()
+#
+#     tg_id = data.get('tg_id')
+#
+#     session = db.Session()
+#     try:
+#         all_favorites = session.query(models.Favorites).filter(models.Favorites.tg_id == tg_id).all()
+#         return web.json_response({'success': True})
+#
+#     except Exception as x:
+#         print(x)
+#         return web.json_response({'success': False})
 
 
 @aiohttp_jinja2.template('choose_breakfast.html')
@@ -771,6 +771,51 @@ async def has_chosen_plate(request):
     return web.json_response({'success': True})
 
 
+async def get_all_favorites(request):
+    data = await request.json()
+    tg_id = data.get('tg_id')
+    plate_type = data.get('plate_type')
+    
+    session = db.Session()
+    try:
+        print('before db')
+        today = date.today()
+        chosen_plate = session.query(models.UserPlatesDate).filter(models.UserPlatesDate.tg_id == tg_id,
+                                                                   models.UserPlatesDate.plate_type == plate_type,
+                                                                   models.UserPlatesDate.date == today).first()
+        
+        all_favorites = session.query(models.Favorites).filter(models.Favorites.tg_id == tg_id).all()
+        print(all_favorites)
+        favorites_plate_ids = [int(element.plate_id) for element in all_favorites]
+        
+        print('inside')
+        result_list = await utils.get_nutrient_for_plates_by_ids(session, in_json=True, plate_ids=favorites_plate_ids)
+        await utils.set_in_favorites_true_for_plates_in_result_list(result_list, all_favorites)
+        
+        if chosen_plate is not None:
+            if chosen_plate.plate_id not in favorites_plate_ids:
+                chosen_plate = None
+        await utils.put_chosen_plate_to_0_index_if_exists(result_list, chosen_plate)
+        
+        if len(result_list) > 1:
+            return web.json_response({
+                'chosen_plate': result_list[0],
+                'all_plates': result_list[1:]
+            })
+        else:
+            return web.json_response({
+                'chosen_plate': result_list[0],
+                'all_plates': []
+            })
+    
+    except Exception as x:
+        logger.exception(x)
+        return web.HTTPBadGateway()
+    finally:
+        if session.is_active:
+            session.close()
+
+
 app = web.Application()
 
 app.router.add_static('/static/', path='root/web/static', name='static')
@@ -804,6 +849,7 @@ app.add_routes([
     web.post('/api/get_all_plates_to_choose', get_all_plates_to_choose),
     web.post('/api/has_chosen_plate', has_chosen_plate),
     web.post('/api/add_to_favorites', add_to_favorites),
+    web.post('/api/get_all_favorites', get_all_favorites),
     # web.post('/api/remove_from_favorites', remove_from_favorites),
 
 ])

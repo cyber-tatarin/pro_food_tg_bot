@@ -37,11 +37,10 @@ percentage_db_func_dict = {
 
 
 async def get_nutrient_for_plates_by_ids(session, plate_ids=None, in_json=False) -> list:
-    if plate_ids:
-        plate_ids_as_str = ', '.join([str(x) for x in plate_ids])
-    else:
-        plate_ids_as_str = ''
-    
+    if plate_ids is not None:
+        if len(plate_ids) == 0:
+            return []
+        
     meal_agg_statement = meal_db_func_dict[os.getenv('DB_ENGINE')]
     percentage_agg_statement = percentage_db_func_dict[os.getenv('DB_ENGINE')]
     
@@ -68,7 +67,7 @@ async def get_nutrient_for_plates_by_ids(session, plate_ids=None, in_json=False)
       inner join ingredients using(ingredient_id)
       inner join plate_meals_association using(meal_id)
       inner join plates using(plate_id)
-      {'where plates.plate_id in (' + plate_ids_as_str + ')' if plate_ids else ''}
+      {'where plates.plate_id in (' + ', '.join([str(x) for x in plate_ids]) + ')' if plate_ids else ''}
       group by meals.meal_id, plates.plate_id, meal_name, plate_name, plate_type, recipe_time, recipe_active_time,
       recipe_difficulty, percentage
       order by percentage
@@ -150,10 +149,12 @@ async def put_chosen_plate_to_0_index_if_exists(result_list, chosen_plate):
 
 
 async def set_in_favorites_true_for_plates_in_result_list(result_list, all_favorites_query):
-    if all_favorites_query:
+    if all_favorites_query and result_list:
         favorite_plate_ids = [int(element.plate_id) for element in all_favorites_query if
                               element.plate_id is not None]
+        print(result_list)
         for obj in result_list:
+            print(obj)
             if int(obj['plate_id']) in favorite_plate_ids:
                 obj['in_favorites'] = True
 
