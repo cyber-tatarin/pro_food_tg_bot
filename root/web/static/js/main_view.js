@@ -293,11 +293,22 @@ async function sendFavoritePlate(data, link, el) {
     const response = await request.json();
 
     if (response.success === true) {
-      const buttonText = response.is_black
-        ? "Удалить из избранного"
-        : "Добавить в избранное";
-      el.textContent = buttonText;
-      el.classList.toggle("card__button__favourites_off", !response.is_black);
+      const cards = document.querySelectorAll(".card");
+      cards.forEach((card) => {
+        if (data.plate_id === card.name) {
+          const buttonText = response.is_black
+            ? "Удалить из избранного"
+            : "Добавить в избранное";
+          card.querySelector(".card__button__favourites").textContent =
+            buttonText;
+          card
+            .querySelector(".card__button__favourites")
+            .classList.toggle(
+              "card__button__favourites_off",
+              !response.is_black
+            );
+        }
+      });
     }
   } catch (err) {
     console.log(err);
