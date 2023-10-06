@@ -5,13 +5,15 @@ let plate_type;
 
 const ref = String(document.referrer);
 
-if (ref.includes("brekfast")) {
+if (ref.includes("breakfast")) {
   plate_type = "Завтрак";
 } else if (ref.includes("lunch")) {
   plate_type = "Обед";
 } else if (ref.includes("dinner")) {
   plate_type = "Ужин";
 }
+
+console.log(plate_type, ref)
 
 async function sendData(link) {
   const request = await fetch(`..${link}`, {
