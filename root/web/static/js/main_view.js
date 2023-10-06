@@ -18,7 +18,7 @@ async function sendData(link) {
 let diameter = 0;
 let nutrientStreak = {};
 
-function setPlateImgae(className, plate, index) {
+function setPlateImage(className, plate, index) {
   let imagePath = "";
   if (plate.percentages[0] === "100") {
     imagePath = "../static/images/1-part.svg";
@@ -173,6 +173,11 @@ async function setPlates() {
       .querySelector(".eat__buttons-single")
       .classList.remove("eat__buttons-single_hidden");
   } else {
+    document
+      .querySelector(".eat__buttons-single")
+      .classList.remove("eat__buttons-single_hidden");
+    document.querySelector(".eat__buttons-single").textContent =
+      "Изменить рацион";
     plates.forEach((plate, index) => {
       document.querySelector(".cards").insertAdjacentHTML(
         "beforeend",
@@ -243,6 +248,7 @@ async function setPlates() {
           data.proteins = plate.proteins;
           data.fats = plate.fats;
           data.carbohydrates = plate.carbohydrates;
+          data.plate_type = plate.plate_type;
           sendPlate(data, "/api/has_eaten_plate", el.target);
         });
 
@@ -264,7 +270,7 @@ async function setPlates() {
           sendFavoritePlate(data, "/api/add_to_favorites", el.target);
         });
 
-      setPlateImgae("card__visual", plate, index);
+      setPlateImage("card__visual", plate, index);
       setPlateStars("card__stars", plate, index);
     });
   }

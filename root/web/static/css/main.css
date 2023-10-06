@@ -418,14 +418,6 @@ body {
   gap: 8px;
 }
 
-.eat__buttons-single {
-  display: block;
-  width: 100%;
-}
-.eat__buttons-single_hidden {
-  display: none;
-}
-
 .eat__button {
   display: flex;
   align-items: center;
@@ -440,6 +432,15 @@ body {
   font-style: normal;
   font-weight: 700;
   line-height: normal;
+}
+
+.eat__buttons-single {
+  display: block;
+  width: 100%;
+}
+
+.eat__buttons-single_hidden {
+  display: none;
 }
 
 /* card */
