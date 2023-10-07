@@ -1,7 +1,6 @@
 const tg = window.Telegram.WebApp;
 const tg_id = 459471362 || tg.initDataUnsafe.user.id;
 
-
 async function sendData(link) {
   console.log(tg_id);
   const request = await fetch(`..${link}`, {
@@ -297,7 +296,7 @@ async function sendFavoritePlate(data, link, el) {
       const cards = document.querySelectorAll(".card");
       cards.forEach((card) => {
         if (String(data.plate_id) === String(card.getAttribute("name"))) {
-          const buttonText = response.is_black
+          const buttonText = !response.is_black
             ? "Удалить из избранного"
             : "Добавить в избранное";
           card.querySelector(".card__button__favourites").textContent =
