@@ -179,6 +179,26 @@ async def restore_duplicate_plate_if_exists(result_list, plate_ids):
     except Exception as x:
         logger.exception(x)
         
+
+async def get_recipe_values():
+    sql_query = text("""
+    select meal_id, recipe, recipe_time, recipe_active_time,
+    string_agg(cast(measure as text), ', ') as ingredients_measures,
+    string_agg(cast(ingredient_name as text), ', ') as ingredients,
+    string_agg(cast(amount as text), ', ') as ingredients_amounts
+    
+    from
+    
+    (select meal_id, ingredient_name, amount, recipe, recipe_time, recipe_active_time, measure from plates
+    inner join plate_meals_association using(plate_id)
+    inner join meals using(meal_id)
+    inner join meal_ingredients_association using(meal_id)
+    inner join ingredients using(ingredient_id)
+    where plate_id = 14) as q
+    
+    group by meal_id, recipe, recipe_time, recipe_active_time;
+    """)
+    
         # index = 0
         # while index < len(result_list):
         #     plate_id = result_list[index]['plate_id']

@@ -157,6 +157,25 @@ class Favorites(Base):
     tg_id = Column(Integer, primary_key=True)
     plate_id = Column(Integer, primary_key=True)
     
+
+class UserStreak(Base):
+    __tablename__ = "user_streaks"
+    
+    tg_id = Column(Integer, primary_key=True)
+    streak = Column(Integer)
+    last_updated = Column(Date, onupdate=datetime.now)
+    
+
+# class UserActionsLog(Base):
+#     __tablename__ = "user_actions_log"
+#
+#     tg_id = Column(Integer)
+#     action_type = Column(String(200))
+#     date_time = Column(DateTime, default=datetime.now)
+    
+    
+    
+    
     
     
 # class PlateNutrientsInfo(Base):

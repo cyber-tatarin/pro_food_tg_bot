@@ -358,22 +358,80 @@ async def get_current_streak(request):
     data = await request.json()
     tg_id = data.get('tg_id')
     
+    # session1 = db.Session()
+    # try:
+    #     current_streak_obj = session1.query(models.UserStreak).filter(models.UserStreak.tg_id == tg_id).first()
+    #     if current_streak_obj is None:
+    #         current_streak = models.UserStreak(tg_id=tg_id, streak=0)
+    #         session1.add(current_streak)
+    #         session1.commit()
+    #
+    #         current_streak = 0
+    #     else:
+    #         current_streak = current_streak_obj.streak
+    #
+    # except Exception as x:
+    #     logger.exception(x)
+    #     return web.HTTPBadGateway()
+    #
+    # finally:
+    #     if session1.is_active:
+    #         session1.close()
+    
+    current_task_number = 1
+    current_streak = 0
+    session = db.Session()
+    today = date.today()
+    try:
+        all_today_chosen_plates = session.query(models.UserPlatesDate).filter(models.UserPlatesDate.tg_id == tg_id,
+                                                                              models.UserPlatesDate.date == today).all()
+        if all_today_chosen_plates:
+            if len(all_today_chosen_plates) == 3:
+                current_task_number += 1
+        
+        all_today_has_eaten = session.query(models.HasEaten).filter(models.HasEaten.tg_id == tg_id,
+                                                                    models.HasEaten.date == today).all()
+        if all_today_has_eaten:
+            if len(all_today_has_eaten) == 3:
+                current_task_number += 1
+                
+        user_streak_obj = session.query(models.UserStreak).filter(models.UserStreak.tg_id == tg_id).first()
+        if user_streak_obj is None:
+            user_streak_obj = models.UserStreak(tg_id=tg_id, streak=0)
+            session.add(user_streak_obj)
+            session.commit()
+            session.refresh(user_streak_obj)
+
+        current_streak = user_streak_obj.streak
+        if current_task_number == 3:
+            updated_earlier_than_today_or_created_today = True
+            last_updated = user_streak_obj.last_updated
+            if last_updated is not None:
+                updated_earlier_than_today_or_created_today = user_streak_obj.last_updated < today
+
+            if updated_earlier_than_today_or_created_today:
+                user_streak_obj.streak += 1
+                
+                user_obj = session.query(models.User).filter(models.User.tg_id == tg_id).first()
+                user_obj.balance += 10
+                
+                session.commit()
+                current_streak += 1
+
+    except Exception as x:
+        logger.exception(x)
+        return web.HTTPBadGateway()
+    
+    finally:
+        if session.is_active:
+            session.close()
+    
     data = {
-        'current_streak': 3,
-        'motivational_text': 'Так держать! С каждым днём ты получаешь все больше монет и становишься ближе к своей цели!',
-        'tasks': [
-            {
-                'text': 'Составить рацион',
-                'completed': True
-            },
-            {
-                'text': 'Съесть рацион',
-                'completed': False
-            }
-        ],
-        'coins_per_completed_task': 6,
-        'coins_loss_for_inactivity': 2,
-        'coins_per_completed_task_for_tomorrow': 7
+        'current_streak_text': current_streak,
+        'current_task_number': current_task_number,
+        'coin_reward': 20,
+        'task_text': 'Так держать! С каждым днём ты получаешь все больше монет и становишься ближе к своей цели!',
+        'tomorrow_text': 'Завтра ты получишь 20 коинов',
     }
     
     return web.json_response(data)
@@ -465,7 +523,6 @@ async def get_today_plates(request):
             await utils.restore_duplicate_plate_if_exists(result_list, plate_ids)
             await utils.set_is_eaten_true_for_plates_in_result_list(result_list, all_today_has_eaten_plates)
             await utils.set_in_favorites_true_for_plates_in_result_list(result_list, all_favorites)
-
             
             logger.info(result_list)
             
