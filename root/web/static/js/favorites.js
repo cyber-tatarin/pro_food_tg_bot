@@ -200,6 +200,7 @@ async function setPlates() {
   }
 
   if (plates.chosen_plate === null && plates.all_plates.length === 0) {
+    document.querySelector(".empty-list").classList.remove("empty-list_hidden");
   }
 }
 
