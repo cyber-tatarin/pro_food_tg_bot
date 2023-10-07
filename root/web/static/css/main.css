@@ -457,6 +457,121 @@ body {
   display: none;
 }
 
+.popup {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 10;
+}
+
+.popup__inner {
+  overflow: auto;
+  background-color: #fff;
+  width: 100%;
+  height: 100%;
+  padding: 24px 32px;
+}
+
+.popup__inner::-webkit-scrollbar {
+  width: 4px;
+  background-color: #fcfcfc;
+}
+
+.popup__inner::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  background-color: rgb(5 255 0 / 80%);
+}
+
+.popup_hidden {
+  display: none;
+}
+
+.popup__ingredients-flex {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.popup__meal-title,
+.popup__ingredients,
+.popup__recepi {
+  color: #303030;
+  font-size: 18px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: normal;
+  margin-bottom: 12px;
+}
+
+.popup__ingredients {
+  font-size: 16px;
+  margin-bottom: 12px;
+}
+
+.popup__recepi {
+  font-size: 16px;
+  margin-bottom: 12px;
+}
+
+.popup__ingredients__title {
+  color: #303030;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 140%; /* 19.6px */
+}
+
+.popup__ingredients__amount,
+.popup__ingredients__measure {
+  margin-left: 13px;
+  color: #303030;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 140%;
+}
+
+.popup__recepi__text {
+  color: #303030;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 140%;
+  margin-bottom: 18px;
+}
+
+.popup__time {
+  display: flex;
+  gap: 32px;
+  margin-bottom: 20px;
+}
+
+.popup__time-total,
+.popup__time-current {
+  color: #303030;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: normal;
+  margin-bottom: 8px;
+}
+
+.popup__time-current__value,
+.popup__time-total__value {
+  color: #303030;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 140%; /* 19.6px */
+}
+
+.popup__meal:first-of-type hr {
+  display: none;
+}
+
 /* card */
 
 .cards,

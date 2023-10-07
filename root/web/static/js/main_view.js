@@ -364,3 +364,26 @@ async function sendPlate(data, link, el) {
     console.log(err);
   }
 }
+
+function showRecepi() {
+  const buttons = document.querySelectorAll(".card__button__recepi");
+  buttons.forEach((buttons) => {
+    buttons.addEventListener("click", (event) => {
+      document.querySelector(".popup").classList.remove("popup_hidden");
+      document.body.style.overflow = "hidden";
+    });
+  });
+}
+
+showRecepi();
+
+async function getRecepi(link) {
+  const request = await fetch(`..${link}`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  });
+  const response = await request.json();
+}
