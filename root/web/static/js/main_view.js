@@ -1,7 +1,6 @@
 const tg = window.Telegram.WebApp;
 const tg_id = 459471362 || tg.initDataUnsafe.user.id;
 
-
 async function sendData(link) {
   console.log(tg_id);
   const request = await fetch(`..${link}`, {
@@ -297,7 +296,7 @@ async function sendFavoritePlate(data, link, el) {
       const cards = document.querySelectorAll(".card");
       cards.forEach((card) => {
         if (String(data.plate_id) === String(card.getAttribute("name"))) {
-          const buttonText = response.is_black
+          const buttonText = !response.is_black
             ? "Удалить из избранного"
             : "Добавить в избранное";
           card.querySelector(".card__button__favourites").textContent =
@@ -364,4 +363,27 @@ async function sendPlate(data, link, el) {
   } catch (err) {
     console.log(err);
   }
+}
+
+function showRecepi() {
+  const buttons = document.querySelectorAll(".card__button__recepi");
+  buttons.forEach((buttons) => {
+    buttons.addEventListener("click", (event) => {
+      document.querySelector(".popup").classList.remove("popup_hidden");
+      document.body.style.overflow = "hidden";
+    });
+  });
+}
+
+showRecepi();
+
+async function getRecepi(link) {
+  const request = await fetch(`..${link}`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  });
+  const response = await request.json();
 }

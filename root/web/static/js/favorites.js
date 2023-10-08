@@ -7,13 +7,17 @@ const ref = String(document.referrer);
 
 if (ref.includes("breakfast")) {
   plate_type = "Завтрак";
+  document.querySelector(".meal-type").textContent =
+    "Составить рацион на сегодня (Завтрак)";
 } else if (ref.includes("lunch")) {
   plate_type = "Обед";
+  document.querySelector(".meal-type").textContent =
+    "Составить рацион на сегодня (Обед)";
 } else if (ref.includes("dinner")) {
+  document.querySelector(".meal-type").textContent =
+    "Составить рацион на сегодня (Ужин)";
   plate_type = "Ужин";
 }
-
-console.log(plate_type, ref)
 
 async function sendData(link) {
   const request = await fetch(`..${link}`, {
@@ -193,6 +197,10 @@ async function setPlates() {
     setMealsList(plates.chosen_plate.meals, "card__list-chosen", index);
     setPlateImage("card__visual-chosen", plates.chosen_plate, 1);
     setPlateStars("card__stars-chosen", plates.chosen_plate, index);
+  }
+
+  if (plates.chosen_plate === null && plates.all_plates.length === 0) {
+    document.querySelector(".empty-list").classList.remove("empty-list_hidden");
   }
 }
 
