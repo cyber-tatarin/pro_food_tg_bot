@@ -390,6 +390,12 @@ async function setRecepi(data) {
 </div>`
   );
 
+  const exit = document.querySelector(".exit");
+  exit.addEventListener("click", (event) => {
+    event.target.closest(".popup").classList.add("popup_hidden");
+    document.body.style.overflow = "visible";
+  });
+
   const request = await fetch(`../api/get_recipe`, {
     method: "POST",
     headers: {
