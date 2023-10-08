@@ -1,7 +1,6 @@
 const tg = window.Telegram.WebApp;
 const tg_id = 459471362 || tg.initDataUnsafe.user.id;
 
-
 const elements = document.querySelectorAll(`.js-choice_type`);
 elements.forEach((el) => {
   const choices = new Choices(el, {
@@ -120,7 +119,9 @@ async function setPlates() {
     <p class="active-time">Активное время приготовления</p>
     <p class="active-time_value">${plate.recipe_active_time} минут</p>
     <div class="card__buttons">
-      <button class="card__button__recepi">Рецепт</button>
+      <button class="card__button__recepi card__button__recepi-recommended${
+        index + 1
+      }">Рецепт</button>
       <button class="card__button__favourites card__button__favourites${
         index + 1
       }">Добавить в избранное</button>
@@ -140,6 +141,16 @@ async function setPlates() {
         .querySelector(`.card__button__choose${index + 1}`)
         .classList.add("card__button__choose_off");
     }
+
+    document
+      .querySelector(`.card__button__recepi-recommended${index + 1}`)
+      .addEventListener("click", (event) => {
+        const data = {};
+        data.plate_id = plate.plate_id;
+        data.tg_id = tg_id;
+        setRecepi(data);
+        showRecepi();
+      });
 
     document
       .querySelector(`.card__button__choose${index + 1}`)
@@ -195,7 +206,9 @@ async function setPlates() {
     <p class="active-time">Активное время приготовления</p>
     <p class="active-time_value">${plate.recipe_active_time} минут</p>
     <div class="card__buttons">
-      <button class="card__button__recepi">Рецепт</button>
+      <button class="card__button__recepi card__button__recepi${
+        index + 1
+      }">Рецепт</button>
       <button class="card__button__favourites card__button__favourites-mini${
         index + 1
       }">Добавить в избранное</button>
@@ -216,6 +229,16 @@ async function setPlates() {
         .querySelector(`.card__button__choose-mini${index + 1}`)
         .classList.add("card__button__choose_off");
     }
+
+    document
+      .querySelector(`.card__button__recepi${index + 1}`)
+      .addEventListener("click", (event) => {
+        const data = {};
+        data.plate_id = plate.plate_id;
+        data.tg_id = tg_id;
+        setRecepi(data);
+        showRecepi();
+      });
 
     document
       .querySelector(`.card__button__choose-mini${index + 1}`)
@@ -277,7 +300,7 @@ async function setPlates() {
     <p class="active-time">Активное время приготовления</p>
     <p class="active-time_value">${plates.chosen_plate.recipe_active_time} минут</p>
     <div class="card__buttons">
-      <button class="card__button__recepi">Рецепт</button>
+      <button class="card__button__recepi card__button__recepi-favourite">Рецепт</button>
       <button class="card__button__favourites card__button__favourites-chosen">Добавить в избранное</button>
     </div>
   </div>`
@@ -295,6 +318,16 @@ async function setPlates() {
 
     setPlateImage("card__visual-chosen", plates.chosen_plate, 1);
     setPlateStars("card__stars-chosen", plates.chosen_plate, index);
+
+    document
+      .querySelector(`.card__button__recepi-favourite`)
+      .addEventListener("click", (event) => {
+        const data = {};
+        data.plate_id = plates.chosen_plate.plate_id;
+        data.tg_id = tg_id;
+        setRecepi(data);
+        showRecepi();
+      });
   }
 }
 
@@ -339,4 +372,89 @@ async function sendPlate(data, link, el) {
       window.location.href = "../choose_dinner";
     }
   } catch (e) {}
+}
+
+function showRecepi() {
+  document.querySelector(".popup").classList.remove("popup_hidden");
+  document.body.style.overflow = "hidden";
+}
+
+async function setRecepi(data) {
+  document.querySelector(".popup__inner").innerHTML = "";
+  document.querySelector(".popup__inner").insertAdjacentHTML(
+    "afterbegin",
+    ` <p class="popup__plate-title">
+  “Название блюда длинasdf adsf asdf asd fasd fasdfasd”
+</p>
+<div class="exit">
+  <img src="../static/images/exit.svg" alt="exit" />
+</div>`
+  );
+
+  const exit = document.querySelector(".exit");
+  exit.addEventListener("click", (event) => {
+    event.target.closest(".popup").classList.add("popup_hidden");
+    document.body.style.overflow = "visible";
+  });
+
+  const request = await fetch(`../api/get_recipe`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  });
+  const response = await request.json();
+
+  document.querySelector(
+    ".popup__plate-title"
+  ).textContent = `“${response.plate_name}”`;
+
+  response.meals.forEach((meal, index) => {
+    document.querySelector(".popup__inner").insertAdjacentHTML(
+      "beforeend",
+      `<div class="popup__meal popup__meal${index + 1}">
+    <p class="popup__meal-title popup__meal-title${index + 1}">${index + 1}. ${
+        meal.meal_name
+      }</p>
+    <p class="popup__ingredients">Ингредиенты:</p>
+    <div class="popup__ingredients-flex popup__ingredients-flex${index + 1}">
+    </div>
+    <p class="popup__recepi">Рецепт:</p>
+    <p class="popup__recepi__text">
+      ${meal.recipe}
+    </p>
+    <div class="popup__time">
+      <div class="popup__time-flex">
+        <p class="popup__time-current">Активное время (минут)</p>
+        <p class="popup__time-current__value">${meal.recipe_active_time}</p>
+      </div>
+      <div class="popup__time-flex">
+        <p class="popup__time-total">Общее время (минут)</p>
+        <p class="popup__time-total__value">${meal.recipe_time}</p>
+      </div>
+    </div>
+    <hr class="hr hr-20" />
+  </div>`
+    );
+
+    meal.ingredients.forEach((ingredient) => {
+      document
+        .querySelector(`.popup__ingredients-flex${index + 1}`)
+        .insertAdjacentHTML(
+          "beforeend",
+          ` <div class="popup__ingredients${index + 1}">
+        <p class="popup__ingredients__title">${index + 1}. ${
+            ingredient.ingredient_name
+          }</p>
+        <p class="popup__ingredients__amount">количество: ${
+          ingredient.ingredient_amount
+        }</p>
+        <p class="popup__ingredients__measure">мера: ${
+          ingredient.ingredient_measure
+        }</p>
+      </div>`
+        );
+    });
+  });
 }

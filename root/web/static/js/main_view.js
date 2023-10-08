@@ -104,14 +104,25 @@ async function setUserStreak() {
       barElement.classList.add("strick-progress__bar_green");
     }
   }
-  if (currentTaskNumber >= 1) {
+  if (currentTaskNumber === 1) {
     document.querySelector(
       ".stick-progress__lines__inner_middle"
     ).style.opacity = "0";
-  }
-  if (currentTaskNumber >= 2) {
+    document.querySelector(
+      ".stick-progress__lines__inner_right"
+    ).style.opacity = "0";
+  } else if (currentTaskNumber === 2) {
     document.querySelector(".stick-progress__lines__inner_left").style.opacity =
       "0";
+    document.querySelector(
+      ".stick-progress__lines__inner_right"
+    ).style.opacity = "0";
+  } else {
+    document.querySelector(".stick-progress__lines__inner_left").style.opacity =
+      "0";
+    document.querySelector(
+      ".stick-progress__lines__inner_middle"
+    ).style.opacity = "0";
   }
 }
 
@@ -457,9 +468,3 @@ async function setRecepi(data) {
     });
   });
 }
-
-const exit = document.querySelector(".exit");
-exit.addEventListener("click", (event) => {
-  event.target.closest(".popup").classList.add("popup_hidden");
-  document.body.style.overflow = "visible";
-});
