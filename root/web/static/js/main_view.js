@@ -85,38 +85,34 @@ async function setUserStreak() {
   console.log(userStreak);
   document.querySelector(
     ".strick__time"
-  ).textContent = `${userStreak.current_streak} дня подряд 🥳 `;
+  ).textContent = `${userStreak.current_streak_text}`;
   document.querySelector(
     ".notion__p-motivation"
-  ).textContent = `${userStreak.motivational_text}`;
-  document.querySelector(
-    ".notion__p-tomorrow"
-  ).textContent = ` А завтра за все задания ты получишь ${userStreak.coins_per_completed_task_for_tomorrow} ЖИРкоинов!!`;
+  ).textContent = `${userStreak.task_text}`;
   document.querySelector(
     ".notion__p-completed"
-  ).textContent = `Выполни сегодня все задания, чтобы получить ${userStreak.coins_per_completed_task} ЖИРкоинов`;
+  ).textContent = `${userStreak.tomorrow_text}`;
   document.querySelector(
-    ".notion__p-inactivity"
-  ).textContent = `Если ты не выполнишь ни одно задание, то потеряешь ${userStreak.coins_loss_for_inactivity}  ЖИРкоина`;
-  userStreak.tasks.forEach((el) => {
-    if (el.completed === true) {
-      document.querySelector(".list").insertAdjacentHTML(
-        "beforeend",
-        `
-      <li class="list__item">
-        <span class="list__item__marker list__item__marker_active"></span>${el.text}
-      </li>`
-      );
-    } else {
-      document.querySelector(".list").insertAdjacentHTML(
-        "beforeend",
-        `
-        <li class="list__item">
-          <span class="list__item__marker"></span>${el.text}
-        </li>`
-      );
+    ".strick-coins"
+  ).textContent = `${userStreak.coin_reward}  ЖИРкоинов`;
+
+  const maxTasks = 3;
+  const currentTaskNumber = userStreak.current_task_number;
+  for (let i = 1; i <= maxTasks; i++) {
+    const barElement = document.querySelector(`.strick-progress__bar${i}`);
+    if (i <= currentTaskNumber) {
+      barElement.classList.add("strick-progress__bar_green");
     }
-  });
+  }
+  if (currentTaskNumber >= 1) {
+    document.querySelector(
+      ".stick-progress__lines__inner_middle"
+    ).style.opacity = "0";
+  }
+  if (currentTaskNumber >= 2) {
+    document.querySelector(".stick-progress__lines__inner_left").style.opacity =
+      "0";
+  }
 }
 
 async function setNutrientParameters() {
@@ -209,7 +205,9 @@ async function setPlates() {
     <p class="active-time">Активное время приготовления</p>
     <p class="active-time_value">${plate.recipe_active_time} минут</p>
     <div class="card__buttons">
-      <button class="card__button__recepi">Рецепт</button>
+      <button class="card__button__recepi card__button__recepi${
+        index + 1
+      }">Рецепт</button>
       <button class="card__button__favourites card__button__favourites${
         index + 1
       }">Добавить в избранное</button>
@@ -239,8 +237,18 @@ async function setPlates() {
       }
 
       document
+        .querySelector(`.card__button__recepi${index + 1}`)
+        .addEventListener("click", (event) => {
+          const data = {};
+          data.plate_id = plate.plate_id;
+          data.tg_id = tg_id;
+          setRecepi(data);
+          showRecepi();
+        });
+
+      document
         .querySelector(`.card__button__choose${index + 1}`)
-        .addEventListener("click", (el) => {
+        .addEventListener("click", (event) => {
           const data = {};
           data.plate_id = plate.plate_id;
           data.tg_id = tg_id;
@@ -249,7 +257,7 @@ async function setPlates() {
           data.fats = plate.fats;
           data.carbohydrates = plate.carbohydrates;
           data.plate_type = plate.plate_type;
-          sendPlate(data, "/api/has_eaten_plate", el.target);
+          sendPlate(data, "/api/has_eaten_plate", event.target);
         });
 
       if (plate.in_favorites === true) {
@@ -263,11 +271,11 @@ async function setPlates() {
 
       document
         .querySelector(`.card__button__favourites${index + 1}`)
-        .addEventListener("click", (el) => {
+        .addEventListener("click", (event) => {
           const data = {};
           data.plate_id = plate.plate_id;
           data.tg_id = tg_id;
-          sendFavoritePlate(data, "/api/add_to_favorites", el.target);
+          sendFavoritePlate(data, "/api/add_to_favorites", event.target);
         });
 
       setPlateImage("card__visual", plate, index);
@@ -366,25 +374,23 @@ async function sendPlate(data, link, el) {
 }
 
 function showRecepi() {
-  const buttons = document.querySelectorAll(".button_get-stats");
-  buttons.forEach((buttons) => {
-    buttons.addEventListener("click", (event) => {
-      document.querySelector(".popup").classList.remove("popup_hidden");
-      document.body.style.overflow = "hidden";
-    });
-  });
-
-  const exit = document.querySelector(".exit");
-  exit.addEventListener("click", (event) => {
-    event.target.closest(".popup").classList.add("popup_hidden");
-    document.body.style.overflow = "visible";
-  });
+  document.querySelector(".popup").classList.remove("popup_hidden");
+  document.body.style.overflow = "hidden";
 }
 
-showRecepi();
+async function setRecepi(data) {
+  document.querySelector(".popup__inner").innerHTML = "";
+  document.querySelector(".popup__inner").insertAdjacentElement(
+    "afterbegin",
+    ` <p class="popup__plate-title">
+  “Название блюда длинasdf adsf asdf asd fasd fasdfasd”
+</p>
+<div class="exit">
+  <img src="../static/images/exit.svg" alt="exit" />
+</div>`
+  );
 
-async function getRecepi(link) {
-  const request = await fetch(`..${link}`, {
+  const request = await fetch(`../api/get_recipe`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -392,4 +398,62 @@ async function getRecepi(link) {
     body: JSON.stringify(data),
   });
   const response = await request.json();
+
+  document.querySelector(
+    ".popup__plate-title"
+  ).textContent = `“${response.plate_name}”`;
+
+  response.meals.forEach((meal, index) => {
+    document.querySelector(".popup__inner").insertAdjacentHTML(
+      "beforeend",
+      `<div class="popup__meal popup__meal${index + 1}">
+    <p class="popup__meal-title popup__meal-title${index + 1}">${index + 1}. ${
+        meal.meal_name
+      }</p>
+    <p class="popup__ingredients">Ингредиенты:</p>
+    <div class="popup__ingredients-flex popup__ingredients-flex${index + 1}">
+    </div>
+    <p class="popup__recepi">Рецепт:</p>
+    <p class="popup__recepi__text">
+      ${meal.recipe}
+    </p>
+    <div class="popup__time">
+      <div class="popup__time-flex">
+        <p class="popup__time-current">Активное время (минут)</p>
+        <p class="popup__time-current__value">${meal.recipe_active_time}</p>
+      </div>
+      <div class="popup__time-flex">
+        <p class="popup__time-total">Общее время (минут)</p>
+        <p class="popup__time-total__value">${meal.recipe_time}</p>
+      </div>
+    </div>
+    <hr class="hr hr-20" />
+  </div>`
+    );
+
+    meal.ingredients.forEach((ingredient) => {
+      document
+        .querySelector(`.popup__ingredients-flex${index + 1}`)
+        .insertAdjacentHTML(
+          "beforeend",
+          ` <div class="popup__ingredients${index + 1}">
+        <p class="popup__ingredients__title">${index + 1}. ${
+            ingredient.ingredient_name
+          }</p>
+        <p class="popup__ingredients__amount">количество: ${
+          ingredient.ingredient_amount
+        }</p>
+        <p class="popup__ingredients__measure">мера: ${
+          ingredient.ingredient_measure
+        }</p>
+      </div>`
+        );
+    });
+  });
 }
+
+const exit = document.querySelector(".exit");
+exit.addEventListener("click", (event) => {
+  event.target.closest(".popup").classList.add("popup_hidden");
+  document.body.style.overflow = "visible";
+});
