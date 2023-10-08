@@ -366,12 +366,18 @@ async function sendPlate(data, link, el) {
 }
 
 function showRecepi() {
-  const buttons = document.querySelectorAll(".card__button__recepi");
+  const buttons = document.querySelectorAll(".button_get-stats");
   buttons.forEach((buttons) => {
     buttons.addEventListener("click", (event) => {
       document.querySelector(".popup").classList.remove("popup_hidden");
       document.body.style.overflow = "hidden";
     });
+  });
+
+  const exit = document.querySelector(".exit");
+  exit.addEventListener("click", (event) => {
+    event.target.closest(".popup").classList.add("popup_hidden");
+    document.body.style.overflow = "visible";
   });
 }
 

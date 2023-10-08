@@ -467,6 +467,7 @@ body {
 }
 
 .popup__inner {
+  position: relative;
   overflow: auto;
   background-color: #fff;
   width: 100%;
@@ -568,8 +569,28 @@ body {
   line-height: 140%; /* 19.6px */
 }
 
-.popup__meal:first-of-type hr {
+.popup__meal:last-of-type hr {
   display: none;
+}
+
+.popup__plate-title {
+  margin-right: 54px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  color: #d9d9d9;
+  font-size: 18px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 24px;
+  margin-bottom: 16px;
+}
+
+.exit {
+  cursor: pointer;
+  top: 24px;
+  right: 24px;
+  position: absolute;
 }
 
 /* card */
