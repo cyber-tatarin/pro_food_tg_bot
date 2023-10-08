@@ -86,6 +86,35 @@ def get_choose_plates_ikb():
     ikbb = InlineKeyboardBuilder()
     ikbb.add(InlineKeyboardButton(text='Выбрать', web_app=WebAppInfo(url=f'{web_app_link}/choose_breakfast')))
     return ikbb.as_markup()
+
+
+def get_ikb_to_get_question_type():
+    ikbb = InlineKeyboardBuilder()
+    ikbb.add(
+        InlineKeyboardButton(text='Почему нет результата?',
+                             callback_data=callback_data_models.ChooseQuestionTypeCallback(type='Почему нет результата?').pack()),
+        InlineKeyboardButton(text='Есть ограничения по еде. Чем заменить?',
+                             callback_data=callback_data_models.ChooseQuestionTypeCallback(type='Есть ограничения по еде').pack()),
+        InlineKeyboardButton(text='Проблемы со здоровьем, нужна консультация',
+                             callback_data=callback_data_models.ChooseQuestionTypeCallback(type='Проблемы со здоровьем').pack()),
+        InlineKeyboardButton(text='Рекомендации по тренировкам/активности',
+                             callback_data=callback_data_models.ChooseQuestionTypeCallback(type='Рекомендации по тренировкам').pack()),
+        InlineKeyboardButton(text='Дополнительный уход за кожей, телом и т.д.',
+                             callback_data=callback_data_models.ChooseQuestionTypeCallback(type='Доп. уход за кожей').pack()),
+        InlineKeyboardButton(text='Другое',
+                             callback_data=callback_data_models.ChooseQuestionTypeCallback(type='Другое').pack()),
+    )
+    ikbb.adjust(1)
+    return ikbb.as_markup()
+
+
+def get_ikb_to_answer_user_question(user_id):
+    ikbb = InlineKeyboardBuilder()
+    ikbb.add(
+        InlineKeyboardButton(text='Ответить на этот вопрос',
+                             callback_data=callback_data_models.AnswerUserQuestionCallback(user_id=user_id).pack())
+    )
+    return ikbb.as_markup()
     
     
     

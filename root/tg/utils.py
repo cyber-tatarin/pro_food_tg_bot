@@ -34,7 +34,7 @@ def is_valid_weight(weight_as_str: str):
 
     # Use re.match to check if the string matches the pattern
     if re.match(number_pattern, weight_as_str):
-        if 20 < float(weight_as_str) < 150:
+        if 35 < float(weight_as_str) < 150:
             return True
     return False
 
@@ -45,7 +45,7 @@ def is_valid_height(height_as_str: str):
 
     # Use re.match to check if the string matches the pattern
     if re.match(number_pattern, height_as_str):
-        if float(height_as_str) < 230:
+        if 100 < float(height_as_str) < 230:
             return True
     return False
 

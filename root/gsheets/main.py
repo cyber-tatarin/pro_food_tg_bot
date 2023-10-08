@@ -36,7 +36,6 @@ def register_user(dict_with_kwargs: dict):
         user_id = dict_with_kwargs.get('user_id')
         user_full_name = dict_with_kwargs.get('user_full_name')
         username = f"@{dict_with_kwargs.get('username')}"
-        user_role = dict_with_kwargs.get('user_role')
         
         # Authenticate using service account credentials
         gc = pygsheets.authorize(service_file=key_json)
@@ -99,4 +98,5 @@ if __name__ == '__main__':
     # loop = asyncio.get_event_loop()
     # loop.create_task(async_execute_of_sync_gsheets(register_loyalty_user(user_id=8, username=7, user_full_name=7)))
     # register_user({'user_id': 2})
-    new_ingredient('g0', 1, 2, 3, 4)
+    # new_ingredient('g0', 1, 2, 3, 4)
+    pass

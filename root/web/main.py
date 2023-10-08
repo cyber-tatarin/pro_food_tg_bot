@@ -14,7 +14,7 @@ from sqlalchemy.exc import IntegrityError
 from root.db import setup as db
 from root.db import models
 from root.logger.config import logger
-from root.tg.main import admin_ids
+from root.tg.main import admin_ids, get_user_question_type
 from root.tg.utils import get_age_from_birth_date
 from root.gsheets import main as gsh
 from . import utils
@@ -426,8 +426,10 @@ async def get_current_streak(request):
         if session.is_active:
             session.close()
     
+    day_word = await utils.get_day_word_according_to_number(current_streak)
+    
     data = {
-        'current_streak_text': current_streak,
+        'current_streak_text': f'{current_streak} {day_word} подряд',
         'current_task_number': current_task_number,
         'coin_reward': 20,
         'task_text': 'Так держать! С каждым днём ты получаешь все больше монет и становишься ближе к своей цели!',
@@ -895,6 +897,13 @@ async def get_recipe(request):
     finally:
         if session.is_active:
             session.close()
+            
+            
+async def ask_question(request):
+    data = await request.json()
+    
+    tg_id = data.get('tg_id')
+    await get_user_question_type(tg_id)
 
 
 app = web.Application()
@@ -932,6 +941,7 @@ app.add_routes([
     web.post('/api/add_to_favorites', add_to_favorites),
     web.post('/api/get_all_favorites', get_all_favorites),
     web.post('/api/get_recipe', get_recipe),
+    web.post('/api/ask_question', ask_question),
     # web.post('/api/remove_from_favorites', remove_from_favorites),
 
 ])

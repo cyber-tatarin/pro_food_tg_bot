@@ -8,4 +8,11 @@ class ActivityLevelCallback(CallbackData, prefix="activity_level"):
 class ChooseGenderCallback(CallbackData, prefix="choose_gender"):
     additional_value: int
     gender: str
+
+
+class ChooseQuestionTypeCallback(CallbackData, prefix="cqt"):
+    type: str
     
+    
+class AnswerUserQuestionCallback(CallbackData, prefix="answer_user_question"):
+    user_id: int
