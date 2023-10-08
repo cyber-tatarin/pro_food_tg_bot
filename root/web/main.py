@@ -383,40 +383,44 @@ async def get_current_streak(request):
     session = db.Session()
     today = date.today()
     try:
-        all_today_chosen_plates = session.query(models.UserPlatesDate).filter(models.UserPlatesDate.tg_id == tg_id,
-                                                                              models.UserPlatesDate.date == today).all()
-        if all_today_chosen_plates:
-            if len(all_today_chosen_plates) == 3:
-                current_task_number += 1
-        
-        all_today_has_eaten = session.query(models.HasEaten).filter(models.HasEaten.tg_id == tg_id,
-                                                                    models.HasEaten.date == today).all()
-        if all_today_has_eaten:
-            if len(all_today_has_eaten) == 3:
-                current_task_number += 1
-                
         user_streak_obj = session.query(models.UserStreak).filter(models.UserStreak.tg_id == tg_id).first()
         if user_streak_obj is None:
             user_streak_obj = models.UserStreak(tg_id=tg_id, streak=0)
             session.add(user_streak_obj)
             session.commit()
             session.refresh(user_streak_obj)
-
+            
         current_streak = user_streak_obj.streak
-        if current_task_number == 3:
-            updated_earlier_than_today_or_created_today = True
-            last_updated = user_streak_obj.last_updated
-            if last_updated is not None:
-                updated_earlier_than_today_or_created_today = user_streak_obj.last_updated < today
-
-            if updated_earlier_than_today_or_created_today:
-                user_streak_obj.streak += 1
-                
-                user_obj = session.query(models.User).filter(models.User.tg_id == tg_id).first()
-                user_obj.balance += 10
-                
-                session.commit()
-                current_streak += 1
+        if user_streak_obj.last_updated != today:
+    
+            all_today_chosen_plates = session.query(models.UserPlatesDate).filter(models.UserPlatesDate.tg_id == tg_id,
+                                                                                  models.UserPlatesDate.date == today).all()
+            if all_today_chosen_plates:
+                if len(all_today_chosen_plates) == 3:
+                    current_task_number += 1
+    
+            all_today_has_eaten = session.query(models.HasEaten).filter(models.HasEaten.tg_id == tg_id,
+                                                                        models.HasEaten.date == today).all()
+            if all_today_has_eaten:
+                if len(all_today_has_eaten) == 3:
+                    current_task_number += 1
+            
+            if current_task_number == 3:
+                updated_earlier_than_today_or_created_today = True
+                last_updated = user_streak_obj.last_updated
+                if last_updated is not None:
+                    updated_earlier_than_today_or_created_today = user_streak_obj.last_updated < today
+    
+                if updated_earlier_than_today_or_created_today:
+                    user_streak_obj.streak += 1
+                    
+                    user_obj = session.query(models.User).filter(models.User.tg_id == tg_id).first()
+                    user_obj.balance += 10
+                    
+                    session.commit()
+                    current_streak += 1
+        else:
+            current_task_number = 3
 
     except Exception as x:
         logger.exception(x)

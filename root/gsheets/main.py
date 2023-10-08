@@ -43,7 +43,7 @@ def register_user(dict_with_kwargs: dict):
         # Open the Google Sheet by name
         sheet = gc.open('pro_food_tg_bot online db')
         # Select the first worksheet in the Google Sheet
-        worksheet = sheet.worksheet_by_title('ingredients')
+        worksheet = sheet.worksheet_by_title('users')
         
         now = datetime.now()
         epoch = datetime(1899, 12, 30)
