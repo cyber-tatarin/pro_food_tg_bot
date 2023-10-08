@@ -380,7 +380,7 @@ function showRecepi() {
 
 async function setRecepi(data) {
   document.querySelector(".popup__inner").innerHTML = "";
-  document.querySelector(".popup__inner").insertAdjacentElement(
+  document.querySelector(".popup__inner").insertAdjacentHTML(
     "afterbegin",
     ` <p class="popup__plate-title">
   “Название блюда длинasdf adsf asdf asd fasd fasdfasd”
