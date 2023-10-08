@@ -380,6 +380,15 @@ function showRecepi() {
 
 async function setRecepi(data) {
   document.querySelector(".popup__inner").innerHTML = "";
+  document.querySelector(".popup__inner").insertAdjacentElement(
+    "afterbegin",
+    ` <p class="popup__plate-title">
+  “Название блюда длинasdf adsf asdf asd fasd fasdfasd”
+</p>
+<div class="exit">
+  <img src="../static/images/exit.svg" alt="exit" />
+</div>`
+  );
 
   const request = await fetch(`../api/get_recipe`, {
     method: "POST",
