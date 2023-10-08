@@ -180,25 +180,73 @@ async def restore_duplicate_plate_if_exists(result_list, plate_ids):
         logger.exception(x)
         
 
-async def get_recipe_values():
-    sql_query = text("""
-    select meal_id, recipe, recipe_time, recipe_active_time,
-    string_agg(cast(measure as text), ', ') as ingredients_measures,
-    string_agg(cast(ingredient_name as text), ', ') as ingredients,
-    string_agg(cast(amount as text), ', ') as ingredients_amounts
+get_recipe_db_func_dict = {
+    'mysql': """GROUP_CONCAT(CONVERT(measure, CHAR) SEPARATOR ', ') as ingredients_measures,
+             GROUP_CONCAT(CONVERT(ingredient_name, CHAR) SEPARATOR ', ') as ingredients,
+             GROUP_CONCAT(CONVERT(amount, CHAR) SEPARATOR ', ') as ingredients_amounts""",
     
+    'postgresql': """string_agg(cast(measure as text), ', ') as ingredients_measures,
+                    string_agg(cast(ingredient_name as text), ', ') as ingredients,
+                    string_agg(cast(amount as text), ', ') as ingredients_amounts"""
+}
+
+
+async def get_recipe_values(session, plate_id):
+    sql_query = text(f"""
+    select meal_id, recipe, recipe_time, recipe_active_time, plate_name, meal_name,
+    {get_recipe_db_func_dict[os.getenv('DB_ENGINE')]}
     from
     
-    (select meal_id, ingredient_name, amount, recipe, recipe_time, recipe_active_time, measure from plates
+    (select meal_id, ingredient_name, amount, recipe, recipe_time, recipe_active_time, measure, plate_name, meal_name
+    from plates
     inner join plate_meals_association using(plate_id)
     inner join meals using(meal_id)
     inner join meal_ingredients_association using(meal_id)
     inner join ingredients using(ingredient_id)
-    where plate_id = 14) as q
+    where plate_id = {plate_id}) as q
     
-    group by meal_id, recipe, recipe_time, recipe_active_time;
+    group by meal_id, recipe, recipe_time, recipe_active_time, plate_name, meal_name;
     """)
     
+    # Execute the query
+    result = session.execute(sql_query).fetchall()
+    
+    meals = list()
+    result_dict = dict()
+    
+    if result:
+        result_dict['plate_name'] = result[0].plate_name
+        for row in result:
+
+            ingredients = list()
+            ingredients_names = row.ingredients.split(', '),
+            ingredients_measures = row.ingredients_measures.split(', '),
+            ingredients_amounts = row.ingredients_amounts.split(', '),
+            
+            print(ingredients_names, '\n', ingredients_amounts, '\n', ingredients_measures)
+            
+            for ingredient_name, ingredient_measure, ingredient_amount in zip(ingredients_names[0],
+                                                                              ingredients_measures[0],
+                                                                              ingredients_amounts[0]):
+                ingredients.append({
+                    'ingredient_name': ingredient_name,
+                    'ingredient_measure': ingredient_measure,
+                    'ingredient_amount': ingredient_amount
+                })
+            
+            meals.append({
+                'meal_name': row.meal_name,
+                'ingredients': ingredients,
+                'recipe': row.recipe,
+                'recipe_time': row.recipe_time,
+                'recipe_active_time': row.recipe_active_time
+            })
+        
+        result_dict['meals'] = meals
+        
+        return result_dict
+    
+    return None
     
     
     

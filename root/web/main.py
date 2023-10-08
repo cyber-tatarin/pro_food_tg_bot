@@ -872,6 +872,30 @@ async def get_all_favorites(request):
     finally:
         if session.is_active:
             session.close()
+            
+            
+async def get_recipe(request):
+    data = await request.json()
+    print('inside')
+    
+    plate_id = data.get('plate_id')
+    print('after sara')
+    
+    session = db.Session()
+    try:
+        result_dict = await utils.get_recipe_values(session, plate_id)
+        if result_dict:
+            return web.json_response(result_dict)
+        else:
+            return web.HTTPBadGateway()
+    
+    except Exception as x:
+        logger.exception(x)
+        return web.HTTPBadGateway()
+        
+    finally:
+        if session.is_active:
+            session.close()
 
 
 app = web.Application()
@@ -908,6 +932,7 @@ app.add_routes([
     web.post('/api/has_chosen_plate', has_chosen_plate),
     web.post('/api/add_to_favorites', add_to_favorites),
     web.post('/api/get_all_favorites', get_all_favorites),
+    web.post('/api/get_recipe', get_recipe),
     # web.post('/api/remove_from_favorites', remove_from_favorites),
 
 ])
