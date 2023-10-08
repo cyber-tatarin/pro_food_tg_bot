@@ -16,7 +16,7 @@ async def set_user_streak_to_0_if_was_not_active_today():
         for user_streak_obj in all_user_streaks:
             last_updated = user_streak_obj.last_updated
             if last_updated:
-                if last_updated == today:
+                if last_updated < today:
                     user_streak_obj.streak = 0
                     
         session.commit()

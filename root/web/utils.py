@@ -199,6 +199,14 @@ async def get_recipe_values():
     group by meal_id, recipe, recipe_time, recipe_active_time;
     """)
     
+    
+    
+    
+    
+    
+    
+    
+    
         # index = 0
         # while index < len(result_list):
         #     plate_id = result_list[index]['plate_id']

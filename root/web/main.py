@@ -283,13 +283,14 @@ async def add_plate_post(request):
         gsheet_thread.start()
     
     except Exception as x:
+        logger.exception(x)
         session2.rollback()
         plate_to_delete = session2.query(models.Plate).filter(models.Plate.plate_id == new_plate_id).first()
         try:
             session2.delete(plate_to_delete)
             session2.commit()
         except Exception as x:
-            print(x)
+            logger.exception(x)
         
         if str(x) not in ['Проценты для блюд расставлены некорректно. Проверьте, пожалуйста',
                           'Вы выбрали 1 блюдо несколько раз. Проверьте, пожалуйста']:
