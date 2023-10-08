@@ -380,7 +380,6 @@ async def get_current_streak(request):
     #         session1.close()
     
     current_task_number = 1
-    current_streak = 0
     session = db.Session()
     today = date.today()
     try:
