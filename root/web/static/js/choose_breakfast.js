@@ -9,6 +9,14 @@ elements.forEach((el) => {
     searchEnabled: false,
     searchChoices: false,
   });
+  el.addEventListener(
+    "change",
+    function (event) {
+      const choice = event.detail.value;
+      sortCards(choice);
+    },
+    false
+  );
 });
 
 async function sendData(link) {
@@ -201,7 +209,7 @@ async function setPlates() {
     <div class="card__list card__list-mini${index + 1}">
     </div>
     <p class="card__difficulty card__difficulty-mini${index + 1}">Сложность</p>
-    <div class="card__stars card__stars-mini${index + 1}">
+    <div class="card__stars card__stars-mini card__stars-mini${index + 1}">
     </div>
     <p class="total-time">Общее время приготовления</p>
     <p class="total-time_value">${plate.recipe_time} минут</p>
@@ -459,4 +467,41 @@ async function setRecepi(data) {
         );
     });
   });
+}
+
+function sortCards(option) {
+  const container = document.querySelector(".cards-mini");
+  const blocks = Array.from(container.children);
+  const sortingFunctions = {
+    1: (a, b) => compareByStarCount(a, b),
+    2: (a, b) => compareByStarCount(b, a),
+    3: (a, b) => compareByRecipeTime(a, b),
+    4: (a, b) => compareByRecipeTime(b, a),
+  };
+
+  const sortingFunction = sortingFunctions[option] || sortingFunctions["1"];
+  blocks.sort(sortingFunction);
+
+  container.innerHTML = "";
+  blocks.forEach((block) => {
+    container.appendChild(block);
+  });
+}
+
+function compareByStarCount(cardA, cardB) {
+  const starsA = cardA.querySelectorAll(
+    '.card__stars-mini img[src="../static/images/green-star.svg"]'
+  ).length;
+  const starsB = cardB.querySelectorAll(
+    '.card__stars-mini img[src="../static/images/green-star.svg"]'
+  ).length;
+  return starsA - starsB;
+}
+
+function compareByRecipeTime(cardA, cardB) {
+  const timeA =
+    parseFloat(cardA.querySelector(".active-time_value").textContent) || 0;
+  const timeB =
+    parseFloat(cardB.querySelector(".active-time_value").textContent) || 0;
+  return timeA - timeB;
 }
