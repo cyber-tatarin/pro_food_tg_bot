@@ -678,8 +678,67 @@ body {
 .exit {
   cursor: pointer;
   top: 24px;
-  right: 24px;
+  right: 32px;
   position: absolute;
+}
+
+.popup__inner_flex {
+  display: flex;
+  flex-direction: column;
+}
+
+.animation {
+  flex: 1;
+  background-color: #a1b4a1;
+  height: 100%;
+  width: 100%;
+  margin-bottom: 16px;
+}
+
+.popup__plate-title_right {
+  align-self: flex-start;
+  margin-bottom: 12px;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.button {
+  transition: 0.3s ease;
+  width: 100%;
+  min-height: 46px;
+  color: #303030;
+  text-align: center;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: normal;
+  border-radius: 16px;
+  background: #05ff00;
+}
+
+.mg-32 {
+  margin-bottom: 32px;
+}
+
+.star svg {
+  transition: 0.3s;
+  fill: #d9d9d9;
+  cursor: pointer;
+}
+
+.star.active svg {
+  fill: #05ff00;
+}
+
+.choose-stars {
+  display: flex;
+  justify-content: space-between;
+}
+
+.flex-1 {
+  flex: 1;
 }
 
 /* card */

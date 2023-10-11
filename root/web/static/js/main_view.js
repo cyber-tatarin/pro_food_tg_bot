@@ -68,7 +68,7 @@ async function setUserParameters() {
   });
   document.querySelector(
     ".weight-aim-value"
-  ).textContent = `${userParameters.weight_aim} кг`;
+  ).textContent = `${userParameters.weight_aim} кг `;
   if (userParameters.weight_gap >= 0) {
     document.querySelector(
       ".weight-gap-value"
@@ -468,3 +468,24 @@ async function setRecepi(data) {
     });
   });
 }
+
+// document.querySelector(".popup").classList.remove("popup_hidden");
+// document.body.style.overflow = "hidden";
+
+// const stars = document.querySelectorAll(".star");
+// const rating = document.querySelector(".rating");
+
+// stars.forEach((star) => {
+//   star.addEventListener("click", (event) => {
+//     const clickedStar = event.currentTarget;
+//     const starIndex = clickedStar.getAttribute("data-index");
+
+//     // Убираем активный класс у всех звезд
+//     stars.forEach((star) => star.classList.remove("active"));
+
+//     // Добавляем активный класс для выбранной и всех предыдущих звезд
+//     for (let i = 1; i <= starIndex; i++) {
+//       stars[i - 1].classList.add("active");
+//     }
+//   });
+// });
