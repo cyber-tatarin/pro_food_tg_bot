@@ -333,6 +333,8 @@ setUserParameters(),
     }
   };
 
+let mark = 1;
+
 async function sendPlate(data, link, el) {
   try {
     const request = await fetch(`..${link}`, {
@@ -346,6 +348,7 @@ async function sendPlate(data, link, el) {
 
     if (response.success === true) {
       if (response.is_green === false) {
+        feedbackData = Object.assign({}, data);
         let starIndex = 1;
         const stars = document.querySelectorAll(".star");
         stars.forEach((star) => star.classList.remove("active"));
@@ -353,6 +356,7 @@ async function sendPlate(data, link, el) {
           star.addEventListener("click", (event) => {
             const clickedStar = event.currentTarget;
             starIndex = clickedStar.getAttribute("data-index");
+            mark = starIndex;
 
             stars.forEach((star) => star.classList.remove("active"));
             for (let i = 1; i <= starIndex; i++) {
@@ -368,23 +372,20 @@ async function sendPlate(data, link, el) {
           .querySelector(".exit");
         exit.addEventListener("click", (event) => {
           event.target.closest(".popup-feedback").classList.add("popup_hidden");
-          document.body.style.overflow = "visible";
-        });
-        const excellentButton = document
-          .querySelector(".popup-feedback")
-          .querySelector(".excellent-button");
-        if (excellentButton)
-          excellentButton.addEventListener("click", (event) => {
-            event.target
-              .closest(".popup-feedback")
-              .classList.add("popup_hidden");
+          if (
+            document
+              .querySelector(".popup-win")
+              .classList.contains("popup_hidden")
+          ) {
             document.body.style.overflow = "visible";
-            sendMark(data, starIndex);
-          });
+          }
+        });
+
         document.body.style.overflow = "hidden";
       }
 
       if (response.completed_all_tasks === true) {
+        console.log(123);
         document.querySelector(".popup-win").classList.remove("popup_hidden");
         document.body.style.overflow = "hidden";
 
@@ -541,3 +542,17 @@ async function setRecepi(data) {
     });
   });
 }
+
+const excellentButton = document
+  .querySelector(".popup-feedback")
+  .querySelector(".excellent-button");
+if (excellentButton)
+  excellentButton.addEventListener("click", (event) => {
+    event.target.closest(".popup-feedback").classList.add("popup_hidden");
+    if (
+      document.querySelector(".popup-win").classList.contains("popup_hidden")
+    ) {
+      document.body.style.overflow = "visible";
+    }
+    sendMark(feedbackData, mark);
+  });
