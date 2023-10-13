@@ -339,34 +339,6 @@ body {
   gap: 8px;
 }
 
-.button_get-stats {
-  text-align: center;
-  padding-top: 16px;
-  padding-bottom: 16px;
-  border-radius: 16px;
-  background: #05ff00;
-  color: #303030;
-  text-align: center;
-  font-size: 12px;
-  font-style: normal;
-  font-weight: 700;
-  line-height: normal;
-}
-
-.button_ask-question {
-  text-align: center;
-  padding-top: 16px;
-  padding-bottom: 16px;
-  border-radius: 16px;
-  background: #303030;
-  color: #fff;
-  text-align: center;
-  font-size: 12px;
-  font-style: normal;
-  font-weight: 700;
-  line-height: normal;
-}
-
 .stats {
   margin: 28px 8px 12px;
 }
@@ -719,6 +691,34 @@ body {
   background: #05ff00;
 }
 
+.button_get-stats {
+  text-align: center;
+  padding-top: 16px;
+  padding-bottom: 16px;
+  border-radius: 16px;
+  background: #05ff00;
+  color: #303030;
+  text-align: center;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: normal;
+}
+
+.button_ask-question {
+  text-align: center;
+  padding-top: 16px;
+  padding-bottom: 16px;
+  border-radius: 16px;
+  background: #303030;
+  color: #fff;
+  text-align: center;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: normal;
+}
+
 .mg-32 {
   margin-bottom: 32px;
 }
@@ -897,7 +897,7 @@ body {
 .card__button__recepi,
 .card__button__favourites {
   height: 40px;
-  padding: 12px 0px;
+  /* padding: 12px 0px; */
   width: 100%;
   border-radius: 32px;
   background: #303030;

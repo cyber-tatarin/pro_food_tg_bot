@@ -72,7 +72,7 @@ async function setUserParameters() {
   if (userParameters.weight_gap >= 0) {
     document.querySelector(
       ".weight-gap-value"
-    ).textContent = `(+${userParameters.weight_gap}) кг`;
+    ).textContent = `(+${userParameters.weight_gap} кг)`;
   } else {
     document.querySelector(
       ".weight-gap-value"
@@ -447,13 +447,13 @@ async function setRecepi(data) {
   </div>`
     );
 
-    meal.ingredients.forEach((ingredient) => {
+    meal.ingredients.forEach((ingredient, i) => {
       document
-        .querySelector(`.popup__ingredients-flex${index + 1}`)
+        .querySelector(`.popup__ingredients-flex${i + 1}`)
         .insertAdjacentHTML(
           "beforeend",
-          ` <div class="popup__ingredients${index + 1}">
-        <p class="popup__ingredients__title">${index + 1}. ${
+          ` <div class="popup__ingredients${i + 1}">
+        <p class="popup__ingredients__title">${i + 1}. ${
             ingredient.ingredient_name
           }</p>
         <p class="popup__ingredients__amount">количество: ${

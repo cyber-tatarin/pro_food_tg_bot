@@ -7,14 +7,14 @@ const ref = String(document.referrer);
 
 if (ref.includes("breakfast")) {
   plate_type = "Завтрак";
-  document.querySelector(".meal-type").textContent =
+  document.querySelector(".goal__title").textContent =
     "Составить рацион на сегодня (Завтрак)";
 } else if (ref.includes("lunch")) {
   plate_type = "Обед";
-  document.querySelector(".meal-type").textContent =
+  document.querySelector(".goal__title").textContent =
     "Составить рацион на сегодня (Обед)";
 } else if (ref.includes("dinner")) {
-  document.querySelector(".meal-type").textContent =
+  document.querySelector(".goal__title").textContent =
     "Составить рацион на сегодня (Ужин)";
   plate_type = "Ужин";
 }
@@ -192,7 +192,7 @@ async function setPlates() {
     <div class="card__list card__list-chosen">
     </div>
     <p class="card__difficulty card__difficulty-chosen">Сложность</p>
-    <div class="card__stars card__stars-chosen">
+    <div class="card__stars card__stars-chosen card__stars-chosen1">
     </div>
     <p class="total-time">Общее время приготовления</p>
     <p class="total-time_value">${plates.chosen_plate.recipe_time} минут</p>
@@ -205,8 +205,8 @@ async function setPlates() {
     );
 
     setMealsList(plates.chosen_plate.meals, "card__list-chosen", index);
-    setPlateImage("card__visual-chosen", plates.chosen_plate, 1);
-    setPlateStars("card__stars-chosen", plates.chosen_plate, index);
+    setPlateImage("card__visual-chosen", plates.chosen_plate, 0);
+    setPlateStars("card__stars-chosen", plates.chosen_plate, 0);
 
     document
       .querySelector(`.card__button__recepi-favourite`)
@@ -224,20 +224,7 @@ async function setPlates() {
   }
 }
 
-setPlates()
-  .then(() => {})
-  .catch((error) => {
-    console.error("Ошибка при выполнении setPlates:", error);
-  })
-  .finally(() => {
-    const loader = document.querySelector(".brain-animation");
-    loader.classList.add("brain-animation_hidden");
-
-    loader.addEventListener("transitionend", function () {
-      loader.style.display = "none";
-      document.body.style.overflow = "visible";
-    });
-  });
+setPlates();
 
 async function sendPlate(data, link, el) {
   try {
