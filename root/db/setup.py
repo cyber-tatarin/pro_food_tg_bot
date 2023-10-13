@@ -38,8 +38,9 @@ if __name__ == '__main__':
     # models.HasEaten.__table__.create(bind=engine)
     # models.UserPlatesDate.__table__.create(bind=engine)
     # models.Favorites.__table__.create(bind=engine)
-    models.UserStreak.__table__.create(bind=engine)
-
+    # models.UserStreak.__table__.create(bind=engine)
+    models.PlateReview.__table__.create(bind=engine)
+    
     # session = Session()
     # ingredient2 = models.Ingredient(ingredient_name="Ingredient 4", proteins=1)
     # meal1 = models.Meal(meal_name="Meal 4", recipe='grgrr')
