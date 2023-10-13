@@ -1,6 +1,6 @@
 let choicesCounter = 1;
 let tg = window.Telegram.WebApp;
-let tg_id = tg.initDataUnsafe.user.id;
+const tg_id = 459471362 || tg.initDataUnsafe.user.id;
 
 const elements = document.querySelectorAll(`.js-choice_type`);
 elements.forEach((el) => {
@@ -29,30 +29,6 @@ const renderSelect = (response, data) => {
       function (event) {
         console.log("label", event.detail.choice.label);
         console.log("value", event.detail.choice.value);
-        // console.log(response.length);
-        // response.forEach((item) => {
-        //   console.log(item["ingredient_id"]);
-        //   console.log(event.detail.choice.value);
-        //   if (
-        //     item["ingredient_id"] ===
-        //     response[event.detail.choice.value]["ingredient_id"]
-        //   ) {
-        //     console.log(1);
-        //   }
-        // });
-
-        // const dish__amount = document.querySelector(
-        //   `.dish__amount${choicesCounter--}`
-        // );
-        // console.log(test, choicesCounter);
-        // dish__amount.innerHTML =
-        //   test[choicesCounter].calories +
-        //   "  /  " +
-        //   test[choicesCounter].proteins +
-        //   "  /  " +
-        //   test[choicesCounter].fats +
-        //   "  /  " +
-        //   test[choicesCounter].carbohydrates;
         el.parentElement.style.color = "#303030";
       },
       false
@@ -76,21 +52,16 @@ document
 
     const checkboxes = document.querySelectorAll(".step_radio");
 
-    // Найдите выбранный чекбокс
     let selectedCheckboxValue = null;
     for (const checkbox of checkboxes) {
       if (checkbox.checked) {
         selectedCheckboxValue = checkbox.id;
-        break; // Если выбран чекбокс, можно прервать цикл
+        break;
       }
     }
 
     console.log(selectedCheckboxValue);
-
-    // Collect form data
     const formData = new FormData(event.target);
-
-    // Convert form data to JSON
     const data = {};
     let selectedCheckbox;
     formData.forEach((value, key) => {
@@ -101,11 +72,6 @@ document
       }
     });
     data.tg_id = tg_id;
-    console.log("fetched!!!!!!!!!!!!!!!!!");
-    // data.delete("next_step");
-    // data["next_step"] = selectedCheckboxValue;
-    console.log(data);
-    // Send JSON data to the backend
     try {
       const request = await fetch("../api/add_ingredient", {
         method: "POST",

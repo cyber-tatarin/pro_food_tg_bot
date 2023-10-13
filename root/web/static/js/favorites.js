@@ -224,7 +224,20 @@ async function setPlates() {
   }
 }
 
-setPlates();
+setPlates()
+  .then(() => {})
+  .catch((error) => {
+    console.error("Ошибка при выполнении setPlates:", error);
+  })
+  .finally(() => {
+    const loader = document.querySelector(".brain-animation");
+    loader.classList.add("brain-animation_hidden");
+
+    loader.addEventListener("transitionend", function () {
+      loader.style.display = "none";
+      document.body.style.overflow = "visible";
+    });
+  });
 
 async function sendPlate(data, link, el) {
   try {

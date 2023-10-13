@@ -317,7 +317,7 @@ async function setPlates() {
 
     setMealsList(plates.chosen_plate.meals, "card__list-chosen", index);
 
-    setPlateImage("card__visual-chosen", plates.chosen_plate, 1);
+    setPlateImage("card__visual-chosen", plates.chosen_plate, 0);
     setPlateStars("card__stars-chosen", plates.chosen_plate, index);
 
     document

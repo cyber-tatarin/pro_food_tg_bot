@@ -295,44 +295,43 @@ async function setPlates() {
   }
 }
 
-setUserParameters();
-setUserStreak();
-setNutrientParameters();
-setPlates();
-
-async function sendFavoritePlate(data, link, el) {
-  try {
-    const request = await fetch(`..${link}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    });
-    const response = await request.json();
-
-    if (response.success === true) {
-      const cards = document.querySelectorAll(".card");
-      cards.forEach((card) => {
-        if (String(data.plate_id) === String(card.getAttribute("name"))) {
-          const buttonText = !response.is_black
-            ? "Удалить из избранного"
-            : "Добавить в избранное";
-          card.querySelector(".card__button__favourites").textContent =
-            buttonText;
-          card
-            .querySelector(".card__button__favourites")
-            .classList.toggle(
-              "card__button__favourites_off",
-              !response.is_black
-            );
-        }
+setUserParameters(),
+  setUserStreak(),
+  setNutrientParameters(),
+  setPlates(),
+  async function sendFavoritePlate(data, link, el) {
+    try {
+      const request = await fetch(`..${link}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
       });
+      const response = await request.json();
+
+      if (response.success === true) {
+        const cards = document.querySelectorAll(".card");
+        cards.forEach((card) => {
+          if (String(data.plate_id) === String(card.getAttribute("name"))) {
+            const buttonText = !response.is_black
+              ? "Удалить из избранного"
+              : "Добавить в избранное";
+            card.querySelector(".card__button__favourites").textContent =
+              buttonText;
+            card
+              .querySelector(".card__button__favourites")
+              .classList.toggle(
+                "card__button__favourites_off",
+                !response.is_black
+              );
+          }
+        });
+      }
+    } catch (err) {
+      console.log(err);
     }
-  } catch (err) {
-    console.log(err);
-  }
-}
+  };
 
 async function sendPlate(data, link, el) {
   try {
@@ -471,6 +470,19 @@ async function setRecepi(data) {
 
 // document.querySelector(".popup").classList.remove("popup_hidden");
 // document.body.style.overflow = "hidden";
+
+// const exit = document.querySelector(".exit");
+// exit.addEventListener("click", (event) => {
+//   event.target.closest(".popup").classList.add("popup_hidden");
+//   document.body.style.overflow = "visible";
+// });
+
+// const excellentButton = document.querySelector(".excellent-button");
+// if (excellentButton)
+//   excellentButton.addEventListener("click", (event) => {
+//     event.target.closest(".popup").classList.add("popup_hidden");
+//     document.body.style.overflow = "visible";
+//   });
 
 // const stars = document.querySelectorAll(".star");
 // const rating = document.querySelector(".rating");

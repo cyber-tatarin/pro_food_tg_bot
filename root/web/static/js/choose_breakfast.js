@@ -326,7 +326,7 @@ async function setPlates() {
         .classList.add("card__button__favourites_off");
     }
 
-    setPlateImage("card__visual-chosen", plates.chosen_plate, 1);
+    setPlateImage("card__visual-chosen", plates.chosen_plate, 0);
     setPlateStars("card__stars-chosen", plates.chosen_plate, index);
 
     document

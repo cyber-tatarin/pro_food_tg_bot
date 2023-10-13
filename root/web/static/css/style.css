@@ -404,6 +404,21 @@ input[type="number"]::-webkit-outer-spin-button {
   gap: 12px;
 }
 
+.brain-animation {
+  opacity: 1;
+  transition: opacity 0.5s;
+  background-color: #fff;
+  position: fixed;
+  width: 100% !important;
+  height: 100% !important;
+  top: 0;
+  left: 0;
+}
+
+.brain-animation_hidden {
+  opacity: 0;
+}
+
 input[type="radio"] {
   display: none;
 }
