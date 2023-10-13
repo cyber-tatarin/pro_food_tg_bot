@@ -76,7 +76,7 @@ async function setUserParameters() {
   } else {
     document.querySelector(
       ".weight-gap-value"
-    ).textContent = `(${userParameters.weight_gap}) кг`;
+    ).textContent = `(${userParameters.weight_gap} кг)`;
   }
 }
 
@@ -345,6 +345,65 @@ async function sendPlate(data, link, el) {
     const response = await request.json();
 
     if (response.success === true) {
+      if (response.is_green === false) {
+        let starIndex = 1;
+        const stars = document.querySelectorAll(".star");
+        stars.forEach((star) => star.classList.remove("active"));
+        stars.forEach((star) => {
+          star.addEventListener("click", (event) => {
+            const clickedStar = event.currentTarget;
+            starIndex = clickedStar.getAttribute("data-index");
+
+            stars.forEach((star) => star.classList.remove("active"));
+            for (let i = 1; i <= starIndex; i++) {
+              stars[i - 1].classList.add("active");
+            }
+          });
+        });
+        document
+          .querySelector(".popup-feedback")
+          .classList.remove("popup_hidden");
+        const exit = document
+          .querySelector(".popup-feedback")
+          .querySelector(".exit");
+        exit.addEventListener("click", (event) => {
+          event.target.closest(".popup-feedback").classList.add("popup_hidden");
+          document.body.style.overflow = "visible";
+        });
+        const excellentButton = document
+          .querySelector(".popup-feedback")
+          .querySelector(".excellent-button");
+        if (excellentButton)
+          excellentButton.addEventListener("click", (event) => {
+            event.target
+              .closest(".popup-feedback")
+              .classList.add("popup_hidden");
+            document.body.style.overflow = "visible";
+            sendMark(data, starIndex);
+          });
+        document.body.style.overflow = "hidden";
+      }
+
+      if (response.completed_all_tasks === true) {
+        document.querySelector(".popup-win").classList.remove("popup_hidden");
+        document.body.style.overflow = "hidden";
+
+        const exit = document
+          .querySelector(".popup-win")
+          .querySelector(".exit");
+        exit.addEventListener("click", (event) => {
+          event.target.closest(".popup-win").classList.add("popup_hidden");
+          document.body.style.overflow = "visible";
+        });
+
+        const excellentButton = document.querySelector(".excellent-button");
+        if (excellentButton)
+          excellentButton.addEventListener("click", (event) => {
+            event.target.closest(".popup-win").classList.add("popup_hidden");
+            document.body.style.overflow = "visible";
+          });
+      }
+
       const eatenCaloriesEl = document.querySelector(".eaten-calories");
       const eatenProteinsEl = document.querySelector(".eaten__proteins");
       const eatenFatsEl = document.querySelector(".eaten__fats");
@@ -384,8 +443,23 @@ async function sendPlate(data, link, el) {
 }
 
 function showRecepi() {
-  document.querySelector(".popup").classList.remove("popup_hidden");
+  document.querySelector(".popup-recepi").classList.remove("popup_hidden");
   document.body.style.overflow = "hidden";
+}
+
+async function sendMark(data, mark) {
+  const obj = {};
+  obj.tg_id = data.tg_id;
+  obj.plate_id = data.plate_id;
+  obj.mark = mark;
+  const request = await fetch(`../api/submit_plate_review`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(obj),
+  });
+  const response = await request.json();
 }
 
 async function setRecepi(data) {
@@ -449,13 +523,13 @@ async function setRecepi(data) {
 
     meal.ingredients.forEach((ingredient, i) => {
       document
-        .querySelector(`.popup__ingredients-flex${i + 1}`)
+        .querySelector(`.popup__ingredients-flex${index + 1}`)
         .insertAdjacentHTML(
           "beforeend",
           ` <div class="popup__ingredients${i + 1}">
-        <p class="popup__ingredients__title">${i + 1}. ${
-            ingredient.ingredient_name
-          }</p>
+        <p class="popup__ingredients__title"><span class="number-indicator">${
+          i + 1
+        }.</span> ${ingredient.ingredient_name}</p>
         <p class="popup__ingredients__amount">количество: ${
           ingredient.ingredient_amount
         }</p>
@@ -467,37 +541,3 @@ async function setRecepi(data) {
     });
   });
 }
-
-// document.querySelector(".popup").classList.remove("popup_hidden");
-// document.body.style.overflow = "hidden";
-
-// const exit = document.querySelector(".exit");
-// exit.addEventListener("click", (event) => {
-//   event.target.closest(".popup").classList.add("popup_hidden");
-//   document.body.style.overflow = "visible";
-// });
-
-// const excellentButton = document.querySelector(".excellent-button");
-// if (excellentButton)
-//   excellentButton.addEventListener("click", (event) => {
-//     event.target.closest(".popup").classList.add("popup_hidden");
-//     document.body.style.overflow = "visible";
-//   });
-
-// const stars = document.querySelectorAll(".star");
-// const rating = document.querySelector(".rating");
-
-// stars.forEach((star) => {
-//   star.addEventListener("click", (event) => {
-//     const clickedStar = event.currentTarget;
-//     const starIndex = clickedStar.getAttribute("data-index");
-
-//     // Убираем активный класс у всех звезд
-//     stars.forEach((star) => star.classList.remove("active"));
-
-//     // Добавляем активный класс для выбранной и всех предыдущих звезд
-//     for (let i = 1; i <= starIndex; i++) {
-//       stars[i - 1].classList.add("active");
-//     }
-//   });
-// });

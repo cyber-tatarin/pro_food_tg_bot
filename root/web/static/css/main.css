@@ -575,7 +575,13 @@ body {
 
 .popup__recepi {
   font-size: 16px;
-  margin-bottom: 12px;
+  margin-bottom: 8px;
+}
+
+.number-indicator {
+  display: inline-block;
+  width: 9px;
+  text-align: right;
 }
 
 .popup__ingredients__title {

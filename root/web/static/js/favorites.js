@@ -128,7 +128,9 @@ async function setPlates() {
     <p class="active-time">Активное время приготовления</p>
     <p class="active-time_value">${plate.recipe_active_time} минут</p>
     <div class="card__buttons">
-      <button class="card__button__recepi">Рецепт</button>
+      <button class="card__button__recepi card__button__recepi${
+        index + 1
+      }">Рецепт</button>
       <button class="card__button__choose card__button__choose${
         index + 1
       }">Выбрать</button>
@@ -189,7 +191,7 @@ async function setPlates() {
       </div>
     </div>
     <p class="card__list-description">Список блюд</p>
-    <div class="card__list card__list-chosen">
+    <div class="card__list card__list-chosen card__list-chosen1">
     </div>
     <p class="card__difficulty card__difficulty-chosen">Сложность</p>
     <div class="card__stars card__stars-chosen card__stars-chosen1">
@@ -204,7 +206,7 @@ async function setPlates() {
   </div>`
     );
 
-    setMealsList(plates.chosen_plate.meals, "card__list-chosen", index);
+    setMealsList(plates.chosen_plate.meals, "card__list-chosen", 0);
     setPlateImage("card__visual-chosen", plates.chosen_plate, 0);
     setPlateStars("card__stars-chosen", plates.chosen_plate, 0);
 

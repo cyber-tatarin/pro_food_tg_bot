@@ -300,10 +300,10 @@ async function setPlates() {
       </div>
     </div>
     <p class="card__list-description">Список блюд</p>
-    <div class="card__list card__list-chosen">
+    <div class="card__list card__list-chosen card__list-chosen1">
     </div>
     <p class="card__difficulty card__difficulty-chosen">Сложность</p>
-    <div class="card__stars card__stars-chosen">
+    <div class="card__stars card__stars-chosen card__stars-chosen1">
     </div>
     <p class="total-time">Общее время приготовления</p>
     <p class="total-time_value">${plates.chosen_plate.recipe_time} минут</p>
@@ -316,7 +316,7 @@ async function setPlates() {
   </div>`
     );
 
-    setMealsList(plates.chosen_plate.meals, "card__list-chosen", index);
+    setMealsList(plates.chosen_plate.meals, "card__list-chosen", 0);
 
     if (plates.chosen_plate.in_favorites === true) {
       document.querySelector(`.card__button__favourites-chosen`).textContent =
@@ -327,7 +327,7 @@ async function setPlates() {
     }
 
     setPlateImage("card__visual-chosen", plates.chosen_plate, 0);
-    setPlateStars("card__stars-chosen", plates.chosen_plate, index);
+    setPlateStars("card__stars-chosen", plates.chosen_plate, 0);
 
     document
       .querySelector(`.card__button__recepi-favourite`)
@@ -337,6 +337,15 @@ async function setPlates() {
         data.tg_id = tg_id;
         setRecepi(data);
         showRecepi();
+      });
+
+    document
+      .querySelector(`.card__button__favourites-chosen`)
+      .addEventListener("click", (el) => {
+        const data = {};
+        data.plate_id = plates.chosen_plate.plate_id;
+        data.tg_id = tg_id;
+        sendFavoritePlate(data, "/api/add_to_favorites", el.target);
       });
   }
 }
@@ -448,15 +457,15 @@ async function setRecepi(data) {
   </div>`
     );
 
-    meal.ingredients.forEach((ingredient) => {
+    meal.ingredients.forEach((ingredient, i) => {
       document
         .querySelector(`.popup__ingredients-flex${index + 1}`)
         .insertAdjacentHTML(
           "beforeend",
-          ` <div class="popup__ingredients${index + 1}">
-        <p class="popup__ingredients__title">${index + 1}. ${
-            ingredient.ingredient_name
-          }</p>
+          ` <div class="popup__ingredients${i + 1}">
+        <p class="popup__ingredients__title"><span class="number-indicator">${
+          i + 1
+        }.</span> ${ingredient.ingredient_name}</p>
         <p class="popup__ingredients__amount">количество: ${
           ingredient.ingredient_amount
         }</p>
