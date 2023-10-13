@@ -166,6 +166,16 @@ class UserStreak(Base):
     last_updated = Column(Date, onupdate=datetime.now)
     
 
+class PlateReview(Base):
+    __tablename__ = "plate_reviews"
+    
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    tg_id = Column(Integer)
+    plate_id = Column(Integer)
+    mark = Column(Integer)
+    date = Column(Date, default=datetime.now)
+    
+    
 # class UserActionsLog(Base):
 #     __tablename__ = "user_actions_log"
 #

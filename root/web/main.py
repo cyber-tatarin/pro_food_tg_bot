@@ -359,26 +359,6 @@ async def get_current_streak(request):
     data = await request.json()
     tg_id = data.get('tg_id')
     
-    # session1 = db.Session()
-    # try:
-    #     current_streak_obj = session1.query(models.UserStreak).filter(models.UserStreak.tg_id == tg_id).first()
-    #     if current_streak_obj is None:
-    #         current_streak = models.UserStreak(tg_id=tg_id, streak=0)
-    #         session1.add(current_streak)
-    #         session1.commit()
-    #
-    #         current_streak = 0
-    #     else:
-    #         current_streak = current_streak_obj.streak
-    #
-    # except Exception as x:
-    #     logger.exception(x)
-    #     return web.HTTPBadGateway()
-    #
-    # finally:
-    #     if session1.is_active:
-    #         session1.close()
-    
     current_task_number = 1
     session = db.Session()
     today = date.today()
@@ -396,13 +376,13 @@ async def get_current_streak(request):
             all_today_chosen_plates = session.query(models.UserPlatesDate).filter(models.UserPlatesDate.tg_id == tg_id,
                                                                                   models.UserPlatesDate.date == today).all()
             if all_today_chosen_plates:
-                if len(all_today_chosen_plates) == 3:
+                if len(all_today_chosen_plates) >= 3:
                     current_task_number += 1
     
             all_today_has_eaten = session.query(models.HasEaten).filter(models.HasEaten.tg_id == tg_id,
                                                                         models.HasEaten.date == today).all()
             if all_today_has_eaten:
-                if len(all_today_has_eaten) == 3:
+                if len(all_today_has_eaten) >= 3:
                     current_task_number += 1
             
             if current_task_number == 3:
@@ -672,32 +652,30 @@ async def has_eaten_plate(request):
             models.HasEaten.plate_type == plate_type
         ).first()
         
-        # eaten_plate_ids = [int(element.plate_id) for element in all_today_has_eaten_plates if
-        #                    element.plate_id is not None]
-        #
-        # if int(plate_id) not in eaten_plate_ids:
-        #     new_has_eaten = models.HasEaten(tg_id=tg_id, plate_id=plate_id,
-        #                                     calories=calories, proteins=proteins,
-        #                                     fats=fats, carbohydrates=carbohydrates)
-        #     session.add(new_has_eaten)
-        #     session.commit()
-        #
-        #     return web.json_response({'success': True, 'is_green': False})
-        
         if eaten_plate is None:
             new_has_eaten = models.HasEaten(tg_id=tg_id, plate_id=plate_id,
                                             calories=calories, proteins=proteins,
                                             fats=fats, carbohydrates=carbohydrates, plate_type=plate_type)
             session.add(new_has_eaten)
             session.commit()
-            
-            return web.json_response({'success': True, 'is_green': False})
+            completed_all_tasks = False
+            try:
+                all_today_has_eaten = session.query(models.HasEaten).filter(models.HasEaten.tg_id == tg_id,
+                                                                            models.HasEaten.date == today).all()
+                if all_today_has_eaten:
+                    if len(all_today_has_eaten) >= 3:
+                        completed_all_tasks = True
+                        
+            except Exception as x:
+                logger.exception(x)
+
+            return web.json_response({'success': True, 'is_green': False, 'completed_all_tasks': completed_all_tasks})
         
         else:
             session.delete(eaten_plate)
             session.commit()
             
-            return web.json_response({'success': True, 'is_green': True})
+            return web.json_response({'success': True, 'is_green': True, 'completed_all_tasks': False})
     
     except Exception as x:
         print(x)
@@ -908,8 +886,30 @@ async def ask_question(request):
     
     tg_id = data.get('tg_id')
     await get_user_question_type(tg_id)
+    
 
-
+async def submit_plate_review(request):
+    data = await request.json()
+    
+    tg_id = data.get('tg_id')
+    plate_id = data.get('plate_id')
+    mark = data.get('mark')
+    
+    session = db.Session()
+    try:
+        new_plate_review = models.PlateReview(tg_id=tg_id,
+                                              plate_id=plate_id,
+                                              mark=mark)
+        
+        session.add(new_plate_review)
+        session.commit()
+        return web.json_response({'success': True})
+    
+    except Exception as x:
+        logger.exception(x)
+        return web.HTTPBadGateway()
+    
+    
 app = web.Application()
 
 app.router.add_static('/static/', path='root/web/static', name='static')
@@ -946,6 +946,7 @@ app.add_routes([
     web.post('/api/get_all_favorites', get_all_favorites),
     web.post('/api/get_recipe', get_recipe),
     web.post('/api/ask_question', ask_question),
+    web.post('/api/submit_plate_review', submit_plate_review)
     # web.post('/api/remove_from_favorites', remove_from_favorites),
 
 ])
