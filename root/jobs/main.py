@@ -59,7 +59,7 @@ def get_body_measures_job():
 
 # Schedule the job to run every day at 10 pm
 schedule.every().day.at("23:55").do(set_user_streak_to_0_if_was_not_active_today_job)
-schedule.every().saturday.at("16:11").do(get_body_measures_job)
+schedule.every().saturday.at("19:00").do(get_body_measures_job)
 
 
 async def run_schedule():

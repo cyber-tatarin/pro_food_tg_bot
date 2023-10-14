@@ -308,7 +308,7 @@ async def get_chest_volume(message: types.Message, state: FSMContext):
         await state.update_data(chest_volume=message.text)
     else:
         await message.answer('Вы ввели не число. Введите, пожалуйста, целое число')
-        
+
 
 @dp.message(GetMeasuresState.get_underchest_voume)
 async def get_under_chest_volume(message: types.Message, state: FSMContext):
@@ -318,7 +318,7 @@ async def get_under_chest_volume(message: types.Message, state: FSMContext):
         await state.update_data(underchest_voume=message.text)
     else:
         await message.answer('Вы ввели не число. Введите, пожалуйста, целое число')
-        
+
 
 @dp.message(GetMeasuresState.get_waist_volume)
 async def get_waist_volume(message: types.Message, state: FSMContext):
@@ -338,7 +338,7 @@ async def get_belly_volume(message: types.Message, state: FSMContext):
         await state.update_data(belly_volume=message.text)
     else:
         await message.answer('Вы ввели не число. Введите, пожалуйста, целое число')
-        
+
 
 @dp.message(GetMeasuresState.get_hips_volume)
 async def get_hips_volume(message: types.Message, state: FSMContext):
@@ -354,16 +354,18 @@ async def get_hips_volume(message: types.Message, state: FSMContext):
         except KeyError:
             await message.answer('Что-то пошло не так, введите данные еще раз, пожалуйста',
                                  reply_markup=keyboards.get_ikb_to_start_getting_body_measures())
+            return
         
         else:
             session = db.Session()
             try:
-                new_body_measure_obj = models.BodyMeasure(weight=weight, chest_volume=chest_volume,
+                new_body_measure_obj = models.BodyMeasure(tg_id=message.from_user.id,
+                                                          weight=weight, chest_volume=chest_volume,
                                                           underchest_voume=underchest_voume, waist_volume=waist_volume,
                                                           belly_volume=belly_volume, hips_volume=hips_volume)
                 session.add(new_body_measure_obj)
                 session.commit()
-                
+            
             except Exception as x:
                 logger.exception(x)
                 await message.answer('Что-то пошло не так, введите данные еще раз, пожалуйста',
@@ -375,7 +377,7 @@ async def get_hips_volume(message: types.Message, state: FSMContext):
         await message.answer('Отличо! Мы успешно занесли Ваши данные в базу. Вы можете посмотреть свою '
                              'понедельную статистику в профиле')
         await state.clear()
-
+    
     else:
         await message.answer('Вы ввели не число. Введите, пожалуйста, целое число')
 
