@@ -271,10 +271,11 @@ async def send_question_answer_to_user(message: types.Message, state: FSMContext
 async def start_getting_body_measures_cb(callback_query: types.CallbackQuery, state: FSMContext):
     await callback_query.message.answer('Введите, пожалуйста, Ваш вес в кг на данный момент в формате "72.0"')
     await state.set_state(GetMeasuresState.get_weight)
+    await callback_query.answer()
 
 
 @dp.message(GetMeasuresState.get_weight)
-async def get_user_question(message: types.Message, state: FSMContext):
+async def get_weight(message: types.Message, state: FSMContext):
     if await utils.is_valid_weight(message.text):
         await message.answer('Введите, пожалуйста, Ваш объем груди в см в формате "90"')
         await state.set_state(GetMeasuresState.get_chest_volume)
@@ -284,7 +285,7 @@ async def get_user_question(message: types.Message, state: FSMContext):
 
 
 @dp.message(GetMeasuresState.get_chest_volume)
-async def get_user_question(message: types.Message, state: FSMContext):
+async def get_chest_volume(message: types.Message, state: FSMContext):
     if message.text.isdecimal():
         await message.answer('Введите, пожалуйста, Ваш объем под грудью в см в формате "70"')
         await state.set_state(GetMeasuresState.get_underchest_voume)
@@ -294,7 +295,7 @@ async def get_user_question(message: types.Message, state: FSMContext):
         
 
 @dp.message(GetMeasuresState.get_underchest_voume)
-async def get_user_question(message: types.Message, state: FSMContext):
+async def get_under_chest_volume(message: types.Message, state: FSMContext):
     if message.text.isdecimal():
         await message.answer('Введите, пожалуйста, Ваш объем талии в см в формате "75"')
         await state.set_state(GetMeasuresState.get_waist_volume)
@@ -304,7 +305,7 @@ async def get_user_question(message: types.Message, state: FSMContext):
         
 
 @dp.message(GetMeasuresState.get_waist_volume)
-async def get_user_question(message: types.Message, state: FSMContext):
+async def get_waist_volume(message: types.Message, state: FSMContext):
     if message.text.isdecimal():
         await message.answer('Введите, пожалуйста, Ваш объем живота в см в формате "80"')
         await state.set_state(GetMeasuresState.get_belly_volume)
@@ -314,7 +315,7 @@ async def get_user_question(message: types.Message, state: FSMContext):
 
 
 @dp.message(GetMeasuresState.get_belly_volume)
-async def get_user_question(message: types.Message, state: FSMContext):
+async def get_belly_volume(message: types.Message, state: FSMContext):
     if message.text.isdecimal():
         await message.answer('Введите, пожалуйста, Ваш объем бёдер см в формате "90"')
         await state.set_state(GetMeasuresState.get_hips_volume)
@@ -324,7 +325,7 @@ async def get_user_question(message: types.Message, state: FSMContext):
         
 
 @dp.message(GetMeasuresState.get_hips_volume)
-async def get_user_question(message: types.Message, state: FSMContext):
+async def get_hips_volume(message: types.Message, state: FSMContext):
     if message.text.isdecimal():
         data = await state.get_data()
         try:
