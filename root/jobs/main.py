@@ -1,4 +1,5 @@
 import re
+import time
 
 import schedule
 import asyncio
@@ -6,6 +7,7 @@ from root.db import setup as db, models
 from root.logger.config import logger
 from datetime import datetime, date
 from sqlalchemy import func
+from root.tg.main import start_getting_body_measures
 
 
 async def set_user_streak_to_0_if_was_not_active_today():
@@ -28,12 +30,35 @@ async def set_user_streak_to_0_if_was_not_active_today():
             session.close()
 
 
+async def get_body_measures():
+    session = db.Session()
+    try:
+        users = session.query(models.User).all()
+        for user in users:
+            try:
+                await start_getting_body_measures(user.tg_id)
+            except Exception as x:
+                logger.exception(x)
+                
+            await asyncio.sleep(0.04)
+    except Exception as x:
+        logger.exception(x)
+    finally:
+        if session.is_active:
+            session.close()
+            
+
 def set_user_streak_to_0_if_was_not_active_today_job():
     asyncio.create_task(set_user_streak_to_0_if_was_not_active_today())
+    
+    
+def get_body_measures_job():
+    asyncio.create_task(get_body_measures())
 
 
 # Schedule the job to run every day at 10 pm
 schedule.every().day.at("23:55").do(set_user_streak_to_0_if_was_not_active_today_job)
+schedule.every().saturday.at("15:45").do(get_body_measures_job)
 
 
 async def run_schedule():
