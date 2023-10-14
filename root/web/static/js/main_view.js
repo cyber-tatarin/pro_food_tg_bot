@@ -295,43 +295,44 @@ async function setPlates() {
   }
 }
 
-setUserParameters(),
-  setUserStreak(),
-  setNutrientParameters(),
-  setPlates(),
-  async function sendFavoritePlate(data, link, el) {
-    try {
-      const request = await fetch(`..${link}`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      });
-      const response = await request.json();
+setUserParameters();
+setUserStreak();
+setNutrientParameters();
+setPlates();
 
-      if (response.success === true) {
-        const cards = document.querySelectorAll(".card");
-        cards.forEach((card) => {
-          if (String(data.plate_id) === String(card.getAttribute("name"))) {
-            const buttonText = !response.is_black
-              ? "Удалить из избранного"
-              : "Добавить в избранное";
-            card.querySelector(".card__button__favourites").textContent =
-              buttonText;
-            card
-              .querySelector(".card__button__favourites")
-              .classList.toggle(
-                "card__button__favourites_off",
-                !response.is_black
-              );
-          }
-        });
-      }
-    } catch (err) {
-      console.log(err);
+async function sendFavoritePlate(data, link, el) {
+  try {
+    const request = await fetch(`..${link}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
+    const response = await request.json();
+
+    if (response.success === true) {
+      const cards = document.querySelectorAll(".card");
+      cards.forEach((card) => {
+        if (String(data.plate_id) === String(card.getAttribute("name"))) {
+          const buttonText = !response.is_black
+            ? "Удалить из избранного"
+            : "Добавить в избранное";
+          card.querySelector(".card__button__favourites").textContent =
+            buttonText;
+          card
+            .querySelector(".card__button__favourites")
+            .classList.toggle(
+              "card__button__favourites_off",
+              !response.is_black
+            );
+        }
+      });
     }
-  };
+  } catch (err) {
+    console.log(err);
+  }
+}
 
 let mark = 1;
 

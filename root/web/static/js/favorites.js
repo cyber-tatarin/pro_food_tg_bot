@@ -9,14 +9,26 @@ if (ref.includes("breakfast")) {
   plate_type = "Завтрак";
   document.querySelector(".goal__title").textContent =
     "Составить рацион на сегодня (Завтрак)";
+  console.log(document.querySelector(".back-button").href);
+  document
+    .querySelector(".back-button")
+    .setAttribute("href", "../choose_breakfast");
 } else if (ref.includes("lunch")) {
   plate_type = "Обед";
   document.querySelector(".goal__title").textContent =
     "Составить рацион на сегодня (Обед)";
+  console.log(document.querySelector(".back-button").href);
+  document
+    .querySelector(".back-button")
+    .setAttribute("href", "../choose_lunch");
 } else if (ref.includes("dinner")) {
+  plate_type = "Ужин";
   document.querySelector(".goal__title").textContent =
     "Составить рацион на сегодня (Ужин)";
-  plate_type = "Ужин";
+  console.log(document.querySelector(".back-button").href);
+  document
+    .querySelector(".back-button")
+    .setAttribute("href", "../choose_dinner");
 }
 
 async function sendData(link) {
