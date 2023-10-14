@@ -281,6 +281,14 @@ async def send_question_answer_to_user(message: types.Message, state: FSMContext
 
 @dp.callback_query(F.data == 'start_getting_body_measures')
 async def start_getting_body_measures_cb(callback_query: types.CallbackQuery, state: FSMContext):
+    try:
+        await bot.send_photo(callback_query.from_user.id,
+                             'https://maxmaltsev-fitlife.ru/uploads/s/3/n/3/3n3j55pm3dxn/img/full_mCNbptM3.jpg',
+                             caption='Это фото поможет Вам сделать замеры')
+    except Exception as x:
+        logger.exception(x)
+    
+    await asyncio.sleep(1)
     await callback_query.message.answer('Введите, пожалуйста, Ваш вес в кг на данный момент в формате "72.0"')
     await state.set_state(GetMeasuresState.get_weight)
     
