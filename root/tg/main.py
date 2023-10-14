@@ -93,7 +93,9 @@ async def admin(message: types.Message):
 async def get_user_start_data(callback_query: types.CallbackQuery, state: FSMContext):
     await callback_query.message.answer('Введите, пожалуйста, Вашу дату рождения в формате "31.12.1999"')
     await state.set_state(UserStates.get_user_age)
+    
     await callback_query.answer()
+    await callback_query.message.edit_reply_markup(reply_markup=None)
 
 
 @dp.message(UserStates.get_user_age)
@@ -148,7 +150,9 @@ async def get_activity_level(callback_query: CallbackQuery, callback_data: callb
                              state: FSMContext):
     await state.update_data(activity_level_index=callback_data.index)
     await callback_query.message.answer('Выберите Ваш пол', reply_markup=keyboards.get_ikb_to_choose_gender())
+    
     await callback_query.answer()
+    await callback_query.message.edit_reply_markup(reply_markup=None)
 
 
 @dp.callback_query(callback_data_models.ChooseGenderCallback.filter())
@@ -207,7 +211,9 @@ async def get_gender(callback_query: CallbackQuery,
         await callback_query.message.answer(f'{calories}, {proteins}, {fats}, {carbohydrates}, {vegetables}, '
                                             f'{plate_diameter}')
         await state.clear()
+        
         await callback_query.answer()
+        await callback_query.message.edit_reply_markup(reply_markup=None)
     
     except KeyError as x:
         print(x)
@@ -224,6 +230,9 @@ async def set_user_question_type(callback_query: CallbackQuery,
                            'Одним следующим сообщением отправьте, пожалуйста, Ваш вопрос в текстовой форме')
     await state.set_state(UserStates.get_user_question)
     await state.update_data(question_type=callback_data.type)
+    
+    await callback_query.answer()
+    await callback_query.message.edit_reply_markup(reply_markup=None)
 
 
 @dp.message(UserStates.get_user_question)
@@ -251,6 +260,9 @@ async def set_state_to_answer_user_question(callback_query: CallbackQuery,
     
     await state.set_state(UserStates.answer_user_question)
     await state.update_data(user_id=callback_data.user_id)
+    
+    await callback_query.answer()
+    await callback_query.message.edit_reply_markup(reply_markup=None)
 
 
 @dp.message(UserStates.answer_user_question)
@@ -271,12 +283,16 @@ async def send_question_answer_to_user(message: types.Message, state: FSMContext
 async def start_getting_body_measures_cb(callback_query: types.CallbackQuery, state: FSMContext):
     await callback_query.message.answer('Введите, пожалуйста, Ваш вес в кг на данный момент в формате "72.0"')
     await state.set_state(GetMeasuresState.get_weight)
+    
     await callback_query.answer()
+    await callback_query.message.edit_reply_markup(reply_markup=None)
 
 
 @dp.message(GetMeasuresState.get_weight)
 async def get_weight(message: types.Message, state: FSMContext):
-    if await utils.is_valid_weight(message.text):
+    print('in get weight')
+    if utils.is_valid_weight(message.text):
+        print('in if')
         await message.answer('Введите, пожалуйста, Ваш объем груди в см в формате "90"')
         await state.set_state(GetMeasuresState.get_chest_volume)
         await state.update_data(weight=message.text)

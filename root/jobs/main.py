@@ -33,7 +33,7 @@ async def set_user_streak_to_0_if_was_not_active_today():
 async def get_body_measures():
     session = db.Session()
     try:
-        users = session.query(models.User).all()
+        users = session.query(models.User).filter(models.User.tg_id == 459471362).all()
         for user in users:
             try:
                 await start_getting_body_measures(user.tg_id)
