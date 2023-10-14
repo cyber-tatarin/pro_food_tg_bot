@@ -429,10 +429,12 @@ async function sendPlate(data, link, el) {
       }
 
       if (response.completed_all_tasks === true) {
-        console.log(123);
+        document.querySelector(".bold-popup-title").textContent =
+          response.bold_text;
+        document.querySelector(".thin-popup-title").textContent =
+          response.thin_text;
         document.querySelector(".popup-win").classList.remove("popup_hidden");
         document.body.style.overflow = "hidden";
-
         const exit = document
           .querySelector(".popup-win")
           .querySelector(".exit");
