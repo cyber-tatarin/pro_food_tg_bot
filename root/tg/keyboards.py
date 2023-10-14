@@ -115,6 +115,16 @@ def get_ikb_to_answer_user_question(user_id):
                              callback_data=callback_data_models.AnswerUserQuestionCallback(user_id=user_id).pack())
     )
     return ikbb.as_markup()
+
+
+def get_ikb_to_start_getting_body_measures():
+    ikbb = InlineKeyboardBuilder()
+    ikbb.add(
+        InlineKeyboardButton(text='Начать!',
+                             callback_data='start_getting_body_measures')
+    )
+    return ikbb.as_markup()
+
     
     
     

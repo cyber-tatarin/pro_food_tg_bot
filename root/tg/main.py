@@ -49,6 +49,15 @@ class UserStates(StatesGroup):
     answer_user_question = State()
 
 
+class GetMeasuresState(StatesGroup):
+    get_weight = State()
+    get_chest_volume = State()
+    get_underchest_voume = State()
+    get_waist_volume = State()
+    get_belly_volume = State()
+    get_hips_volume = State()
+
+
 # -------------------------------------------------------------------------------------------------
 
 
@@ -242,7 +251,7 @@ async def set_state_to_answer_user_question(callback_query: CallbackQuery,
     
     await state.set_state(UserStates.answer_user_question)
     await state.update_data(user_id=callback_data.user_id)
-    
+
 
 @dp.message(UserStates.answer_user_question)
 async def send_question_answer_to_user(message: types.Message, state: FSMContext):
@@ -251,10 +260,108 @@ async def send_question_answer_to_user(message: types.Message, state: FSMContext
         user_id = data['user_id']
     except KeyError:
         return
-        
+    
     await bot.send_message(user_id, 'Вот ответ от Татьяны на Ваш вопрос 👇')
     await bot.copy_message(chat_id=user_id, from_chat_id=ADMIN_ID, message_id=message.message_id)
     
+    # ----------------------------------------------------------------------------------------------------------
+
+
+@dp.callback_query(F.data == 'start_getting_body_measures')
+async def start_getting_body_measures_cb(callback_query: types.CallbackQuery, state: FSMContext):
+    await callback_query.message.answer('Введите, пожалуйста, Ваш вес в кг на данный момент в формате "72.0"')
+    await state.set_state(GetMeasuresState.get_weight)
+
+
+@dp.message(GetMeasuresState.get_weight)
+async def get_user_question(message: types.Message, state: FSMContext):
+    if await utils.is_valid_weight(message.text):
+        await message.answer('Введите, пожалуйста, Ваш объем груди в см в формате "90"')
+        await state.set_state(GetMeasuresState.get_chest_volume)
+        await state.update_data(weight=message.text)
+    else:
+        await message.answer('Вы ввели не число. Введите, пожалуйста, целое число')
+
+
+@dp.message(GetMeasuresState.get_chest_volume)
+async def get_user_question(message: types.Message, state: FSMContext):
+    if message.text.isdecimal():
+        await message.answer('Введите, пожалуйста, Ваш объем под грудью в см в формате "70"')
+        await state.set_state(GetMeasuresState.get_underchest_voume)
+        await state.update_data(chest_volume=message.text)
+    else:
+        await message.answer('Вы ввели не число. Введите, пожалуйста, целое число')
+        
+
+@dp.message(GetMeasuresState.get_underchest_voume)
+async def get_user_question(message: types.Message, state: FSMContext):
+    if message.text.isdecimal():
+        await message.answer('Введите, пожалуйста, Ваш объем талии в см в формате "75"')
+        await state.set_state(GetMeasuresState.get_waist_volume)
+        await state.update_data(underchest_voume=message.text)
+    else:
+        await message.answer('Вы ввели не число. Введите, пожалуйста, целое число')
+        
+
+@dp.message(GetMeasuresState.get_waist_volume)
+async def get_user_question(message: types.Message, state: FSMContext):
+    if message.text.isdecimal():
+        await message.answer('Введите, пожалуйста, Ваш объем живота в см в формате "80"')
+        await state.set_state(GetMeasuresState.get_belly_volume)
+        await state.update_data(waist_volume=message.text)
+    else:
+        await message.answer('Вы ввели не число. Введите, пожалуйста, целое число')
+
+
+@dp.message(GetMeasuresState.get_belly_volume)
+async def get_user_question(message: types.Message, state: FSMContext):
+    if message.text.isdecimal():
+        await message.answer('Введите, пожалуйста, Ваш объем бёдер см в формате "90"')
+        await state.set_state(GetMeasuresState.get_hips_volume)
+        await state.update_data(belly_volume=message.text)
+    else:
+        await message.answer('Вы ввели не число. Введите, пожалуйста, целое число')
+        
+
+@dp.message(GetMeasuresState.get_hips_volume)
+async def get_user_question(message: types.Message, state: FSMContext):
+    if message.text.isdecimal():
+        data = await state.get_data()
+        try:
+            weight = data['weight']
+            chest_volume = data['chest_volume']
+            underchest_voume = data['underchest_voume']
+            waist_volume = data['waist_volume']
+            belly_volume = data['belly_volume']
+            hips_volume = message.text
+        except KeyError:
+            await message.answer('Что-то пошло не так, введите данные еще раз, пожалуйста',
+                                 reply_markup=keyboards.get_ikb_to_start_getting_body_measures())
+        
+        else:
+            session = db.Session()
+            try:
+                new_body_measure_obj = models.BodyMeasure(weight=weight, chest_volume=chest_volume,
+                                                          underchest_voume=underchest_voume, waist_volume=waist_volume,
+                                                          belly_volume=belly_volume, hips_volume=hips_volume)
+                session.add(new_body_measure_obj)
+                session.commit()
+                
+            except Exception as x:
+                logger.exception(x)
+                await message.answer('Что-то пошло не так, введите данные еще раз, пожалуйста',
+                                     reply_markup=keyboards.get_ikb_to_start_getting_body_measures())
+            finally:
+                if session.is_active:
+                    session.close()
+        
+        await message.answer('Отличо! Мы успешно занесли Ваши данные в базу. Вы можете посмотреть свою '
+                             'понедельную статистику в профиле')
+        await state.clear()
+
+    else:
+        await message.answer('Вы ввели не число. Введите, пожалуйста, целое число')
+
 
 # -------------------------------------------------------------------------------------------------
 
@@ -276,6 +383,12 @@ async def send_question_answer_to_user(message: types.Message, state: FSMContext
 async def get_user_question_type(user_id):
     await bot.send_message(user_id, 'Выберите категорию, к которой можно отнести Ваш вопрос',
                            reply_markup=keyboards.get_ikb_to_get_question_type())
+
+
+async def start_getting_body_measures(user_id):
+    await bot.send_message(user_id, 'Пришло время еженедельных замеров, которые важны, чтобы отслеживать Ваш прогресс.'
+                                    '\n\nНажмите на кнопку ниже, чтобы начать! Это займет не больше 5 минут',
+                           reply_markup=keyboards.get_ikb_to_start_getting_body_measures())
 
 
 async def send_message_to_users_manually(user_ids_list: list, message):
