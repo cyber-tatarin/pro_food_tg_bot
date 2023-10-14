@@ -251,7 +251,7 @@ async def get_recipe_values(session, plate_id):
 
 async def get_day_word_according_to_number(number):
     number_as_str = str(number)
-    if number in [11, 12, 13, 14]:
+    if number in ['11', '12', '13', '14']:
         return 'дней'
     elif number_as_str[-1] == '1':
         return 'день'
@@ -259,6 +259,18 @@ async def get_day_word_according_to_number(number):
         return 'дня'
     else:
         return 'дней'
+
+
+async def get_coin_word_according_to_number(number):
+    number_as_str = str(number)
+    if number in ['11', '12', '13', '14']:
+        return 'ЖИРкоинов'
+    elif number_as_str[-1] == '1':
+        return 'ЖИРкоин'
+    elif number_as_str[-1] in ['2', '3', '4']:
+        return 'ЖИРкоина'
+    else:
+        return 'ЖИРкоинов'
         
 
     

@@ -76,10 +76,10 @@ class Ingredient(Base):
     ingredient_name = Column(String(256), unique=True)
     
     measure = Column(String(50))
-    calories = Column(Integer)
-    proteins = Column(Integer)
-    fats = Column(Integer)
-    carbohydrates = Column(Integer)
+    calories = Column(Float)
+    proteins = Column(Float)
+    fats = Column(Float)
+    carbohydrates = Column(Float)
 
     meals = relationship("Meal", secondary=meal_ingredients_association, back_populates="ingredients")
     

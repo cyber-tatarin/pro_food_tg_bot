@@ -379,26 +379,14 @@ async def get_current_streak(request):
                 if len(all_today_chosen_plates) >= 3:
                     current_task_number += 1
     
-            all_today_has_eaten = session.query(models.HasEaten).filter(models.HasEaten.tg_id == tg_id,
-                                                                        models.HasEaten.date == today).all()
-            if all_today_has_eaten:
-                if len(all_today_has_eaten) >= 3:
-                    current_task_number += 1
+            # all_today_has_eaten = session.query(models.HasEaten).filter(models.HasEaten.tg_id == tg_id,
+            #                                                             models.HasEaten.date == today).all()
+            # if all_today_has_eaten:
+            #     if len(all_today_has_eaten) >= 3:
+            #         current_task_number += 1
             
-            if current_task_number == 3:
-                updated_earlier_than_today_or_created_today = True
-                last_updated = user_streak_obj.last_updated
-                if last_updated is not None:
-                    updated_earlier_than_today_or_created_today = user_streak_obj.last_updated < today
-    
-                if updated_earlier_than_today_or_created_today:
-                    user_streak_obj.streak += 1
-                    
-                    user_obj = session.query(models.User).filter(models.User.tg_id == tg_id).first()
-                    user_obj.balance += 10
-                    
-                    session.commit()
-                    current_streak += 1
+            # if current_task_number == 3:
+            #     pass
         else:
             current_task_number = 3
 
@@ -643,6 +631,8 @@ async def has_eaten_plate(request):
     fats = data.get('fats')
     carbohydrates = data.get('carbohydrates')
     
+    current_balance = ''
+    
     session = db.Session()
     try:
         today = date.today()
@@ -651,6 +641,8 @@ async def has_eaten_plate(request):
             models.HasEaten.tg_id == tg_id,
             models.HasEaten.plate_type == plate_type
         ).first()
+        
+        user_streak_obj = session.query(models.UserStreak).filter(models.UserStreak.tg_id == tg_id)
         
         if eaten_plate is None:
             new_has_eaten = models.HasEaten(tg_id=tg_id, plate_id=plate_id,
@@ -664,12 +656,33 @@ async def has_eaten_plate(request):
                                                                             models.HasEaten.date == today).all()
                 if all_today_has_eaten:
                     if len(all_today_has_eaten) >= 3:
-                        completed_all_tasks = True
+    
+                        updated_earlier_than_today_or_created_today = True
+                        last_updated = user_streak_obj.last_updated
+                        if last_updated is not None:
+                            updated_earlier_than_today_or_created_today = user_streak_obj.last_updated < today
+    
+                        if updated_earlier_than_today_or_created_today:
+                            user_streak_obj.streak += 1
+        
+                            user_obj = session.query(models.User).filter(models.User.tg_id == tg_id).first()
+                            user_obj.balance += 10
+                            
+                            current_balance = user_obj.balance
+        
+                            session.commit()
+                            completed_all_tasks = True
                         
             except Exception as x:
                 logger.exception(x)
-
-            return web.json_response({'success': True, 'is_green': False, 'completed_all_tasks': completed_all_tasks})
+            
+            response_dict = {'success': True, 'is_green': False, 'completed_all_tasks': completed_all_tasks}
+            if completed_all_tasks:
+                response_dict['bold_text'] = 'Так держать ты получил 10 ЖИРкоинов'
+                coin_word = await utils.get_coin_word_according_to_number(current_balance)
+                response_dict['thin_text'] = f'Теперь у Вас на балансе {current_balance} {coin_word}'
+            
+            return web.json_response(response_dict)
         
         else:
             session.delete(eaten_plate)
