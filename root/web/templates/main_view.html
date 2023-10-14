@@ -13,7 +13,10 @@
     <link rel="stylesheet" href="/static/css/reset.css" />
     <link rel="stylesheet" href="/static/css/main.css" />
   </head>
-  <body>
+  <body style="overflow: hidden">
+    <div class="loading">
+      <div class="lds-heart"><div></div></div>
+    </div>
     <main class="main">
       <div class="container">
         <section class="section-person">
@@ -24,8 +27,6 @@
             <div class="coin__amount">1000</div>
             <a href="#" class="coin__help">Что это?</a>
           </div>
-          <!-- <img src="../static/images/brain-animation.gif" alt="" />
-          <img src="../static/images/boom-animation.gif" alt="" /> -->
           <hr class="hr" />
           <div class="person-info">
             <div class="person-info__item">
@@ -214,8 +215,8 @@
             <div class="current-progress">
               <div class="date">09.09.2023 — сегодня</div>
               <div class="calories">
-                <span class="eaten-calories">1100</span><span> / </span
-                ><span class="day_calories">2400 ккал</span>
+                <span>Ккал </span> <span class="eaten-calories">1100</span
+                ><span> / </span><span class="day_calories">2400 ккал</span>
               </div>
             </div>
             <div class="progress">
@@ -224,29 +225,29 @@
               <hr class="progress__mark" />
               <div class="progress__marks">
                 <p class="progress__start">0</p>
-                <p class="progress__end">2400</p>
+                <p class="progress__end">100</p>
               </div>
             </div>
             <div class="progress-info">
               <div class="progress-info__item">
-                <div class="progress-info__title">Белки</div>
+                <div class="progress-info__title">Белки %</div>
                 <div class="progress-info__value">
                   <span class="eaten__proteins">10</span><span> / </span
-                  ><span class="day__proteins">200 </span>
+                  ><span class="day__proteins">100</span>
                 </div>
               </div>
               <div class="progress-info__item">
-                <div class="progress-info__title">Жиры</div>
+                <div class="progress-info__title">Жиры %</div>
                 <div class="progress-info__value">
                   <span class="eaten__fats">10</span><span> / </span
-                  ><span class="day__fats">200 </span>
+                  ><span class="day__fats">100</span>
                 </div>
               </div>
               <div class="progress-info__item">
-                <div class="progress-info__title">Углеводы</div>
+                <div class="progress-info__title">Углеводы %</div>
                 <div class="progress-info__value">
                   <span class="eaten__carbohydrates">10</span><span> / </span
-                  ><span class="day__carbohydrates">200 </span>
+                  ><span class="day__carbohydrates">100</span>
                 </div>
               </div>
             </div>
@@ -267,65 +268,18 @@
         <section class="cards"></section>
       </div>
     </main>
-    <!-- <div class="popup popup_hidden">
-      <div class="popup__inner">
-        <p class="popup__plate-title">
-          “Название блюда длинasdf adsf asdf asd fasd fasdfasd”
-        </p>
-        <div class="exit">
-          <img src="../static/images/exit.svg" alt="exit" />
-        </div>
-        <div class="popup__meal popup__meal1">
-          <p class="popup__meal-title">1. Жареное мясо</p>
-          <p class="popup__ingredients">Ингредиенты:</p>
-          <div class="popup__ingredients-flex">
-            <div class="popup__ingredients1">
-              <p class="popup__ingredients__title">1. Мясо</p>
-              <p class="popup__ingredients__amount">количество: 3</p>
-              <p class="popup__ingredients__measure">мера: Ладонь</p>
-            </div>
-            <div class="popup__ingredients2">
-              <p class="popup__ingredients__title">2. Мясо</p>
-              <p class="popup__ingredients__amount">количество: 3</p>
-              <p class="popup__ingredients__measure">мера: Ладонь</p>
-            </div>
-            <div class="popup__ingredients3">
-              <p class="popup__ingredients__title">3. Мясо</p>
-              <p class="popup__ingredients__amount">количество: 3</p>
-              <p class="popup__ingredients__measure">мера: Ладонь</p>
-            </div>
-          </div>
-          <p class="popup__recepi">Рецепт:</p>
-          <p class="popup__recepi__text">
-            Отбейте мясо, налейте масло, пожарьте и положите на тарелку
-          </p>
-          <div class="popup__time">
-            <div class="popup__time-flex">
-              <p class="popup__time-current">Активное время (минут)</p>
-              <p class="popup__time-current__value">20</p>
-            </div>
-            <div class="popup__time-flex">
-              <p class="popup__time-total">Общее время (минут)</p>
-              <p class="popup__time-total__value">40</p>
-            </div>
-          </div>
-          <hr class="hr hr-20" />
-        </div>
-      </div>
-    </div> -->
-
     <div class="popup popup-recepi popup_hidden">
       <div class="popup__inner popup__inner_flex"></div>
     </div>
-
     <div class="popup popup-win popup_hidden">
       <div class="popup__inner popup__inner_flex">
         <p class="popup__plate-title popup__plate-title_right">Ура!!</p>
         <div class="exit">
           <img src="../static/images/exit.svg" alt="exit" />
         </div>
-
         <dotlottie-player
+          class="win-player"
+          async
           src="https://lottie.host/309115b2-89cd-4600-a3b6-e2ea38266cba/A8NltTX77L.lottie"
           background="transparent"
           speed="1"
@@ -338,17 +292,18 @@
         <p class="popup__recepi__text mg-32 text-center">
           Сейчас у Вас 100 ЖИРконинов
         </p>
-        <button class="button excellent-button">Отлично</button>
+        <button class="button excellent-button" style="margin-top: auto">
+          Отлично
+        </button>
       </div>
     </div>
-
     <div class="popup popup-feedback popup_hidden">
       <div class="popup__inner popup__inner_flex">
         <p class="popup__plate-title">Обратная связь</p>
         <div class="exit">
           <img src="../static/images/exit.svg" alt="exit" />
         </div>
-        <p class="popup__meal-title">
+        <p class="popup__meal-title mg-20">
           Оцените, пожалуйста, блюдо, которое Вы съели
         </p>
         <div class="choose-stars">
@@ -418,8 +373,16 @@
             </svg>
           </div>
         </div>
+        <p class="feedback-instruction">
+          Оценка тарелок нужна для того, чтобы позже рекомендовать Вам только те
+          тарелки, которые Вам могут понравиться
+        </p>
+        <div class="error">
+          Вы не поставили никакую оценку. <br class="br-error" />Пожалуйста,
+          поставьте оценку от 1 до 5
+        </div>
         <div class="flex-1"></div>
-        <button class="button excellent-button">Отлично</button>
+        <button class="button excellent-button">Отправить</button>
       </div>
     </div>
     <script

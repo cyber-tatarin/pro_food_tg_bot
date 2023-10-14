@@ -2,8 +2,6 @@ let choicesCounter = 1;
 let tg = window.Telegram.WebApp;
 const tg_id = 459471362 || tg.initDataUnsafe.user.id;
 
-const test = getData();
-
 const renderSelect = (response, data) => {
   const elements = document.querySelectorAll(`.js-choice_${choicesCounter++}`);
   elements.forEach((el) => {
@@ -40,6 +38,33 @@ const renderSelect = (response, data) => {
 let testChoices = [];
 let response;
 
+let isFunctionsLoaded = false;
+let isImagesLoaded = false;
+
+function hideLoading() {
+  const loader = document.querySelector(".loading");
+  loader.classList.add("loading_hidden");
+  loader.addEventListener("transitionend", function () {
+    loader.style.display = "none";
+  });
+  document.body.style.overflow = "visible";
+}
+
+window.onload = () => {
+  console.log("successfully");
+  isImagesLoaded = true;
+  if (isFunctionsLoaded) {
+    hideLoading();
+  }
+};
+
+getData().finally(() => {
+  console.log("finally");
+  isFunctionsLoaded = true;
+  if (isImagesLoaded) {
+    hideLoading();
+  }
+});
 const buttonAdd = document.querySelector(".dish__add");
 buttonAdd.addEventListener("click", (event) => {
   event.preventDefault();

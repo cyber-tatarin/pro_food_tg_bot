@@ -38,7 +38,33 @@ const renderSelect = (response, data) => {
   });
 };
 
-// renderSelect();
+let isFunctionsLoaded = false;
+let isImagesLoaded = false;
+
+function hideLoading() {
+  const loader = document.querySelector(".loading");
+  loader.classList.add("loading_hidden");
+  loader.addEventListener("transitionend", function () {
+    loader.style.display = "none";
+  });
+  document.body.style.overflow = "visible";
+}
+
+window.onload = () => {
+  console.log("successfully");
+  isImagesLoaded = true;
+  if (isFunctionsLoaded) {
+    hideLoading();
+  }
+};
+
+getData().finally(() => {
+  console.log("finally");
+  isFunctionsLoaded = true;
+  if (isImagesLoaded) {
+    hideLoading();
+  }
+});
 
 let testChoices = [];
 let response;
@@ -137,5 +163,3 @@ async function getData() {
     console.error("Ошибка при получении данных:", error);
   }
 }
-
-getData();

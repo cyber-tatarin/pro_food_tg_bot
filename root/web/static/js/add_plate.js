@@ -17,6 +17,34 @@ elements.forEach((el) => {
   );
 });
 
+let isFunctionsLoaded = false;
+let isImagesLoaded = false;
+
+function hideLoading() {
+  const loader = document.querySelector(".loading");
+  loader.classList.add("loading_hidden");
+  loader.addEventListener("transitionend", function () {
+    loader.style.display = "none";
+  });
+  document.body.style.overflow = "visible";
+}
+
+window.onload = () => {
+  console.log("successfully");
+  isImagesLoaded = true;
+  if (isFunctionsLoaded) {
+    hideLoading();
+  }
+};
+
+getData().finally(() => {
+  console.log("finally");
+  isFunctionsLoaded = true;
+  if (isImagesLoaded) {
+    hideLoading();
+  }
+});
+
 const renderSelect = (response, data) => {
   const elements = document.querySelectorAll(`.js-choice_${choicesCounter++}`);
   elements.forEach((el) => {
@@ -223,8 +251,6 @@ async function getData() {
     console.error("Ошибка при получении данных:", error);
   }
 }
-
-getData();
 
 function setTotalEnergy(data) {
   const dishAmount = document.querySelectorAll(`.choice-energy`);

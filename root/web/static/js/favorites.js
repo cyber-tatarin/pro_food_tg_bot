@@ -71,25 +71,34 @@ async function getDiameter() {
   return response.plate_diameter;
 }
 
-function setPlateImage(className, plate, index) {
+async function setPlateImage(className, plate, index) {
+  console.log("setPlateImage");
   let imagePath = "";
   if (plate.percentages[0] === "100") {
-    imagePath = "../static/images/1-part.svg";
-  } else if (plate.percentages[0] === "50") {
-    imagePath = "../static/images/2-parts.svg";
+    imagePath = "../static/images/1-part.png";
+  } else if (plate.percentages[0] === "50" && plate.percentages.length === 2) {
+    imagePath = "../static/images/2-parts.png";
   } else if (plate.percentages[0] === "33") {
-    imagePath = "../static/images/3-33-parts.svg";
-  } else if (plate.percentages[0] === "25" && plate.percentages[2] === "50") {
-    imagePath = "../static/images/3-parts.svg";
+    imagePath = "../static/images/3-33-parts.png";
+  } else if (plate.percentages.length === 4) {
+    imagePath = "../static/images/4-parts.png";
   } else {
-    imagePath = "../static/images/4-parts.svg";
+    imagePath = "../static/images/3-parts.png";
   }
+
+  let img = new Image();
+  let imgLoaded = new Promise((resolve, reject) => {
+    img.onload = resolve;
+    img.onerror = reject;
+  });
+  img.src = imagePath;
+  img.className = "card__plate";
+  document.querySelector(`.${className}${index + 1}`).appendChild(img);
   document
     .querySelector(`.${className}${index + 1}`)
-    .insertAdjacentHTML(
-      "afterbegin",
-      `<img src="${imagePath}" class="card__plate" />`
-    );
+    .insertAdjacentElement("afterbegin", img);
+
+  return imgLoaded;
 }
 
 function setPlateStars(className, plate, index) {
@@ -180,7 +189,13 @@ async function setPlates() {
         sendPlate(data, "/api/has_chosen_plate", el.target);
       });
 
-    setPlateImage("card__visual", plate, index);
+    setPlateImage("card__visual", plate, index).finally(() => {
+      console.log("finally");
+      isFunctionsLoaded = true;
+      if (isImagesLoaded) {
+        hideLoading();
+      }
+    });
     setPlateStars("card__stars", plate, index);
   });
 
@@ -238,7 +253,40 @@ async function setPlates() {
   }
 }
 
+let isFunctionsLoaded = false;
+let isImagesLoaded = false;
+
 setPlates();
+
+function showLoading(param = true) {
+  const loader = document.querySelector(".loading");
+  loader.classList.remove("loading_hidden");
+  loader.style.display = "flex";
+  if (param) {
+    console.log("hidden");
+    document.body.style.overflow = "hidden";
+  }
+}
+
+function hideLoading(param = true) {
+  const loader = document.querySelector(".loading");
+  loader.classList.add("loading_hidden");
+  loader.addEventListener("transitionend", function () {
+    loader.style.display = "none";
+  });
+  if (param) {
+    console.log("visible");
+    document.body.style.overflow = "visible";
+  }
+}
+
+window.onload = () => {
+  console.log("successfully");
+  isImagesLoaded = true;
+  if (isFunctionsLoaded) {
+    hideLoading();
+  }
+};
 
 async function sendPlate(data, link, el) {
   try {
