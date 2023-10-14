@@ -89,6 +89,12 @@ async def admin(message: types.Message):
     await message.answer('Составить рацион', reply_markup=keyboards.get_choose_plates_ikb())
 
 
+@dp.message(F.from_user.id.in_(admin_ids), F.content_type.in_({types.ContentType.VOICE, types.ContentType.VIDEO_NOTE}))
+async def store_file_ids(message: types.Message):
+    with open(os.path.join('root', 'tg', 'admin_media_records.txt'), 'a') as file:
+        file.write(f'{message.from_user.id} : {message.message_id} {message.content_type} {datetime.now()}\n\n')
+
+
 @dp.callback_query(F.data == 'get_user_start_data')
 async def get_user_start_data(callback_query: types.CallbackQuery, state: FSMContext):
     await callback_query.message.answer('Введите, пожалуйста, Вашу дату рождения в формате "31.12.1999"')
@@ -275,6 +281,7 @@ async def send_question_answer_to_user(message: types.Message, state: FSMContext
     
     await bot.send_message(user_id, 'Вот ответ от Татьяны на Ваш вопрос 👇')
     await bot.copy_message(chat_id=user_id, from_chat_id=ADMIN_ID, message_id=message.message_id)
+    await state.clear()
     
     # ----------------------------------------------------------------------------------------------------------
 
