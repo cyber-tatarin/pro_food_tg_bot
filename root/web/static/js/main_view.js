@@ -475,22 +475,22 @@ async function sendPlate(data, link, el) {
       eatenCaloriesEl.textContent =
         +eatenCaloriesEl.textContent +
         (response.is_green
-          ? Math.floor((-data.calories * 100) / nutrientStreak.day_calories)
+          ? Math.ceil((-data.calories * 100) / nutrientStreak.day_calories)
           : Math.floor((data.calories * 100) / nutrientStreak.day_calories));
       eatenProteinsEl.textContent =
         +eatenProteinsEl.textContent +
         (response.is_green
-          ? Math.floor((-data.proteins * 100) / nutrientStreak.day_proteins)
+          ? Math.ceil((-data.proteins * 100) / nutrientStreak.day_proteins)
           : Math.floor((data.proteins * 100) / nutrientStreak.day_proteins));
       eatenFatsEl.textContent =
         +eatenFatsEl.textContent +
         (response.is_green
-          ? Math.floor((-data.fats * 100) / nutrientStreak.day_fats)
+          ? Math.ceil((-data.fats * 100) / nutrientStreak.day_fats)
           : Math.floor((data.fats * 100) / nutrientStreak.day_fats));
       eatenCarbohydratesEl.textContent =
         +eatenCarbohydratesEl.textContent +
         (response.is_green
-          ? Math.floor(
+          ? Math.ceil(
               (-data.carbohydrates * 100) / nutrientStreak.day_carbohydrates
             )
           : Math.floor(
