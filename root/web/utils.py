@@ -21,7 +21,7 @@ async def is_admin_by_id(tg_id):
         if int(tg_id) not in admin_ids:
             raise web.HTTPForbidden()
     except Exception as x:
-        print(x)
+        logger.exception(x)
         raise web.HTTPForbidden()
 
 
@@ -117,9 +117,7 @@ async def set_is_eaten_true_for_plates_in_result_list(result_list, all_today_has
 
 async def set_plate_type(result_list, user_type_plate_date_query):
     if user_type_plate_date_query:
-        logger.info(user_type_plate_date_query)
         plate_id_to_value = {obj.plate_id: obj.plate_type for obj in user_type_plate_date_query}
-        logger.info(plate_id_to_value)
         for element in result_list:
             if element['plate_id'] in plate_id_to_value:
                 element['plate_type'] = plate_id_to_value[element['plate_id']]
@@ -152,9 +150,7 @@ async def set_in_favorites_true_for_plates_in_result_list(result_list, all_favor
     if all_favorites_query and result_list:
         favorite_plate_ids = [int(element.plate_id) for element in all_favorites_query if
                               element.plate_id is not None]
-        print(result_list)
         for obj in result_list:
-            print(obj)
             if int(obj['plate_id']) in favorite_plate_ids:
                 obj['in_favorites'] = True
 
@@ -222,8 +218,6 @@ async def get_recipe_values(session, plate_id):
             ingredients_names = row.ingredients.split(', '),
             ingredients_measures = row.ingredients_measures.split(', '),
             ingredients_amounts = row.ingredients_amounts.split(', '),
-            
-            print(ingredients_names, '\n', ingredients_amounts, '\n', ingredients_measures)
             
             for ingredient_name, ingredient_measure, ingredient_amount in zip(ingredients_names[0],
                                                                               ingredients_measures[0],
