@@ -1,4 +1,5 @@
 import asyncio
+import uuid
 from datetime import datetime
 import os
 import re
@@ -47,6 +48,7 @@ class UserStates(StatesGroup):
     get_user_weight_aim = State()
     get_user_question = State()
     answer_user_question = State()
+    get_have_eaten = State()
 
 
 class GetMeasuresState(StatesGroup):
@@ -87,12 +89,6 @@ async def admin(message: types.Message):
 @dp.message(Command('choose'))
 async def admin(message: types.Message):
     await message.answer('Составить рацион', reply_markup=keyboards.get_choose_plates_ikb())
-
-
-@dp.message(F.from_user.id.in_(admin_ids), F.content_type.in_({types.ContentType.VOICE, types.ContentType.VIDEO_NOTE}))
-async def store_file_ids(message: types.Message):
-    with open(os.path.join('root', 'tg', 'admin_media_records.txt'), 'a') as file:
-        file.write(f'{message.from_user.id} : {message.message_id} {message.content_type} {datetime.now()}\n\n')
 
 
 @dp.callback_query(F.data == 'get_user_start_data')
@@ -398,6 +394,42 @@ async def get_hips_volume(message: types.Message, state: FSMContext):
 
 
 # -------------------------------------------------------------------------------------------------
+@dp.message(Command('eat'))
+async def store_file_ids(message: types.Message, state: FSMContext):
+    await state.set_state(UserStates.get_have_eaten)
+
+
+@dp.message(UserStates.get_have_eaten, F.content_type.in_({types.ContentType.VOICE, types.ContentType.TEXT}))
+async def set_have_eaten_without_plates(message: types.Message, state: FSMContext):
+    if message.content_type == types.ContentType.TEXT:
+        have_eaten_in_text = message.text
+    else:
+        filename = f'{uuid.uuid4().int}.mp3'
+        file_path = os.path.join('root', 'tg', 'media', filename)
+        await bot.download(message.voice, file_path)
+        try:
+            have_eaten_in_text = utils.speech_to_text(file_path)
+            if os.path.exists(file_path):
+                os.remove(file_path)
+            
+            await state.clear()
+            
+        except Exception as x:
+            have_eaten_in_text = 'None'
+            logger.exception(x)
+            
+    await message.answer(have_eaten_in_text)
+
+
+# -------------------------------------------------------------------------------------------------
+
+@dp.message(F.from_user.id.in_(admin_ids), F.content_type.in_({types.ContentType.VOICE, types.ContentType.VIDEO_NOTE}))
+async def store_file_ids(message: types.Message):
+    with open(os.path.join('root', 'tg', 'admin_media_records.txt'), 'a') as file:
+        file.write(f'{message.from_user.id} : {message.message_id} {message.content_type} {datetime.now()}\n\n')
+
+
+# -------------------------------------------------------------------------------------------------
 
 # @dp.message(Command('manually'))
 # async def states(message: types.Message, state: FSMContext):
@@ -423,6 +455,17 @@ async def start_getting_body_measures(user_id):
     await bot.send_message(user_id, 'Пришло время еженедельных замеров, которые важны, чтобы отслеживать Ваш прогресс.'
                                     '\n\nНажмите на кнопку ниже, чтобы начать! Это займет не больше 5 минут',
                            reply_markup=keyboards.get_ikb_to_start_getting_body_measures())
+
+
+async def get_has_eaten_without_plates(user_id):
+    await bot.send_message(user_id, 'Пришлите, пожалуйста то, что Вы съели в свободной форме в виде текста '
+                                    'или голосового сообщения')
+    await storage.set_state(key=StorageKey(bot_id=bot.id, chat_id=user_id,
+                                           user_id=user_id), state='UserStates:get_have_eaten')
+
+
+async def what_else_to_eat(user_id):
+    await bot.send_message(user_id, 'Ничего!')
 
 
 async def send_message_to_users_manually(user_ids_list: list, message):

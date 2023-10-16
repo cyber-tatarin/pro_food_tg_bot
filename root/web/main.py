@@ -14,7 +14,7 @@ from sqlalchemy.exc import IntegrityError
 from root.db import setup as db
 from root.db import models
 from root.logger.config import logger
-from root.tg.main import admin_ids, get_user_question_type
+from root.tg.main import admin_ids, get_user_question_type, get_has_eaten_without_plates, what_else_to_eat
 from root.tg.utils import get_age_from_birth_date
 from root.gsheets import main as gsh
 from . import utils
@@ -458,7 +458,6 @@ async def get_nutrient_parameters(request):
 async def get_today_plates(request):
     data = await request.json()
     tg_id = data.get('tg_id')
-    logger.info(tg_id)
     
     session1 = db.Session()
     try:
@@ -466,7 +465,6 @@ async def get_today_plates(request):
         today_plates_list = session1.query(models.UserPlatesDate).filter(models.UserPlatesDate.tg_id == tg_id,
                                                                          models.UserPlatesDate.date == today,
                                                                          ).all()
-        logger.info(today_plates_list)
     
     except Exception as x:
         print(x)
@@ -477,8 +475,6 @@ async def get_today_plates(request):
     
     if today_plates_list:
         plate_ids = [int(element.plate_id) for element in today_plates_list]
-        
-        logger.info(plate_ids)
         
         session2 = db.Session()
         try:
@@ -491,14 +487,10 @@ async def get_today_plates(request):
             
             all_favorites = session2.query(models.Favorites).filter(models.Favorites.tg_id == tg_id).all()
             
-            logger.info(result_list)
-            
             await utils.set_plate_type(result_list, today_plates_list)
             await utils.restore_duplicate_plate_if_exists(result_list, plate_ids)
             await utils.set_is_eaten_true_for_plates_in_result_list(result_list, all_today_has_eaten_plates)
             await utils.set_in_favorites_true_for_plates_in_result_list(result_list, all_favorites)
-            
-            logger.info(result_list)
             
             custom_order = {
                 "Завтрак": 1,
@@ -594,8 +586,6 @@ async def get_all_plates_to_choose(request):
                                                                    models.UserPlatesDate.plate_type == plate_type,
                                                                    models.UserPlatesDate.date == today).first()
         
-        logger.info(f'chosen plate! {tg_id}: {chosen_plate.id if chosen_plate else "no chosen plate"}')
-        
         all_favorites = session.query(models.Favorites).filter(models.Favorites.tg_id == tg_id).all()
         
         print('inside')
@@ -642,7 +632,7 @@ async def has_eaten_plate(request):
             models.HasEaten.plate_type == plate_type
         ).first()
         
-        user_streak_obj = session.query(models.UserStreak).filter(models.UserStreak.tg_id == tg_id)
+        user_streak_obj = session.query(models.UserStreak).filter(models.UserStreak.tg_id == tg_id).first()
         
         if eaten_plate is None:
             new_has_eaten = models.HasEaten(tg_id=tg_id, plate_id=plate_id,
@@ -789,8 +779,6 @@ async def has_chosen_plate(request):
     plate_type = data.get('plate_type')
     plate_id = data.get('plate_id')
     
-    logger.info(f'in has_chosen {tg_id} {plate_id} {plate_type}')
-    
     session = db.Session()
     try:
         new_user_plate_date = models.UserPlatesDate(tg_id=tg_id, plate_type=plate_type, plate_id=plate_id)
@@ -798,7 +786,6 @@ async def has_chosen_plate(request):
         session.commit()
     
     except IntegrityError:
-        logger.info('today plate already exists')
         new_session = db.Session()
         try:
             obj_to_edit = new_session.query(models.UserPlatesDate).filter(models.UserPlatesDate.tg_id == tg_id,
@@ -923,6 +910,30 @@ async def submit_plate_review(request):
         return web.HTTPBadGateway()
     
     
+async def get_has_eaten_without_plates_post(request):
+    data = await request.json()
+    try:
+        tg_id = data['tg_id']
+        await get_has_eaten_without_plates(tg_id)
+        return web.json_response({'success': True})
+    
+    except Exception as x:
+        logger.exception(x)
+        return web.HTTPBadGateway()
+
+
+async def what_else_to_eat_post(request):
+    data = await request.json()
+    try:
+        tg_id = data['tg_id']
+        await what_else_to_eat(tg_id)
+        return web.json_response({'success': True})
+    
+    except Exception as x:
+        logger.exception(x)
+        return web.HTTPBadGateway()
+    
+    
 app = web.Application()
 
 app.router.add_static('/static/', path='root/web/static', name='static')
@@ -959,7 +970,9 @@ app.add_routes([
     web.post('/api/get_all_favorites', get_all_favorites),
     web.post('/api/get_recipe', get_recipe),
     web.post('/api/ask_question', ask_question),
-    web.post('/api/submit_plate_review', submit_plate_review)
+    web.post('/api/submit_plate_review', submit_plate_review),
+    web.post('/api/get_has_eaten_without_plates_post', get_has_eaten_without_plates_post),
+    web.post('/api/what_else_to_eat_post', what_else_to_eat_post)
     # web.post('/api/remove_from_favorites', remove_from_favorites),
 
 ])

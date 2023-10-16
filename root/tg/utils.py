@@ -1,5 +1,7 @@
 # в этом файле лежат все функции, не связанные с приемом сообщений и запросов от пользователей
+import os
 from datetime import datetime
+import assemblyai as aai
 
 from root.db import setup as db, models
 from sqlalchemy.exc import IntegrityError
@@ -133,6 +135,16 @@ def str_date_to_strp(date_as_str):
         return None
     
 # print(count_cpfc(19, 72.0, 173, 80, 1.5, -161, 'Женщина'))
+
+
+aai.settings.api_key = os.getenv('AAI_API_KEY')
+config = aai.TranscriptionConfig(language_code="ru")
+transcriber = aai.Transcriber(config=config)
+
+
+def speech_to_text(audiofile_path):
+    transcript = transcriber.transcribe(audiofile_path)
+    return transcript.text
     
 
 
