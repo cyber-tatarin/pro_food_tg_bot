@@ -28,8 +28,10 @@ let nutrientStreak = {};
 let gender = "";
 let genderTextEaten = "";
 let genderTextNotEaten = "";
+let promises = [];
 
-function setPlateImage(className, plate, index) {
+async function setPlateImage(className, plate, index) {
+  console.log("setPlateImage");
   let imagePath = "";
   if (plate.percentages[0] === "100") {
     imagePath = "../static/images/1-part.png";
@@ -42,12 +44,20 @@ function setPlateImage(className, plate, index) {
   } else {
     imagePath = "../static/images/3-parts.png";
   }
+
+  let img = new Image();
+  let imgLoaded = new Promise((resolve, reject) => {
+    img.onload = resolve;
+    img.onerror = reject;
+  });
+  img.src = imagePath;
+  img.className = "card__plate";
+  document.querySelector(`.${className}${index + 1}`).appendChild(img);
   document
     .querySelector(`.${className}${index + 1}`)
-    .insertAdjacentHTML(
-      "afterbegin",
-      `<img src="${imagePath}" class="card__plate" />`
-    );
+    .insertAdjacentElement("afterbegin", img);
+
+  return imgLoaded;
 }
 
 function setPlateStars(className, plate, index) {
@@ -291,7 +301,7 @@ async function setPlates() {
           sendFavoritePlate(data, "/api/add_to_favorites", event.target);
         });
 
-      setPlateImage("card__visual", plate, index);
+      promises.push(setPlateImage("card__visual", plate, index));
       setPlateStars("card__stars", plate, index);
     });
   }
@@ -300,23 +310,32 @@ async function setPlates() {
 let isFunctionsLoaded = false;
 let isImagesLoaded = false;
 
-async function executeFunctions() {
-  try {
-    await setUserParameters();
-    await setUserStreak();
-    await setNutrientParameters();
-    await setPlates();
-  } catch (error) {
-    console.error("Произошла ошибка при выполнении функций:", error);
-  } finally {
-    isFunctionsLoaded = true;
-    if (isImagesLoaded) {
-      hideLoading();
-    }
+function handleCompletion(message) {
+  console.log(message);
+  isFunctionsLoaded = true;
+  if (isImagesLoaded) {
+    hideLoading();
   }
 }
 
-executeFunctions();
+Promise.all([
+  setUserParameters(),
+  setUserStreak(),
+  setNutrientParameters(),
+  setPlates(),
+])
+  .catch((error) => {
+    console.error("Произошла ошибка при выполнении функций:", error);
+  })
+  .finally(() => {
+    Promise.all(promises)
+      .then(() => handleCompletion("Все изображения загружены!"))
+      .catch(() =>
+        handleCompletion(
+          "Ошибка при загрузке одного или нескольких изображений."
+        )
+      );
+  });
 
 function showLoading(param = true) {
   const loader = document.querySelector(".loading");
@@ -636,47 +655,38 @@ if (excellentButton)
     }
   });
 
-document.querySelector(".i_have_eaten").addEventListener("click", async () => {
+async function handleButtonClick(endpoint) {
   try {
     showLoading(false);
-    const request = await fetch("../api/get_has_eaten_without_plates_post", {
+    const response = await fetch(endpoint, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({ tg_id: tg_id }),
     });
-    const response = await request.json();
-    if (response.success === true) {
+
+    const data = await response.json();
+    if (data.success === true) {
       tg.close();
-    } else {
     }
-    hideLoading(false);
   } catch (err) {
     console.log(err);
+  } finally {
     hideLoading(false);
   }
-});
+}
 
+document.querySelector(".i_have_eaten").addEventListener("click", function () {
+  handleButtonClick("../api/get_has_eaten_without_plates_post");
+});
 document
   .querySelector(".what_can_i_eat")
-  .addEventListener("click", async () => {
-    try {
-      showLoading(false);
-      const request = await fetch("../api/what_else_to_eat_post", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ tg_id: tg_id }),
-      });
-      const response = await request.json();
-      if (response.success === true) {
-        tg.close();
-      } else {
-      }
-    } catch (err) {
-      console.log(err);
-      hideLoading(false);
-    }
+  .addEventListener("click", function () {
+    handleButtonClick("../api/what_else_to_eat_post");
+  });
+document
+  .querySelector(".button_ask-question")
+  .addEventListener("click", function () {
+    handleButtonClick("../api/ask_question");
   });

@@ -56,6 +56,7 @@ function setMealsList(meals, containerSelector, index) {
 }
 
 let diameter;
+let promises = [];
 
 async function getDiameter() {
   const request = await fetch(`../api/get_user_parameters`, {
@@ -189,13 +190,7 @@ async function setPlates() {
         sendPlate(data, "/api/has_chosen_plate", el.target);
       });
 
-    setPlateImage("card__visual", plate, index).finally(() => {
-      console.log("finally");
-      isFunctionsLoaded = true;
-      if (isImagesLoaded) {
-        hideLoading();
-      }
-    });
+    promises.push(setPlateImage("card__visual", plate, index));
     setPlateStars("card__stars", plate, index);
   });
 
@@ -234,7 +229,7 @@ async function setPlates() {
     );
 
     setMealsList(plates.chosen_plate.meals, "card__list-chosen", 0);
-    setPlateImage("card__visual-chosen", plates.chosen_plate, 0);
+    promises.push(setPlateImage("card__visual-chosen", plates.chosen_plate, 0));
     setPlateStars("card__stars-chosen", plates.chosen_plate, 0);
 
     document
@@ -256,7 +251,19 @@ async function setPlates() {
 let isFunctionsLoaded = false;
 let isImagesLoaded = false;
 
-setPlates();
+setPlates().finally(async () => {
+  try {
+    await Promise.all(promises);
+    console.log("Все изображения загружены!");
+  } catch {
+    console.log("Ошибка при загрузке одного или нескольких изображений.");
+  } finally {
+    isFunctionsLoaded = true;
+    if (isImagesLoaded) {
+      hideLoading();
+    }
+  }
+});
 
 function showLoading(param = true) {
   const loader = document.querySelector(".loading");
