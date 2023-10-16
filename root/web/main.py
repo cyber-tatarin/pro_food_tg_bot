@@ -343,7 +343,8 @@ async def get_user_parameters(request):
             'height': user.height,
             'weight_aim': user.weight_aim,
             'weight_gap': float(user.weight_aim) - float(latest_body_measure.weight),
-            'plate_diameter': user.plate_diameter
+            'plate_diameter': user.plate_diameter,
+            'gender': user.gender
         }
         
         return web.json_response(res_data)
