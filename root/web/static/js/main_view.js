@@ -1,8 +1,17 @@
 const tg = window.Telegram.WebApp;
 const tg_id = 459471362 || tg.initDataUnsafe.user.id;
 
+document.body.style.overflow = "hidden";
+
+const currentDate = new Date();
+const day = String(currentDate.getDate()).padStart(2, "0");
+const month = String(currentDate.getMonth() + 1).padStart(2, "0");
+const year = currentDate.getFullYear();
+
+const formattedDate = `${day}.${month}.${year}`;
+document.querySelector(".date").textContent = `${formattedDate} — сегодня`;
+
 async function sendData(link) {
-  console.log(tg_id);
   const request = await fetch(`..${link}`, {
     method: "POST",
     headers: {
@@ -11,7 +20,6 @@ async function sendData(link) {
     body: JSON.stringify({ tg_id: tg_id }),
   });
   const response = await request.json();
-  console.log(response);
   return response;
 }
 
@@ -21,15 +29,15 @@ let nutrientStreak = {};
 function setPlateImage(className, plate, index) {
   let imagePath = "";
   if (plate.percentages[0] === "100") {
-    imagePath = "../static/images/1-part.svg";
-  } else if (plate.percentages[0] === "50") {
-    imagePath = "../static/images/2-parts.svg";
+    imagePath = "../static/images/1-part.png";
+  } else if (plate.percentages[0] === "50" && plate.percentages.length === 2) {
+    imagePath = "../static/images/2-parts.png";
   } else if (plate.percentages[0] === "33") {
-    imagePath = "../static/images/3-33-parts.svg";
-  } else if (plate.percentages[0] === "25" && plate.percentages[2] === "50") {
-    imagePath = "../static/images/3-parts.svg";
+    imagePath = "../static/images/3-33-parts.png";
+  } else if (plate.percentages.length === 4) {
+    imagePath = "../static/images/4-parts.png";
   } else {
-    imagePath = "../static/images/4-parts.svg";
+    imagePath = "../static/images/3-parts.png";
   }
   document
     .querySelector(`.${className}${index + 1}`)
@@ -53,7 +61,6 @@ function setPlateStars(className, plate, index) {
 
 async function setUserParameters() {
   const userParameters = await sendData("/api/get_user_parameters");
-  console.log(userParameters);
   diameter = userParameters.plate_diameter;
   document.querySelector(
     ".weight-value"
@@ -82,7 +89,6 @@ async function setUserParameters() {
 
 async function setUserStreak() {
   const userStreak = await sendData("/api/get_current_streak");
-  console.log(userStreak);
   document.querySelector(
     ".strick__time"
   ).textContent = `${userStreak.current_streak_text}`;
@@ -128,7 +134,6 @@ async function setUserStreak() {
 
 async function setNutrientParameters() {
   nutrientStreak = await sendData("/api/get_nutrient_parameters");
-  console.log(nutrientStreak);
   const width = nutrientStreak.eaten_calories / nutrientStreak.day_calories;
   if (width > 1) {
     document.querySelector(".progress__foreground").style.width = "100%";
@@ -144,33 +149,23 @@ async function setNutrientParameters() {
       width * 80
     }%`;
   }
-  document.querySelector(
-    ".day_calories"
-  ).textContent = `${nutrientStreak.day_calories} ккал`;
-  document.querySelector(
-    ".eaten-calories"
-  ).textContent = `${nutrientStreak.eaten_calories}`;
-  document.querySelector(
-    ".progress__end"
-  ).textContent = `${nutrientStreak.day_calories}`;
-  document.querySelector(
-    ".day__proteins"
-  ).textContent = `${nutrientStreak.day_proteins}`;
-  document.querySelector(
-    ".eaten__proteins"
-  ).textContent = `${nutrientStreak.eaten_proteins}`;
-  document.querySelector(
-    ".day__fats"
-  ).textContent = `${nutrientStreak.day_fats}`;
-  document.querySelector(
-    ".eaten__fats"
-  ).textContent = `${nutrientStreak.eaten_fats}`;
-  document.querySelector(
-    ".day__carbohydrates"
-  ).textContent = `${nutrientStreak.day_carbohydrates}`;
-  document.querySelector(
-    ".eaten__carbohydrates"
-  ).textContent = `${nutrientStreak.eaten_carbohydrates}`;
+  document.querySelector(".day_calories").textContent = `100%`;
+  document.querySelector(".eaten-calories").textContent = `${
+    (nutrientStreak.eaten_calories * 100) / nutrientStreak.day_calories
+  }`;
+
+  document.querySelector(".eaten__proteins").textContent = `${
+    (nutrientStreak.eaten_proteins * 100) / nutrientStreak.day_proteins
+  }`;
+
+  document.querySelector(".eaten__fats").textContent = `${
+    (nutrientStreak.eaten_fats * 100) / nutrientStreak.day_fats
+  }`;
+
+  document.querySelector(".eaten__carbohydrates").textContent = `${
+    (nutrientStreak.eaten_carbohydrates * 100) /
+    nutrientStreak.day_carbohydrates
+  }`;
 }
 
 async function setPlates() {
@@ -295,13 +290,59 @@ async function setPlates() {
   }
 }
 
-setUserParameters();
-setUserStreak();
-setNutrientParameters();
-setPlates();
+let isFunctionsLoaded = false;
+let isImagesLoaded = false;
+
+Promise.all([
+  setUserParameters(),
+  setUserStreak(),
+  setNutrientParameters(),
+  setPlates(),
+])
+  .then(() => {})
+  .catch((error) => {
+    console.error("Произошла ошибка при выполнении функций:", error);
+  })
+  .finally(() => {
+    isFunctionsLoaded = true;
+    if (isImagesLoaded) {
+      hideLoading();
+    }
+  });
+
+function showLoading(param = true) {
+  const loader = document.querySelector(".loading");
+  loader.classList.remove("loading_hidden");
+  loader.style.display = "flex";
+  if (param) {
+    console.log("hidden");
+    document.body.style.overflow = "hidden";
+  }
+}
+
+function hideLoading(param = true) {
+  const loader = document.querySelector(".loading");
+  loader.classList.add("loading_hidden");
+  loader.addEventListener("transitionend", function () {
+    loader.style.display = "none";
+  });
+  if (param) {
+    console.log("visible");
+    document.body.style.overflow = "visible";
+  }
+}
+
+window.onload = () => {
+  console.log("successfully");
+  isImagesLoaded = true;
+  if (isFunctionsLoaded) {
+    hideLoading();
+  }
+};
 
 async function sendFavoritePlate(data, link, el) {
   try {
+    showLoading();
     const request = await fetch(`..${link}`, {
       method: "POST",
       headers: {
@@ -310,7 +351,7 @@ async function sendFavoritePlate(data, link, el) {
       body: JSON.stringify(data),
     });
     const response = await request.json();
-
+    hideLoading();
     if (response.success === true) {
       const cards = document.querySelectorAll(".card");
       cards.forEach((card) => {
@@ -334,10 +375,11 @@ async function sendFavoritePlate(data, link, el) {
   }
 }
 
-let mark = 1;
+let mark = 0;
 
 async function sendPlate(data, link, el) {
   try {
+    showLoading();
     const request = await fetch(`..${link}`, {
       method: "POST",
       headers: {
@@ -346,7 +388,7 @@ async function sendPlate(data, link, el) {
       body: JSON.stringify(data),
     });
     const response = await request.json();
-
+    hideLoading();
     if (response.success === true) {
       if (response.is_green === false) {
         feedbackData = Object.assign({}, data);
@@ -368,6 +410,7 @@ async function sendPlate(data, link, el) {
         document
           .querySelector(".popup-feedback")
           .classList.remove("popup_hidden");
+        document.querySelector(".error").classList.remove("error_active");
         const exit = document
           .querySelector(".popup-feedback")
           .querySelector(".exit");
@@ -386,10 +429,12 @@ async function sendPlate(data, link, el) {
       }
 
       if (response.completed_all_tasks === true) {
-        console.log(123);
+        document.querySelector(".bold-popup-title").textContent =
+          response.bold_text;
+        document.querySelector(".thin-popup-title").textContent =
+          response.thin_text;
         document.querySelector(".popup-win").classList.remove("popup_hidden");
         document.body.style.overflow = "hidden";
-
         const exit = document
           .querySelector(".popup-win")
           .querySelector(".exit");
@@ -421,23 +466,34 @@ async function sendPlate(data, link, el) {
 
       eatenCaloriesEl.textContent =
         +eatenCaloriesEl.textContent +
-        (response.is_green ? -data.calories : data.calories);
+        (response.is_green
+          ? (-data.calories * 100) / nutrientStreak.day_calories
+          : (data.calories * 100) / nutrientStreak.day_calories);
       eatenProteinsEl.textContent =
         +eatenProteinsEl.textContent +
-        (response.is_green ? -data.proteins : data.proteins);
+        (response.is_green
+          ? (-data.proteins * 100) / nutrientStreak.day_proteins
+          : (data.proteins * 100) / nutrientStreak.day_proteins);
       eatenFatsEl.textContent =
-        +eatenFatsEl.textContent + (response.is_green ? -data.fats : data.fats);
+        +eatenFatsEl.textContent +
+        (response.is_green
+          ? (-data.fats * 100) / nutrientStreak.day_fats
+          : (data.fats * 100) / nutrientStreak.day_fats);
       eatenCarbohydratesEl.textContent =
         +eatenCarbohydratesEl.textContent +
-        (response.is_green ? -data.carbohydrates : data.carbohydrates);
+        (response.is_green
+          ? (-data.carbohydrates * 100) / nutrientStreak.day_carbohydrates
+          : (data.carbohydrates * 100) / nutrientStreak.day_carbohydrates);
 
-      const width = +eatenCaloriesEl.textContent / nutrientStreak.day_calories;
+      const width = +eatenCaloriesEl.textContent;
+      console.log(width);
+
       const progressBarStyle = progressForeground.style;
 
-      progressBarStyle.width = width > 1 ? "100%" : `${width * 80}%`;
+      progressBarStyle.width = width > 100 ? "100%" : `${width * 0.8}%`;
       progressBarStyle.borderTopRightRadius =
-        progressBarStyle.borderBottomRightRadius = width > 1 ? "3px" : "0px";
-      progressBarStyle.backgroundColor = width > 1 ? "#ff0831" : "#05ff00";
+        progressBarStyle.borderBottomRightRadius = width > 100 ? "3px" : "0px";
+      progressBarStyle.backgroundColor = width > 100 ? "#ff0831" : "#05ff00";
     }
   } catch (err) {
     console.log(err);
@@ -454,6 +510,7 @@ async function sendMark(data, mark) {
   obj.tg_id = data.tg_id;
   obj.plate_id = data.plate_id;
   obj.mark = mark;
+  showLoading(false);
   const request = await fetch(`../api/submit_plate_review`, {
     method: "POST",
     headers: {
@@ -462,9 +519,11 @@ async function sendMark(data, mark) {
     body: JSON.stringify(obj),
   });
   const response = await request.json();
+  hideLoading(false);
 }
 
 async function setRecepi(data) {
+  showLoading(false);
   document.querySelector(".popup__inner").innerHTML = "";
   document.querySelector(".popup__inner").insertAdjacentHTML(
     "afterbegin",
@@ -476,12 +535,6 @@ async function setRecepi(data) {
 </div>`
   );
 
-  const exit = document.querySelector(".exit");
-  exit.addEventListener("click", (event) => {
-    event.target.closest(".popup").classList.add("popup_hidden");
-    document.body.style.overflow = "visible";
-  });
-
   const request = await fetch(`../api/get_recipe`, {
     method: "POST",
     headers: {
@@ -490,6 +543,8 @@ async function setRecepi(data) {
     body: JSON.stringify(data),
   });
   const response = await request.json();
+
+  hideLoading(false);
 
   document.querySelector(
     ".popup__plate-title"
@@ -542,6 +597,11 @@ async function setRecepi(data) {
         );
     });
   });
+  const exit = document.querySelector(".popup-recepi").querySelector(".exit");
+  exit.addEventListener("click", (event) => {
+    event.target.closest(".popup-recepi").classList.add("popup_hidden");
+    document.body.style.overflow = "visible";
+  });
 }
 
 const excellentButton = document
@@ -549,11 +609,17 @@ const excellentButton = document
   .querySelector(".excellent-button");
 if (excellentButton)
   excellentButton.addEventListener("click", (event) => {
-    event.target.closest(".popup-feedback").classList.add("popup_hidden");
-    if (
-      document.querySelector(".popup-win").classList.contains("popup_hidden")
-    ) {
-      document.body.style.overflow = "visible";
+    if (mark <= 0) {
+      document.querySelector(".error").classList.add("error_active");
+    } else {
+      event.target.closest(".popup-feedback").classList.add("popup_hidden");
+      if (
+        document.querySelector(".popup-win").classList.contains("popup_hidden")
+      ) {
+        document.body.style.overflow = "visible";
+      }
+      document.querySelector(".error").classList.remove("error_active");
+      sendMark(feedbackData, mark);
+      mark = 0;
     }
-    sendMark(feedbackData, mark);
   });

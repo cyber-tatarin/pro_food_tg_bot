@@ -8,6 +8,95 @@ body {
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 }
 
+.lds-heart {
+  display: inline-block;
+  position: relative;
+  width: 80px;
+  height: 80px;
+  transform: rotate(45deg);
+  transform-origin: 40px 40px;
+}
+.lds-heart div {
+  top: 32px;
+  left: 32px;
+  position: absolute;
+  width: 32px;
+  height: 32px;
+  background: #05ff00;
+  animation: lds-heart 1.2s infinite cubic-bezier(0.215, 0.61, 0.355, 1);
+}
+.lds-heart div:after,
+.lds-heart div:before {
+  content: " ";
+  position: absolute;
+  display: block;
+  width: 32px;
+  height: 32px;
+  background: #05ff00;
+}
+.lds-heart div:before {
+  left: -24px;
+  border-radius: 50% 0 0 50%;
+}
+.lds-heart div:after {
+  top: -24px;
+  border-radius: 50% 50% 0 0;
+}
+@keyframes lds-heart {
+  0% {
+    transform: scale(0.95);
+  }
+  5% {
+    transform: scale(1.1);
+  }
+  39% {
+    transform: scale(0.85);
+  }
+  45% {
+    transform: scale(1);
+  }
+  60% {
+    transform: scale(0.95);
+  }
+  100% {
+    transform: scale(0.9);
+  }
+}
+
+body::-webkit-scrollbar {
+  width: 4px;
+  background-color: #fcfcfc;
+}
+
+body::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  background-color: rgb(5 255 0 / 80%);
+}
+
+body {
+  scrollbar-width: 4px; /* Для Firefox */
+  background-color: #fcfcfc;
+}
+
+.loading {
+  z-index: 11;
+  background-color: #fff;
+  top: 0;
+  left: 0;
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.loading_hidden {
+  transition: 0.5s;
+  pointer-events: none;
+  opacity: 0;
+}
+
 .main {
   display: flex;
   justify-content: center;
@@ -536,6 +625,10 @@ body {
   padding: 24px 32px;
 }
 
+.popup-win .popup__inner {
+  overflow-x: hidden;
+}
+
 .popup__inner::-webkit-scrollbar {
   width: 4px;
   background-color: #fcfcfc;
@@ -582,6 +675,15 @@ body {
   display: inline-block;
   width: 9px;
   text-align: right;
+}
+
+.win-player {
+  pointer-events: none;
+  margin-top: -20px;
+  scale: 1.2;
+  width: 100%;
+  height: fit-content;
+  aspect-ratio: 1 !important;
 }
 
 .popup__ingredients__title {
@@ -674,13 +776,22 @@ body {
 }
 
 .popup__plate-title_right {
-  padding-bottom: 10px;
+  padding-bottom: 22px;
   align-self: flex-start;
-  margin-bottom: 12px;
+  margin-bottom: 0px;
 }
 
 .text-center {
   text-align: center;
+}
+
+.feedback-instruction {
+  color: #303030;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 140%;
+  margin-bottom: 24px;
 }
 
 .button {
@@ -742,6 +853,7 @@ body {
 .choose-stars {
   display: flex;
   justify-content: space-between;
+  margin-bottom: 16px;
 }
 
 .flex-1 {
@@ -828,6 +940,10 @@ body {
   justify-content: center;
   margin-bottom: 16px;
   position: relative;
+}
+
+.card__plate {
+  max-height: 230px;
 }
 
 .card__plate_size {
@@ -1100,6 +1216,44 @@ body {
   margin-top: 1px;
   border-radius: 20px;
   border: 1.2px solid #303030;
+}
+
+.mg-20 {
+  margin-bottom: 20px;
+}
+
+.error {
+  margin: 0px -8px;
+  display: none;
+  color: #303030;
+  font-family: Montserrat;
+  font-size: 11px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: normal;
+  border-radius: 16px;
+  border: 1.2px solid #f00;
+  padding: 16px 20px;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.error_active {
+  display: block;
+}
+
+.br-error {
+  display: none;
+}
+
+@media (max-width: 530px) {
+  .error {
+    text-align: left;
+  }
+
+  .br-error {
+    display: block;
+  }
 }
 
 @media (max-width: 360px) {

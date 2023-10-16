@@ -44,6 +44,7 @@ function setMealsList(meals, containerSelector, index) {
 }
 
 let diameter;
+let promises = [];
 
 async function getDiameter() {
   const request = await fetch(`../api/get_user_parameters`, {
@@ -59,25 +60,34 @@ async function getDiameter() {
   return response.plate_diameter;
 }
 
-function setPlateImage(className, plate, index) {
+async function setPlateImage(className, plate, index) {
+  console.log("setPlateImage");
   let imagePath = "";
   if (plate.percentages[0] === "100") {
-    imagePath = "../static/images/1-part.svg";
-  } else if (plate.percentages[0] === "50") {
-    imagePath = "../static/images/2-parts.svg";
+    imagePath = "../static/images/1-part.png";
+  } else if (plate.percentages[0] === "50" && plate.percentages.length === 2) {
+    imagePath = "../static/images/2-parts.png";
   } else if (plate.percentages[0] === "33") {
-    imagePath = "../static/images/3-33-parts.svg";
-  } else if (plate.percentages[0] === "25" && plate.percentages[2] === "50") {
-    imagePath = "../static/images/3-parts.svg";
+    imagePath = "../static/images/3-33-parts.png";
+  } else if (plate.percentages.length === 4) {
+    imagePath = "../static/images/4-parts.png";
   } else {
-    imagePath = "../static/images/4-parts.svg";
+    imagePath = "../static/images/3-parts.png";
   }
+
+  let img = new Image();
+  let imgLoaded = new Promise((resolve, reject) => {
+    img.onload = resolve;
+    img.onerror = reject;
+  });
+  img.src = imagePath;
+  img.className = "card__plate";
+  document.querySelector(`.${className}${index + 1}`).appendChild(img);
   document
     .querySelector(`.${className}${index + 1}`)
-    .insertAdjacentHTML(
-      "afterbegin",
-      `<img src="${imagePath}" class="card__plate" />`
-    );
+    .insertAdjacentElement("afterbegin", img);
+
+  return imgLoaded;
 }
 
 function setPlateStars(className, plate, index) {
@@ -190,7 +200,7 @@ async function setPlates() {
         sendFavoritePlate(data, "/api/add_to_favorites", el.target);
       });
 
-    setPlateImage("card__visual", plate, index);
+    promises.push(setPlateImage("card__visual", plate, index));
     setPlateStars("card__stars", plate, index);
   });
 
@@ -326,7 +336,7 @@ async function setPlates() {
         .classList.add("card__button__favourites_off");
     }
 
-    setPlateImage("card__visual-chosen", plates.chosen_plate, 0);
+    promises.push(setPlateImage("card__visual-chosen", plates.chosen_plate, 0));
     setPlateStars("card__stars-chosen", plates.chosen_plate, 0);
 
     document
@@ -350,10 +360,60 @@ async function setPlates() {
   }
 }
 
-setPlates();
+let isFunctionsLoaded = false;
+let isImagesLoaded = false;
+
+setPlates().finally(() => {
+  Promise.all(promises)
+    .then(() => {
+      console.log("Все изображения загружены!");
+      isFunctionsLoaded = true;
+      if (isImagesLoaded) {
+        hideLoading();
+      }
+    })
+    .catch(() => {
+      console.log("Ошибка при загрузке одного или нескольких изображений.");
+      isFunctionsLoaded = true;
+      if (isImagesLoaded) {
+        hideLoading();
+      }
+    });
+});
+
+function showLoading(param = true) {
+  const loader = document.querySelector(".loading");
+  loader.classList.remove("loading_hidden");
+  loader.style.display = "flex";
+  if (param) {
+    console.log("hidden");
+    document.body.style.overflow = "hidden";
+  }
+}
+
+function hideLoading(param = true) {
+  const loader = document.querySelector(".loading");
+  loader.classList.add("loading_hidden");
+  loader.addEventListener("transitionend", function () {
+    loader.style.display = "none";
+  });
+  if (param) {
+    console.log("visible");
+    document.body.style.overflow = "visible";
+  }
+}
+
+window.onload = () => {
+  console.log("successfully");
+  isImagesLoaded = true;
+  if (isFunctionsLoaded) {
+    hideLoading();
+  }
+};
 
 async function sendFavoritePlate(data, link, el) {
   try {
+    showLoading();
     const request = await fetch(`..${link}`, {
       method: "POST",
       headers: {
@@ -362,6 +422,7 @@ async function sendFavoritePlate(data, link, el) {
       body: JSON.stringify(data),
     });
     const response = await request.json();
+    hideLoading();
     if (response.success === true) {
       if (response.is_black === true) {
         el.textContent = "Добавить в избранное";
@@ -378,6 +439,7 @@ async function sendFavoritePlate(data, link, el) {
 
 async function sendPlate(data, link, el) {
   try {
+    showLoading();
     const request = await fetch(`..${link}`, {
       method: "POST",
       headers: {
@@ -386,9 +448,12 @@ async function sendPlate(data, link, el) {
       body: JSON.stringify(data),
     });
     const response = await request.json();
+
     console.log(response);
     if (response.success === true) {
       window.location.href = "../choose_lunch";
+    } else {
+      hideLoading();
     }
   } catch (e) {}
 }
@@ -399,11 +464,12 @@ function showRecepi() {
 }
 
 async function setRecepi(data) {
+  showLoading(false);
   document.querySelector(".popup__inner").innerHTML = "";
   document.querySelector(".popup__inner").insertAdjacentHTML(
     "afterbegin",
     ` <p class="popup__plate-title">
-  “Название блюда длинasdf adsf asdf asd fasd fasdfasd”
+  “”
 </p>
 <div class="exit">
   <img src="../static/images/exit.svg" alt="exit" />
@@ -424,6 +490,8 @@ async function setRecepi(data) {
     body: JSON.stringify(data),
   });
   const response = await request.json();
+
+  hideLoading(false);
 
   document.querySelector(
     ".popup__plate-title"
