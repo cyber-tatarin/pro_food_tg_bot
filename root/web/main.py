@@ -884,9 +884,14 @@ async def get_recipe(request):
             
 async def ask_question(request):
     data = await request.json()
-    
     tg_id = data.get('tg_id')
-    await get_user_question_type(tg_id)
+    
+    try:
+        await get_user_question_type(tg_id)
+        return web.json_response({'success': True})
+    except Exception as x:
+        logger.exception(x)
+        return web.HTTPBadGateway()
     
 
 async def submit_plate_review(request):

@@ -48,12 +48,12 @@ def get_ikb_to_choose_activity_level():
 def get_ikb_to_choose_gender():
     ikbb = InlineKeyboardBuilder()
     ikbb.add(
-        InlineKeyboardButton(text='Мужчина',
+        InlineKeyboardButton(text='Мужской',
                              callback_data=callback_data_models.ChooseGenderCallback(additional_value=5,
-                                                                                     gender='Мужчина').pack()),
-        InlineKeyboardButton(text='Женщина',
+                                                                                     gender='Мужской').pack()),
+        InlineKeyboardButton(text='Женский',
                              callback_data=callback_data_models.ChooseGenderCallback(additional_value=-161,
-                                                                                     gender='Женщина').pack()),
+                                                                                     gender='Женский').pack()),
     )
     
     ikbb.adjust(1)
