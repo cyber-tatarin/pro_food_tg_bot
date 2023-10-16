@@ -25,6 +25,9 @@ async function sendData(link) {
 
 let diameter = 0;
 let nutrientStreak = {};
+let gender = "";
+let genderTextEaten = "";
+let genderTextNotEaten = "";
 
 function setPlateImage(className, plate, index) {
   let imagePath = "";
@@ -62,6 +65,10 @@ function setPlateStars(className, plate, index) {
 async function setUserParameters() {
   const userParameters = await sendData("/api/get_user_parameters");
   diameter = userParameters.plate_diameter;
+  gender = userParameters.gender;
+  genderTextEaten = gender === "Мужской" ? "Я съел" : "Я съела";
+  genderTextNotEaten = gender === "Мужской" ? "Я не съел" : "Я не съела";
+  document.querySelector(".i_have_eaten").textContent = genderTextEaten;
   document.querySelector(
     ".weight-value"
   ).textContent = `${userParameters.weight} кг`;
@@ -219,7 +226,7 @@ async function setPlates() {
       }">Добавить в избранное</button>
       <button class="card__button__choose card__button__choose${
         index + 1
-      }">Выбрать</button>
+      }">${genderTextEaten}</button>
     </div>
   </div>`
       );
@@ -236,7 +243,7 @@ async function setPlates() {
       if (plate.is_eaten === true) {
         document.querySelector(
           `.card__button__choose${index + 1}`
-        ).textContent = "Не съел";
+        ).textContent = genderTextNotEaten;
         document
           .querySelector(`.card__button__choose${index + 1}`)
           .classList.add("card__button__choose_off");
@@ -293,22 +300,23 @@ async function setPlates() {
 let isFunctionsLoaded = false;
 let isImagesLoaded = false;
 
-Promise.all([
-  setUserParameters(),
-  setUserStreak(),
-  setNutrientParameters(),
-  setPlates(),
-])
-  .then(() => {})
-  .catch((error) => {
+async function executeFunctions() {
+  try {
+    await setUserParameters();
+    await setUserStreak();
+    await setNutrientParameters();
+    await setPlates();
+  } catch (error) {
     console.error("Произошла ошибка при выполнении функций:", error);
-  })
-  .finally(() => {
+  } finally {
     isFunctionsLoaded = true;
     if (isImagesLoaded) {
       hideLoading();
     }
-  });
+  }
+}
+
+executeFunctions();
 
 function showLoading(param = true) {
   const loader = document.querySelector(".loading");
@@ -461,7 +469,7 @@ async function sendPlate(data, link, el) {
         ".progress__foreground"
       );
 
-      el.textContent = response.is_green ? "Выбрать" : "Не съел";
+      el.textContent = response.is_green ? genderTextEaten : genderTextNotEaten;
       el.classList.toggle("card__button__choose_off", !response.is_green);
 
       eatenCaloriesEl.textContent =
@@ -625,5 +633,50 @@ if (excellentButton)
       document.querySelector(".error").classList.remove("error_active");
       sendMark(feedbackData, mark);
       mark = 0;
+    }
+  });
+
+document.querySelector(".i_have_eaten").addEventListener("click", async () => {
+  try {
+    showLoading(false);
+    const request = await fetch("../api/get_has_eaten_without_plates_post", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ tg_id: tg_id }),
+    });
+    const response = await request.json();
+    if (response.success === true) {
+      tg.close();
+    } else {
+    }
+    hideLoading(false);
+  } catch (err) {
+    console.log(err);
+    hideLoading(false);
+  }
+});
+
+document
+  .querySelector(".what_can_i_eat")
+  .addEventListener("click", async () => {
+    try {
+      showLoading(false);
+      const request = await fetch("../api/what_else_to_eat_post", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ tg_id: tg_id }),
+      });
+      const response = await request.json();
+      if (response.success === true) {
+        tg.close();
+      } else {
+      }
+    } catch (err) {
+      console.log(err);
+      hideLoading(false);
     }
   });

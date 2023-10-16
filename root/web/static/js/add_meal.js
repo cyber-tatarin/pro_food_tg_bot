@@ -122,8 +122,6 @@ document
       }
     });
     data.tg_id = tg_id;
-    console.log("data", data);
-    console.log("fetched!!!!!!!!!!!!!!!!!");
     try {
       const request = await fetch("../api/add_meal", {
         method: "POST",
