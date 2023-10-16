@@ -210,7 +210,6 @@ async function setPlates() {
       `<div class="card card-mini card-mini${index + 1}" name="${
         plate.plate_id
       }">
-    <div class="card__type">Рекомендуем</div>
     <div class="card__calories">Б: ${plate.proteins} / Ж: ${plate.fats} / У: ${
         plate.carbohydrates
       } / ${plate.calories} ккал</div>
