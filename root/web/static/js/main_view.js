@@ -150,22 +150,22 @@ async function setNutrientParameters() {
     }%`;
   }
   document.querySelector(".day_calories").textContent = `100%`;
-  document.querySelector(".eaten-calories").textContent = `${
+  document.querySelector(".eaten-calories").textContent = `${Math.round(
     (nutrientStreak.eaten_calories * 100) / nutrientStreak.day_calories
-  }`;
+  )}`;
 
-  document.querySelector(".eaten__proteins").textContent = `${
+  document.querySelector(".eaten__proteins").textContent = `${Math.round(
     (nutrientStreak.eaten_proteins * 100) / nutrientStreak.day_proteins
-  }`;
+  )}`;
 
-  document.querySelector(".eaten__fats").textContent = `${
+  document.querySelector(".eaten__fats").textContent = `${Math.round(
     (nutrientStreak.eaten_fats * 100) / nutrientStreak.day_fats
-  }`;
+  )}`;
 
-  document.querySelector(".eaten__carbohydrates").textContent = `${
+  document.querySelector(".eaten__carbohydrates").textContent = `${Math.round(
     (nutrientStreak.eaten_carbohydrates * 100) /
-    nutrientStreak.day_carbohydrates
-  }`;
+      nutrientStreak.day_carbohydrates
+  )}`;
 }
 
 async function setPlates() {
@@ -467,23 +467,27 @@ async function sendPlate(data, link, el) {
       eatenCaloriesEl.textContent =
         +eatenCaloriesEl.textContent +
         (response.is_green
-          ? (-data.calories * 100) / nutrientStreak.day_calories
-          : (data.calories * 100) / nutrientStreak.day_calories);
+          ? Math.round((-data.calories * 100) / nutrientStreak.day_calories)
+          : Math.round((data.calories * 100) / nutrientStreak.day_calories));
       eatenProteinsEl.textContent =
         +eatenProteinsEl.textContent +
         (response.is_green
-          ? (-data.proteins * 100) / nutrientStreak.day_proteins
-          : (data.proteins * 100) / nutrientStreak.day_proteins);
+          ? Math.round((-data.proteins * 100) / nutrientStreak.day_proteins)
+          : Math.round((data.proteins * 100) / nutrientStreak.day_proteins));
       eatenFatsEl.textContent =
         +eatenFatsEl.textContent +
         (response.is_green
-          ? (-data.fats * 100) / nutrientStreak.day_fats
-          : (data.fats * 100) / nutrientStreak.day_fats);
+          ? Math.round((-data.fats * 100) / nutrientStreak.day_fats)
+          : Math.round((data.fats * 100) / nutrientStreak.day_fats));
       eatenCarbohydratesEl.textContent =
         +eatenCarbohydratesEl.textContent +
         (response.is_green
-          ? (-data.carbohydrates * 100) / nutrientStreak.day_carbohydrates
-          : (data.carbohydrates * 100) / nutrientStreak.day_carbohydrates);
+          ? Math.round(
+              (-data.carbohydrates * 100) / nutrientStreak.day_carbohydrates
+            )
+          : Math.round(
+              (data.carbohydrates * 100) / nutrientStreak.day_carbohydrates
+            ));
 
       const width = +eatenCaloriesEl.textContent;
       console.log(width);
