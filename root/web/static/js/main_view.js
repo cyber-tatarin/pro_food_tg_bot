@@ -669,10 +669,13 @@ async function handleButtonClick(endpoint) {
     const data = await response.json();
     if (data.success === true) {
       tg.close();
+    } else {
+      tg.close();
     }
   } catch (err) {
     console.log(err);
   } finally {
+    tg.close();
     hideLoading(false);
   }
 }
@@ -690,3 +693,200 @@ document
   .addEventListener("click", function () {
     handleButtonClick("../api/ask_question");
   });
+
+// Вспомогательные функции для сегментов
+const skipped = (ctx, value) =>
+  ctx.p0.skip || ctx.p1.skip ? value : undefined;
+const down = (ctx, value) =>
+  ctx.p0.parsed.y > ctx.p1.parsed.y ? value : undefined;
+
+// Общие настройки
+const genericOptions = {
+  fill: false,
+  interaction: {
+    intersect: false,
+  },
+  plugins: {
+    legend: {
+      display: false, // убирает отображение легенды
+    },
+  },
+  radius: 0,
+  scales: {
+    y: {
+      borderColor: function (context) {
+        const color = "blue"; // Замените это на ваше условие или значение
+        return Chart.helpers.color(color).lighten(10);
+      },
+      min: 40,
+      max: 85,
+      title: {
+        display: false,
+        // text: "Вес (кг)",
+      },
+      font: {
+        family: "Montserrat",
+        size: 14, // Можете задать любой размер
+      },
+      // ticks: {
+      //   maxRotation: 90, // Максимальное вращение меток
+      //   minRotation: 90, // Минимальное вращение меток
+      // },
+      grid: {
+        borderColor: "rgba(0, 0, 0, 0.7)",
+        display: false, // убирает решётчатые линии по оси X
+      },
+    },
+    x: {
+      borderColor: function (context) {
+        const color = "blue"; // Замените это на ваше условие или значение
+        return Chart.helpers.color(color).lighten(10);
+      },
+      title: {
+        display: false,
+        // text: "Неделя",
+      },
+      font: {
+        family: "Montserrat",
+        size: 14, // Можете задать любой размер
+      },
+      ticks: {
+        display: false, // убирает отображение меток на оси X
+      },
+      // ticks: {
+      //   maxRotation: 90, // Максимальное вращение меток
+      //   minRotation: 90, // Минимальное вращение меток
+      // },
+      grid: {
+        borderColor: "rgba(0, 0, 0, 0.7)",
+        display: false, // убирает решётчатые линии по оси X
+      },
+    },
+  },
+};
+
+// Конфигурация графика
+const config = {
+  type: "line",
+  data: {
+    labels: [
+      "Неделя 1",
+      "Неделя 2",
+      "Неделя 3",
+      "Неделя 4",
+      "Неделя 5",
+      "Неделя 6",
+      "Неделя 7",
+      "Неделя 8",
+      "Неделя 9",
+      "Неделя 10",
+      "Неделя 11",
+      "Неделя 12",
+      "Неделя 13",
+      "Неделя 14",
+      "Неделя 15",
+      "Неделя 16",
+      "Неделя 17",
+      "Неделя 18",
+    ],
+    datasets: [
+      {
+        label: null,
+        data: [
+          50,
+          55,
+          NaN,
+          65,
+          70,
+          71,
+          68,
+          75,
+          60,
+          80.5,
+          70,
+          NaN,
+          45,
+          60,
+          80,
+          50,
+          60,
+          50,
+          55,
+          76,
+          50,
+          55,
+          NaN,
+          65,
+          70,
+          71,
+          68,
+          75,
+          60,
+          80,
+        ],
+        borderColor: "#303030",
+        segment: {
+          borderColor: (ctx) =>
+            skipped(ctx, "rgb(0,0,0,0.2)") || down(ctx, "#05ff00") || "#f00",
+
+          borderDash: (ctx) => skipped(ctx, [6, 6]),
+        },
+        spanGaps: true,
+      },
+    ],
+  },
+  options: genericOptions,
+};
+
+// Инициализация графика
+const ctx = document.getElementById("myChart").getContext("2d");
+const myChart = new Chart(ctx, config);
+Chart.defaults.font.family = "Montserrat";
+
+const horizontalLinePlugin = {
+  id: "horizontalLine",
+  afterDraw: (chart) => {
+    const ctx = chart.ctx;
+    ctx.font = "12px Montserrat"; // Шрифт текста
+    const datasets = chart.data.datasets;
+    let minY = Number.POSITIVE_INFINITY;
+    let maxY = Number.NEGATIVE_INFINITY;
+
+    datasets.forEach((dataset) => {
+      dataset.data.forEach((value) => {
+        if (!isNaN(value)) {
+          minY = Math.min(minY, value);
+          maxY = Math.max(maxY, value);
+        }
+      });
+    });
+
+    const yMin = chart.scales.y.getPixelForValue(minY);
+    const yMax = chart.scales.y.getPixelForValue(maxY);
+    const chartArea = chart.chartArea;
+
+    ctx.save();
+    ctx.strokeStyle = "rgb(0,0,0,0.2)"; // Цвет линии
+    ctx.lineWidth = 1; // Толщина линии
+    ctx.fillStyle = "#ababab"; // Цвет текста
+
+    // Рисуем линию для максимального значения и текст
+    ctx.beginPath();
+    ctx.moveTo(chartArea.left, yMax);
+    ctx.lineTo(chartArea.right, yMax);
+    ctx.stroke();
+    ctx.fillText(maxY, chartArea.left + 20, yMax - 10); // .toFixed(2) округляет до 2-х десятичных знаков
+
+    // Рисуем линию для минимального значения и текст
+    ctx.beginPath();
+
+    ctx.moveTo(chartArea.left, yMin);
+    ctx.lineTo(chartArea.right, yMin);
+    ctx.stroke();
+    ctx.fillText(minY, chartArea.left + 20, yMin + 20);
+
+    ctx.restore();
+  },
+};
+
+Chart.register(horizontalLinePlugin);
