@@ -954,7 +954,7 @@ async def statistics_post(request):
         all_body_measures = session.query(models.BodyMeasure).filter(models.BodyMeasure.tg_id == tg_id).order_by(
             models.BodyMeasure.date).all()
         all_body_measures.pop(0)
-        print(all_body_measures)
+        
         if all_body_measures:
             weight_list = list()
             chest_volume_list = list()
@@ -964,28 +964,21 @@ async def statistics_post(request):
             hips_volume_list = list()
             
             date_pattern = '%d.%m.%Y'
-            
-            # measure_date = all_body_measures[0].date
-            
+
             for index, body_measure_obj in enumerate(all_body_measures[1:]):
                 previous_body_measure_obj = all_body_measures[index]
-                
-                # print((next_body_measure.date - body_measure_obj.date).days)
                 
                 obj_date_as_str = datetime.strftime(previous_body_measure_obj.date, date_pattern)
                 
                 weight_list.append({'date': obj_date_as_str, 'value': previous_body_measure_obj.weight})
                 chest_volume_list.append({'date': obj_date_as_str, 'value': previous_body_measure_obj.chest_volume})
-                underchest_volume_list.append({'date': obj_date_as_str, 'value': previous_body_measure_obj.weight})
-                waist_volume_list.append({'date': obj_date_as_str, 'value': previous_body_measure_obj.underchest_voume})
+                underchest_volume_list.append({'date': obj_date_as_str, 'value': previous_body_measure_obj.underchest_volume})
+                waist_volume_list.append({'date': obj_date_as_str, 'value': previous_body_measure_obj.waist_volume})
                 belly_volume_list.append({'date': obj_date_as_str, 'value': previous_body_measure_obj.belly_volume})
                 hips_volume_list.append({'date': obj_date_as_str, 'value': previous_body_measure_obj.hips_volume})
                 
                 measure_date = previous_body_measure_obj.date
-                
                 while (body_measure_obj.date - measure_date).days > 7:
-                    print('in while')
-                    print((body_measure_obj.date - measure_date).days)
                     
                     measure_date = measure_date + timedelta(days=7)
                     measure_date_as_str = datetime.strftime(measure_date, date_pattern)
@@ -996,17 +989,13 @@ async def statistics_post(request):
                     waist_volume_list.append({'date': measure_date_as_str, 'value': None})
                     belly_volume_list.append({'date': measure_date_as_str, 'value': None})
                     hips_volume_list.append({'date': measure_date_as_str, 'value': None})
-                    
-                    print(measure_date)
-            
-            print(datetime.strftime(all_body_measures[-1].date, '%Y-%m-%d'))
             
             last_obj_date = datetime.strftime(all_body_measures[-1].date, date_pattern)
             
             weight_list.append({'date': last_obj_date, 'value': all_body_measures[-1].weight})
             chest_volume_list.append({'date': last_obj_date, 'value': all_body_measures[-1].chest_volume})
-            underchest_volume_list.append({'date': last_obj_date, 'value': all_body_measures[-1].weight})
-            waist_volume_list.append({'date': last_obj_date, 'value': all_body_measures[-1].underchest_voume})
+            underchest_volume_list.append({'date': last_obj_date, 'value': all_body_measures[-1].underchest_volume})
+            waist_volume_list.append({'date': last_obj_date, 'value': all_body_measures[-1].waist_volume})
             belly_volume_list.append({'date': last_obj_date, 'value': all_body_measures[-1].belly_volume})
             hips_volume_list.append({'date': last_obj_date, 'value': all_body_measures[-1].hips_volume})
             
@@ -1017,7 +1006,6 @@ async def statistics_post(request):
                 'waist_volume_list': waist_volume_list,
                 'belly_volume_list': belly_volume_list,
                 'hips_volume_list': hips_volume_list
-                
             }
             
             return web.json_response(result_dict)

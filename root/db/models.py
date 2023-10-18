@@ -44,7 +44,7 @@ class BodyMeasure(Base):
     
     weight = Column(Float)
     chest_volume = Column(Integer)
-    underchest_voume = Column(Integer)
+    underchest_volume = Column(Integer)
     waist_volume = Column(Integer)
     belly_volume = Column(Integer)
     hips_volume = Column(Integer)
