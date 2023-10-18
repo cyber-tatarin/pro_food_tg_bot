@@ -7,7 +7,7 @@ import aiohttp
 from aiohttp import web
 import jinja2
 import aiohttp_jinja2
-from sqlalchemy import func, select, text
+from sqlalchemy import func, select, text, desc
 from dotenv import load_dotenv, find_dotenv
 from sqlalchemy.exc import IntegrityError
 
@@ -370,16 +370,16 @@ async def get_current_streak(request):
             session.add(user_streak_obj)
             session.commit()
             session.refresh(user_streak_obj)
-            
+        
         current_streak = user_streak_obj.streak
         if user_streak_obj.last_updated != today:
-    
+            
             all_today_chosen_plates = session.query(models.UserPlatesDate).filter(models.UserPlatesDate.tg_id == tg_id,
                                                                                   models.UserPlatesDate.date == today).all()
             if all_today_chosen_plates:
                 if len(all_today_chosen_plates) >= 3:
                     current_task_number += 1
-    
+            
             # all_today_has_eaten = session.query(models.HasEaten).filter(models.HasEaten.tg_id == tg_id,
             #                                                             models.HasEaten.date == today).all()
             # if all_today_has_eaten:
@@ -390,7 +390,7 @@ async def get_current_streak(request):
             #     pass
         else:
             current_task_number = 3
-
+    
     except Exception as x:
         logger.exception(x)
         return web.HTTPBadGateway()
@@ -647,23 +647,23 @@ async def has_eaten_plate(request):
                                                                             models.HasEaten.date == today).all()
                 if all_today_has_eaten:
                     if len(all_today_has_eaten) >= 3:
-    
+                        
                         updated_earlier_than_today_or_created_today = True
                         last_updated = user_streak_obj.last_updated
                         if last_updated is not None:
                             updated_earlier_than_today_or_created_today = user_streak_obj.last_updated < today
-    
+                        
                         if updated_earlier_than_today_or_created_today:
                             user_streak_obj.streak += 1
-        
+                            
                             user_obj = session.query(models.User).filter(models.User.tg_id == tg_id).first()
                             user_obj.balance += 10
                             
                             current_balance = user_obj.balance
-        
+                            
                             session.commit()
                             completed_all_tasks = True
-                        
+            
             except Exception as x:
                 logger.exception(x)
             
@@ -856,8 +856,8 @@ async def get_all_favorites(request):
     finally:
         if session.is_active:
             session.close()
-            
-            
+
+
 async def get_recipe(request):
     data = await request.json()
     print('inside')
@@ -876,12 +876,12 @@ async def get_recipe(request):
     except Exception as x:
         logger.exception(x)
         return web.HTTPBadGateway()
-        
+    
     finally:
         if session.is_active:
             session.close()
-            
-            
+
+
 async def ask_question(request):
     data = await request.json()
     tg_id = data.get('tg_id')
@@ -892,7 +892,7 @@ async def ask_question(request):
     except Exception as x:
         logger.exception(x)
         return web.HTTPBadGateway()
-    
+
 
 async def submit_plate_review(request):
     data = await request.json()
@@ -914,8 +914,8 @@ async def submit_plate_review(request):
     except Exception as x:
         logger.exception(x)
         return web.HTTPBadGateway()
-    
-    
+
+
 async def get_has_eaten_without_plates_post(request):
     data = await request.json()
     try:
@@ -938,8 +938,98 @@ async def what_else_to_eat_post(request):
     except Exception as x:
         logger.exception(x)
         return web.HTTPBadGateway()
+
+
+@aiohttp_jinja2.template('statistics.html')
+async def statistics_get(request):
+    return {}
+
+
+async def statistics_post(request):
+    data = await request.json()
+    tg_id = data.get('tg_id')
     
+    session = db.Session()
+    try:
+        all_body_measures = session.query(models.BodyMeasure).filter(models.BodyMeasure.tg_id == tg_id).order_by(
+            models.BodyMeasure.date).all()
+        all_body_measures.pop(0)
+        print(all_body_measures)
+        if all_body_measures:
+            weight_list = list()
+            chest_volume_list = list()
+            underchest_volume_list = list()
+            waist_volume_list = list()
+            belly_volume_list = list()
+            hips_volume_list = list()
+            
+            date_pattern = '%d.%m.%Y'
+            
+            # measure_date = all_body_measures[0].date
+            
+            for index, body_measure_obj in enumerate(all_body_measures[1:]):
+                previous_body_measure_obj = all_body_measures[index]
+                
+                # print((next_body_measure.date - body_measure_obj.date).days)
+                
+                obj_date_as_str = datetime.strftime(previous_body_measure_obj.date, date_pattern)
+                
+                weight_list.append({'date': obj_date_as_str, 'value': previous_body_measure_obj.weight})
+                chest_volume_list.append({'date': obj_date_as_str, 'value': previous_body_measure_obj.chest_volume})
+                underchest_volume_list.append({'date': obj_date_as_str, 'value': previous_body_measure_obj.weight})
+                waist_volume_list.append({'date': obj_date_as_str, 'value': previous_body_measure_obj.underchest_voume})
+                belly_volume_list.append({'date': obj_date_as_str, 'value': previous_body_measure_obj.belly_volume})
+                hips_volume_list.append({'date': obj_date_as_str, 'value': previous_body_measure_obj.hips_volume})
+                
+                measure_date = previous_body_measure_obj.date
+                
+                while (body_measure_obj.date - measure_date).days > 7:
+                    print('in while')
+                    print((body_measure_obj.date - measure_date).days)
+                    
+                    measure_date = measure_date + timedelta(days=7)
+                    measure_date_as_str = datetime.strftime(measure_date, date_pattern)
+                    
+                    weight_list.append({'date': measure_date_as_str, 'value': None})
+                    chest_volume_list.append({'date': measure_date_as_str, 'value': None})
+                    underchest_volume_list.append({'date': measure_date_as_str, 'value': None})
+                    waist_volume_list.append({'date': measure_date_as_str, 'value': None})
+                    belly_volume_list.append({'date': measure_date_as_str, 'value': None})
+                    hips_volume_list.append({'date': measure_date_as_str, 'value': None})
+                    
+                    print(measure_date)
+            
+            print(datetime.strftime(all_body_measures[-1].date, '%Y-%m-%d'))
+            
+            last_obj_date = datetime.strftime(all_body_measures[-1].date, date_pattern)
+            
+            weight_list.append({'date': last_obj_date, 'value': all_body_measures[-1].weight})
+            chest_volume_list.append({'date': last_obj_date, 'value': all_body_measures[-1].chest_volume})
+            underchest_volume_list.append({'date': last_obj_date, 'value': all_body_measures[-1].weight})
+            waist_volume_list.append({'date': last_obj_date, 'value': all_body_measures[-1].underchest_voume})
+            belly_volume_list.append({'date': last_obj_date, 'value': all_body_measures[-1].belly_volume})
+            hips_volume_list.append({'date': last_obj_date, 'value': all_body_measures[-1].hips_volume})
+            
+            result_dict = {
+                'weight_list': weight_list,
+                'chest_volume_list': chest_volume_list,
+                'underchest_volume_list': underchest_volume_list,
+                'waist_volume_list': waist_volume_list,
+                'belly_volume_list': belly_volume_list,
+                'hips_volume_list': hips_volume_list
+                
+            }
+            
+            return web.json_response(result_dict)
     
+    except Exception as x:
+        logger.exception(x)
+        return web.HTTPBadGateway()
+    finally:
+        if session.is_active:
+            session.close()
+
+
 app = web.Application()
 
 app.router.add_static('/static/', path='root/web/static', name='static')
@@ -956,6 +1046,7 @@ app.add_routes([
     web.get('/choose_lunch', choose_lunch),
     web.get('/choose_dinner', choose_dinner),
     web.get('/favorites', favorites),
+    web.get('/statistics', statistics_get)
 
 ])
 
@@ -978,7 +1069,8 @@ app.add_routes([
     web.post('/api/ask_question', ask_question),
     web.post('/api/submit_plate_review', submit_plate_review),
     web.post('/api/get_has_eaten_without_plates_post', get_has_eaten_without_plates_post),
-    web.post('/api/what_else_to_eat_post', what_else_to_eat_post)
+    web.post('/api/what_else_to_eat_post', what_else_to_eat_post),
+    web.post('/api/statistics', statistics_post)
     # web.post('/api/remove_from_favorites', remove_from_favorites),
 
 ])
