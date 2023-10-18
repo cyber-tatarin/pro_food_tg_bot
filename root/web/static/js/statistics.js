@@ -1,0 +1,279 @@
+const tg = window.Telegram.WebApp;
+const tg_id = 459471362 || tg.initDataUnsafe.user.id;
+
+let isFunctionsLoaded = true;
+let isImagesLoaded = false;
+
+function showLoading(param = true) {
+  const loader = document.querySelector(".loading");
+  loader.classList.remove("loading_hidden");
+  loader.style.display = "flex";
+  if (param) {
+    console.log("hidden");
+    document.body.style.overflow = "hidden";
+  }
+}
+
+async function setStatistics() {
+  try {
+    const request = await fetch(`/api/statistics`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ tg_id: tg_id }),
+    });
+    const response = await request.json();
+    if (!isEmpty(response)) {
+      registerChart("weightChart", response.weight_list, "кг");
+      registerChart("chestVolumeChart", response.chest_volume_list, "см");
+      registerChart(
+        "underchestVolumeChart",
+        response.underchest_volume_list,
+        "см"
+      );
+      registerChart("hipsVolumeChart", response.waist_volume_list, "см");
+      registerChart("bellyVolumeChart", response.belly_volume_list, "см");
+      registerChart("waistVolumeChart", response.hips_volume_list, "см");
+      // hideLoading();
+    } else {
+      console.log("Пустой JSON");
+    }
+  } catch (err) {
+    console.log(err);
+  }
+}
+
+function isEmpty(obj) {
+  if (Object.keys(obj).length === 0) return true;
+
+  for (let key in obj) {
+    if (obj[key] !== null && obj[key] !== undefined && obj[key].length !== 0)
+      return false;
+  }
+
+  return true;
+}
+
+setStatistics();
+
+function hideLoading(param = true) {
+  const loader = document.querySelector(".loading");
+  loader.classList.add("loading_hidden");
+  loader.addEventListener("transitionend", function () {
+    loader.style.display = "none";
+  });
+  if (param) {
+    console.log("visible");
+    document.body.style.overflow = "visible";
+  }
+}
+
+window.onload = () => {
+  console.log("successfully");
+  isImagesLoaded = true;
+  if (isFunctionsLoaded) {
+    hideLoading();
+  }
+};
+
+const skipped = (ctx, value) =>
+  ctx.p0.skip || ctx.p1.skip ? value : undefined;
+const down = (ctx, value) =>
+  ctx.p0.parsed.y > ctx.p1.parsed.y ? value : undefined;
+
+const chartAreaBorder = {
+  id: "chartAreaBorder",
+  beforeDraw(chart, args, options) {
+    const {
+      ctx,
+      chartArea: { left, top, width, height },
+    } = chart;
+    ctx.save();
+    ctx.strokeStyle = options.borderColor;
+    ctx.lineWidth = options.borderWidth;
+    ctx.setLineDash(options.borderDash || []);
+    ctx.lineDashOffset = options.borderDashOffset;
+
+    ctx.beginPath();
+    ctx.moveTo(left, top);
+    ctx.lineTo(left, top + height);
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.moveTo(left, top + height);
+    ctx.lineTo(left + width, top + height);
+    ctx.stroke();
+
+    ctx.restore();
+  },
+};
+
+const horizontalLinePlugin = {
+  id: "horizontalLine",
+  afterDraw: (chart) => {
+    const ctx = chart.ctx;
+    ctx.font = "12px Montserrat";
+    const datasets = chart.data.datasets;
+    let minY = Number.POSITIVE_INFINITY;
+    let maxY = Number.NEGATIVE_INFINITY;
+
+    datasets.forEach((dataset) => {
+      dataset.data.forEach((value) => {
+        if (value) {
+          minY = Math.min(minY, value);
+          maxY = Math.max(maxY, value);
+        }
+      });
+    });
+
+    const yMin = chart.scales.y.getPixelForValue(minY);
+    const yMax = chart.scales.y.getPixelForValue(maxY);
+    const chartArea = chart.chartArea;
+
+    ctx.save();
+    ctx.strokeStyle = "rgb(0,0,0,0.2)";
+    ctx.lineWidth = 1;
+    ctx.fillStyle = "#ababab";
+    ctx.beginPath();
+    ctx.moveTo(chartArea.left, yMax);
+    ctx.lineTo(chartArea.right, yMax);
+    ctx.stroke();
+    ctx.fillText(maxY, chartArea.left + 20, yMax - 10);
+    ctx.beginPath();
+    ctx.moveTo(chartArea.left, yMin);
+    ctx.lineTo(chartArea.right, yMin);
+    ctx.stroke();
+    ctx.fillText(minY, chartArea.left + 20, yMin + 20);
+    ctx.restore();
+  },
+};
+
+function createConfig(dates, values, min, max, measure) {
+  return {
+    type: "line",
+    data: {
+      labels: dates,
+      datasets: [
+        {
+          label: null,
+          data: values,
+          segment: {
+            borderColor: (ctx) =>
+              skipped(ctx, "rgb(0,0,0,0.2)") || down(ctx, "#05ff00") || "#f00",
+            borderDash: (ctx) => skipped(ctx, [6, 6]),
+          },
+          spanGaps: true,
+          pointRadius: 0,
+          pointHitRadius: 10,
+        },
+      ],
+    },
+    options: {
+      plugins: {
+        legend: { display: false },
+        chartAreaBorder: {
+          borderColor: "#303030",
+          borderWidth: 2,
+        },
+        tooltip: {
+          mode: "index",
+          displayColors: false,
+          backgroundColor: "rgba(0,0,0,0.5)",
+          titleFont: { family: "Montserrat", size: 16 },
+          bodyFont: { family: "Montserrat", size: 14 },
+          callbacks: {
+            title: function (context) {
+              return context[0].label;
+            },
+            label: function (context) {
+              return context.parsed.y + ` ${measure}`;
+            },
+          },
+        },
+      },
+      scales: {
+        y: {
+          min: min - 1,
+          max: max + 1,
+          ticks: {
+            stepSize: 1,
+            color: "#303030",
+          },
+          grid: { display: false },
+        },
+        x: {
+          ticks: { display: true, color: "#303030" },
+          grid: { display: false },
+        },
+      },
+    },
+    plugins: [chartAreaBorder],
+  };
+}
+
+function registerChart(element, list, measure) {
+  const dates = [];
+  const values = [];
+  const allValues = [];
+
+  for (const item of list) {
+    for (const [date, value] of Object.entries(item)) {
+      dates.push(date);
+      allValues.push(value); // сохраняем все значения
+      if (value !== null) {
+        values.push(value); // сохраняем только ненулевые значения
+      }
+    }
+  }
+
+  const minValue = Math.min(...values);
+  const maxValue = Math.max(...values);
+  const ctx = document.getElementById(element).getContext("2d");
+  const myChart = new Chart(
+    ctx,
+    createConfig(dates, allValues, minValue, maxValue, measure)
+  );
+  Chart.defaults.font.family = "Montserrat";
+  Chart.register(horizontalLinePlugin);
+}
+
+const test = {
+  weight_list: [
+    { "01.01.2023": 60 },
+    { "02.01.2023": 65 },
+    { "02.01.2023": null },
+  ],
+  chest_volume_list: [
+    { "04.01.2023": 60 },
+    { "05.01.2023": 61 },
+    { "06.01.2023": 58 },
+  ],
+  underchest_volume_list: [
+    { "07.01.2023": 60 },
+    { "08.01.2023": 61 },
+    { "09.01.2023": 58 },
+  ],
+  waist_volume_list: [
+    { "01.01.2023": 60 },
+    { "02.01.2023": 61 },
+    { "03.01.2023": 58 },
+  ],
+  belly_volume_list: [
+    { "01.01.2023": 60 },
+    { "02.01.2023": 61 },
+    { "03.01.2023": 58 },
+  ],
+  hips_volume_list: [
+    { "01.01.2023": 60 },
+    { "02.01.2023": 61 },
+    { "03.01.2023": 58 },
+  ],
+};
+
+// registerChart("weightChart", test.weight_list, "кг");
+// registerChart("chestVolumeChart", test.chest_volume_list, "см");
+// registerChart("underchestVolumeChart", test.underchest_volume_list, "см");
+// registerChart("hipsVolumeChart", test.waist_volume_list, "см");
+// registerChart("bellyVolumeChart", test.belly_volume_list, "см");
+// registerChart("waistVolumeChart", test.hips_volume_list, "см");

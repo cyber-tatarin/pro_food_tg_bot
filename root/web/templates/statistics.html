@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/static/css/reset.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/choices.js@9.0.1/public/assets/styles/choices.min.css"
+    />
+    <link rel="stylesheet" href="/static/css/main.css" />
+  </head>
+  <body>
+    <div class="loading">
+      <div class="lds-heart"><div></div></div>
+    </div>
+    <main class="main">
+      <div class="container">
+        <p class="stat">Статистика</p>
+        <div class="graphic-flex">
+          <div class="graphic graphic1">
+            <p class="stat-title">Вес (кг)</p>
+            <div class="canvas-container">
+              <canvas id="weightChart"></canvas>
+            </div>
+          </div>
+          <div class="graphic graphic2">
+            <p class="stat-title">Обхват груди (см)</p>
+            <div class="canvas-container">
+              <canvas id="chestVolumeChart"></canvas>
+            </div>
+          </div>
+          <div class="graphic graphic3">
+            <p class="stat-title">Обхват под грудью (см)</p>
+            <div class="canvas-container">
+              <canvas id="underchestVolumeChart"></canvas>
+            </div>
+          </div>
+          <div class="graphic graphic4">
+            <p class="stat-title">Обхват бедер (см)</p>
+            <div class="canvas-container">
+              <canvas id="hipsVolumeChart"></canvas>
+            </div>
+          </div>
+          <div class="graphic graphic5">
+            <p class="stat-title">Обхват живота (см)</p>
+            <div class="canvas-container">
+              <canvas id="bellyVolumeChart"></canvas>
+            </div>
+          </div>
+          <div class="graphic graphic6">
+            <p class="stat-title">Обхват талии (см)</p>
+            <div class="canvas-container">
+              <canvas id="waistVolumeChart"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script src="/static/js/statistics.js"></script>
+  </body>
+</html>

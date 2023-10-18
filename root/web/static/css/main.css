@@ -251,7 +251,6 @@ body {
 
 .progress-info__value {
   color: #303030;
-
   font-size: 16px;
   font-style: normal;
   font-weight: 700;
@@ -432,6 +431,12 @@ body {
   margin: 28px 8px 12px;
 }
 
+.canvas-container {
+  padding: 16px;
+  border-radius: 20px;
+  border: 2px dashed #eee;
+}
+
 .plate {
   display: flex;
   flex-direction: column;
@@ -441,12 +446,18 @@ body {
 
 .plate__size,
 .date,
-.diet {
+.diet,
+.stat {
   color: #303030;
   font-size: 14px;
   font-style: normal;
   font-weight: 400;
   line-height: normal;
+}
+
+.stat {
+  margin-left: 8px;
+  margin-bottom: 16px;
 }
 
 .plate__size_value,
@@ -1056,12 +1067,30 @@ body {
   border: 2px solid #303030;
 }
 
-.meal-type {
+canvas {
+  aspect-ratio: 16/9 !important;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.meal-type,
+.stat-title {
   color: #303030;
   font-size: 20px;
   font-style: normal;
   font-weight: 700;
   line-height: normal;
+}
+
+.graphic-flex {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.stat-title {
+  margin-left: 8px;
+  margin-bottom: 8px;
 }
 
 .meal-type a {
@@ -1244,6 +1273,10 @@ body {
 
 .br-error {
   display: none;
+}
+
+.stat-title {
+  font-size: 20px;
 }
 
 @media (max-width: 530px) {
