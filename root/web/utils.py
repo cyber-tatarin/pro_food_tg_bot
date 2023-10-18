@@ -1,4 +1,5 @@
 import os
+from datetime import datetime
 
 from aiohttp import web
 from sqlalchemy import text
@@ -265,22 +266,4 @@ async def get_coin_word_according_to_number(number):
         return 'ЖИРкоина'
     else:
         return 'ЖИРкоинов'
-        
 
-    
-    
-    
-    
-    
-    
-    
-    
-        # index = 0
-        # while index < len(result_list):
-        #     plate_id = result_list[index]['plate_id']
-        #     if plate_ids.count(plate_id) > 1:
-        #         result_list.insert(0, result_list[index].copy())
-        #         result_list[0]['plate_type'] = plate_type_as_list[0]
-        #         plate_type_as_list.pop(0)
-        #         plate_ids.remove(plate_id)  # remove this plate_id from ids to avoid infinite loop
-        #     index += 1
