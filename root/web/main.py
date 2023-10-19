@@ -951,8 +951,12 @@ async def statistics_post(request):
     
     session = db.Session()
     try:
-        all_body_measures = session.query(models.BodyMeasure).filter(models.BodyMeasure.tg_id == tg_id).order_by(
-            models.BodyMeasure.date).all()
+        all_body_measures_query = await session.execute(select(models.BodyMeasure).where
+            (models.BodyMeasure.tg_id == tg_id).order_by(
+            models.BodyMeasure.date)
+        )
+        
+        all_body_measures = all_body_measures_query.scalars().all()
         all_body_measures.pop(0)
         
         if all_body_measures:
@@ -964,7 +968,7 @@ async def statistics_post(request):
             hips_volume_list = list()
             
             date_pattern = '%d.%m.%Y'
-
+            
             for index, body_measure_obj in enumerate(all_body_measures[1:]):
                 previous_body_measure_obj = all_body_measures[index]
                 
@@ -972,14 +976,14 @@ async def statistics_post(request):
                 
                 weight_list.append({'date': obj_date_as_str, 'value': previous_body_measure_obj.weight})
                 chest_volume_list.append({'date': obj_date_as_str, 'value': previous_body_measure_obj.chest_volume})
-                underchest_volume_list.append({'date': obj_date_as_str, 'value': previous_body_measure_obj.underchest_volume})
+                underchest_volume_list.append(
+                    {'date': obj_date_as_str, 'value': previous_body_measure_obj.underchest_volume})
                 waist_volume_list.append({'date': obj_date_as_str, 'value': previous_body_measure_obj.waist_volume})
                 belly_volume_list.append({'date': obj_date_as_str, 'value': previous_body_measure_obj.belly_volume})
                 hips_volume_list.append({'date': obj_date_as_str, 'value': previous_body_measure_obj.hips_volume})
                 
                 measure_date = previous_body_measure_obj.date
                 while (body_measure_obj.date - measure_date).days > 7:
-                    
                     measure_date = measure_date + timedelta(days=7)
                     measure_date_as_str = datetime.strftime(measure_date, date_pattern)
                     
@@ -1015,7 +1019,7 @@ async def statistics_post(request):
         return web.HTTPBadGateway()
     finally:
         if session.is_active:
-            session.close()
+            await session.close()
 
 
 app = web.Application()
