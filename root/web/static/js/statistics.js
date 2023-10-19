@@ -144,7 +144,7 @@ const horizontalLinePlugin = {
     ctx.moveTo(chartArea.left, yMin);
     ctx.lineTo(chartArea.right, yMin);
     ctx.stroke();
-    ctx.fillText(minY, chartArea.left + 20, yMin + 20);
+    ctx.fillText(minY, chartArea.left + 20, yMin - 10);
     ctx.restore();
   },
 };
@@ -217,15 +217,13 @@ function registerChart(element, list, measure) {
   const values = [];
   const allValues = [];
 
-  for (const item of list) {
-    for (const [date, value] of Object.entries(item)) {
-      dates.push(date);
-      allValues.push(value); // сохраняем все значения
-      if (value !== null) {
-        values.push(value); // сохраняем только ненулевые значения
-      }
+  list.forEach((el) => {
+    dates.push(el.date);
+    allValues.push(el.value);
+    if (el.value !== null) {
+      values.push(el.value); // сохраняем только ненулевые значения
     }
-  }
+  });
 
   const minValue = Math.min(...values);
   const maxValue = Math.max(...values);
@@ -240,34 +238,34 @@ function registerChart(element, list, measure) {
 
 const test = {
   weight_list: [
-    { "01.01.2023": 60 },
-    { "02.01.2023": 65 },
-    { "02.01.2023": null },
+    { date: "02.01.2023", value: 60 },
+    { date: "03.01.2023", value: 50 },
+    { date: "05.01.2023", value: 70 },
   ],
   chest_volume_list: [
-    { "04.01.2023": 60 },
-    { "05.01.2023": 61 },
-    { "06.01.2023": 58 },
+    { date: "02.01.2023", value: 60 },
+    { date: "03.01.2023", value: 50 },
+    { date: "05.01.2023", value: 70 },
   ],
   underchest_volume_list: [
-    { "07.01.2023": 60 },
-    { "08.01.2023": 61 },
-    { "09.01.2023": 58 },
+    { date: "02.01.2023", value: 60 },
+    { date: "03.01.2023", value: 50 },
+    { date: "05.01.2023", value: 70 },
   ],
   waist_volume_list: [
-    { "01.01.2023": 60 },
-    { "02.01.2023": 61 },
-    { "03.01.2023": 58 },
+    { date: "02.01.2023", value: 60 },
+    { date: "03.01.2023", value: 50 },
+    { date: "05.01.2023", value: 70 },
   ],
   belly_volume_list: [
-    { "01.01.2023": 60 },
-    { "02.01.2023": 61 },
-    { "03.01.2023": 58 },
+    { date: "02.01.2023", value: 60 },
+    { date: "03.01.2023", value: 50 },
+    { date: "05.01.2023", value: 70 },
   ],
   hips_volume_list: [
-    { "01.01.2023": 60 },
-    { "02.01.2023": 61 },
-    { "03.01.2023": 58 },
+    { date: "02.01.2023", value: 60 },
+    { date: "03.01.2023", value: 50 },
+    { date: "05.01.2023", value: 70 },
   ],
 };
 
