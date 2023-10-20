@@ -1068,9 +1068,9 @@ body {
 }
 
 canvas {
-  aspect-ratio: 16/9 !important;
-  width: 100% !important;
-  height: 100% !important;
+  // aspect-ratio: 16/9 !important;
+ // width: 100% !important;
+  //	height: 100% !important;
 }
 
 .meal-type,

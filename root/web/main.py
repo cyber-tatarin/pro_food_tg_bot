@@ -69,8 +69,8 @@ async def add_ingredient_post(request):
             carbohydrates=carbohydrates
         )
         session.add(new_ingredient)
-        session.commit()
-        session.refresh(new_ingredient)
+        await session.commit()
+        await session.refresh(new_ingredient)
         new_ingredient_id = new_ingredient.ingredient_id
         
         gsheet_thread = threading.Thread(target=gsh.add_to_sheet, args=('ingredients',
@@ -85,7 +85,7 @@ async def add_ingredient_post(request):
                                   'error_message': 'Вы ввели данные некорректно, проверьте пожалуйста'})
     finally:
         if session.is_active:
-            session.close()
+            await session.close()
     
     return web.json_response({'success': True})
 
@@ -123,9 +123,9 @@ async def add_meal_post(request):
         )
         print("Created new_meal:", new_meal)
         session1.add(new_meal)
-        session1.commit()
+        await session1.commit()
         
-        session1.refresh(new_meal)
+        await session1.refresh(new_meal)
         new_meal_id = new_meal.meal_id
         print("Obtained new_meal_id:", new_meal_id)
     
@@ -135,7 +135,7 @@ async def add_meal_post(request):
                                   'error_message': 'Вы ввели данные некорректно, проверьте пожалуйста'})
     finally:
         if session1.is_active:
-            session1.close()
+            await session1.close()
     print('After 1st block')
     
     session2 = db.Session()
@@ -160,17 +160,17 @@ async def add_meal_post(request):
             
             print(ingredient_id, f'ingredient{1}')
             
-            ingredient = session2.query(models.Ingredient).filter(
-                models.Ingredient.ingredient_id == int(ingredient_id)).first()
+            ingredient = await session2.get(models.Ingredient, ingredient_id)
+            
             association = models.meal_ingredients_association.insert().values(
                 amount=float(ingredient_amount),
                 ingredient_id=ingredient.ingredient_id,
                 meal_id=int(new_meal_id)
             )
-            session2.execute(association)
+            await session2.execute(association)
             list_to_insert_into_gsheets.append([ingredient.ingredient_id, new_meal_id, ingredient_amount])
         
-        session2.commit()
+        await session2.commit()
         
         gsheet_thread = threading.Thread(target=gsh.add_to_sheet, args=('meals',
                                                                         [[new_meal_id, name, recipe,
@@ -182,11 +182,11 @@ async def add_meal_post(request):
         gsheet_thread.start()
     
     except Exception as x:
-        session2.rollback()
+        await session2.rollback()
         meal_to_delete = session2.query(models.Meal).filter(models.Meal.meal_id == new_meal_id).first()
         try:
-            session2.delete(meal_to_delete)
-            session2.commit()
+            await session2.delete(meal_to_delete)
+            await session2.commit()
         except Exception as x:
             print(x)
         
@@ -198,7 +198,7 @@ async def add_meal_post(request):
                                       'error_message': str(x)})
     finally:
         if session2.is_active:
-            session2.close()
+            await session2.close()
     
     return web.json_response({'success': True})
 
@@ -229,9 +229,9 @@ async def add_plate_post(request):
         )
         print("Created new_meal:", new_plate)
         session1.add(new_plate)
-        session1.commit()
+        await session1.commit()
         
-        session1.refresh(new_plate)
+        await session1.refresh(new_plate)
         new_plate_id = new_plate.plate_id
         print("Obtain ed new_meal_id:", new_plate_id)
     
@@ -241,7 +241,7 @@ async def add_plate_post(request):
                                   'error_message': 'Вы ввели данные некорректно, проверьте пожалуйста'})
     finally:
         if session1.is_active:
-            session1.close()
+            await session1.close()
     print('After 1st block')
     
     session2 = db.Session()
@@ -264,17 +264,16 @@ async def add_plate_post(request):
         list_to_insert_into_gsheets = list()
         
         for meal_id, meal_percentage in zip(ids_list, percentages_list):
-            meal = session2.query(models.Meal).filter(
-                models.Meal.meal_id == int(meal_id)).first()
+            meal = await session2.get(models.Meal, meal_id)
             association = models.plate_meals_association.insert().values(
                 percentage=int(meal_percentage),
                 plate_id=int(new_plate_id),
                 meal_id=meal.meal_id
             )
-            session2.execute(association)
+            await session2.execute(association)
             list_to_insert_into_gsheets.append([new_plate_id, meal.meal_id, meal_percentage])
         
-        session2.commit()
+        await session2.commit()
         
         gsheet_thread = threading.Thread(target=gsh.add_to_sheet, args=('plates', [[new_plate_id, name, plate_type]]))
         gsheet_thread.start()
@@ -284,11 +283,11 @@ async def add_plate_post(request):
     
     except Exception as x:
         logger.exception(x)
-        session2.rollback()
-        plate_to_delete = session2.query(models.Plate).filter(models.Plate.plate_id == new_plate_id).first()
+        await session2.rollback()
+        plate_to_delete = await session2.get(models.Plate, new_plate_id)
         try:
-            session2.delete(plate_to_delete)
-            session2.commit()
+            await session2.delete(plate_to_delete)
+            await session2.commit()
         except Exception as x:
             logger.exception(x)
         
@@ -332,10 +331,12 @@ async def get_user_parameters(request):
     
     session = db.Session()
     try:
-        user = session.query(models.User).filter(models.User.tg_id == int(tg_id)).first()
-        latest_body_measure = session.query(models.BodyMeasure).filter(
-            models.BodyMeasure.tg_id == int(tg_id)
-        ).order_by(models.BodyMeasure.date.desc()).first()
+        user = await session.get(models.User, tg_id)
+        latest_body_measure_query = await session.execute(select(models.BodyMeasure).where(
+            models.BodyMeasure.tg_id == tg_id
+        ).order_by(models.BodyMeasure.date.desc()))
+        
+        latest_body_measure = latest_body_measure_query.scalars().first()
         
         res_data = {
             'weight': latest_body_measure.weight,
@@ -344,7 +345,8 @@ async def get_user_parameters(request):
             'weight_aim': user.weight_aim,
             'weight_gap': float(user.weight_aim) - float(latest_body_measure.weight),
             'plate_diameter': user.plate_diameter,
-            'gender': user.gender
+            'gender': user.gender,
+            'balance': user.balance
         }
         
         return web.json_response(res_data)
@@ -353,7 +355,7 @@ async def get_user_parameters(request):
         return web.HTTPBadGateway()
     finally:
         if session.is_active:
-            session.close()
+            await session.close()
 
 
 async def get_current_streak(request):
@@ -364,18 +366,22 @@ async def get_current_streak(request):
     session = db.Session()
     today = date.today()
     try:
-        user_streak_obj = session.query(models.UserStreak).filter(models.UserStreak.tg_id == tg_id).first()
+        user_streak_obj = await session.get(models.UserStreak, tg_id)
         if user_streak_obj is None:
             user_streak_obj = models.UserStreak(tg_id=tg_id, streak=0)
             session.add(user_streak_obj)
-            session.commit()
-            session.refresh(user_streak_obj)
+            await session.commit()
+            await session.refresh(user_streak_obj)
         
         current_streak = user_streak_obj.streak
         if user_streak_obj.last_updated != today:
             
-            all_today_chosen_plates = session.query(models.UserPlatesDate).filter(models.UserPlatesDate.tg_id == tg_id,
-                                                                                  models.UserPlatesDate.date == today).all()
+            all_today_chosen_plates_query = await session.execute(select(models.UserPlatesDate).where(
+                models.UserPlatesDate.tg_id == tg_id,
+                models.UserPlatesDate.date == today)
+            )
+            all_today_chosen_plates = all_today_chosen_plates_query.scalars().all()
+            
             if all_today_chosen_plates:
                 if len(all_today_chosen_plates) >= 3:
                     current_task_number += 1
@@ -397,7 +403,7 @@ async def get_current_streak(request):
     
     finally:
         if session.is_active:
-            session.close()
+            await session.close()
     
     day_word = await utils.get_day_word_according_to_number(current_streak)
     
@@ -419,20 +425,25 @@ async def get_nutrient_parameters(request):
     session = db.Session()
     try:
         today = date.today()
-        user = session.query(models.User).filter(models.User.tg_id == tg_id).first()
-        all_today_has_eaten_query = session.query(
-            func.coalesce(func.sum(models.HasEaten.calories), 0),
-            func.coalesce(func.sum(models.HasEaten.proteins), 0),
-            func.coalesce(func.sum(models.HasEaten.fats), 0),
-            func.coalesce(func.sum(models.HasEaten.carbohydrates), 0)
-        ).filter(
-            models.HasEaten.date_time >= today,
-            models.HasEaten.date_time < today + timedelta(days=1),
-            models.HasEaten.tg_id == tg_id
+        user = await session.get(models.User, tg_id)
+        
+        stmt = (
+            select(
+                func.coalesce(func.sum(models.HasEaten.calories), 0),
+                func.coalesce(func.sum(models.HasEaten.proteins), 0),
+                func.coalesce(func.sum(models.HasEaten.fats), 0),
+                func.coalesce(func.sum(models.HasEaten.carbohydrates), 0)
+            )
+            .where(
+                models.HasEaten.date_time >= today,
+                models.HasEaten.date_time < today + timedelta(days=1),
+                models.HasEaten.tg_id == tg_id
+            )
         )
         
-        # Fetch the results (returns a tuple with sum values)
-        sums = all_today_has_eaten_query.one()
+        # Fetching the results asynchronously
+        result = await session.execute(stmt)
+        sums = result.fetchone()
         
         sum_calories, sum_proteins, sum_fats, sum_carbohydrates = sums
         
@@ -449,11 +460,11 @@ async def get_nutrient_parameters(request):
         
         return web.json_response(data)
     except Exception as x:
-        print(x)
+        logger.exception(x)
         return web.HTTPBadGateway()
     finally:
         if session.is_active:
-            session.close()
+            await session.close()
 
 
 async def get_today_plates(request):
@@ -463,16 +474,18 @@ async def get_today_plates(request):
     session1 = db.Session()
     try:
         today = date.today()
-        today_plates_list = session1.query(models.UserPlatesDate).filter(models.UserPlatesDate.tg_id == tg_id,
-                                                                         models.UserPlatesDate.date == today,
-                                                                         ).all()
+        today_plates_list_query = await session1.execute(select(models.UserPlatesDate).where
+                                                         (models.UserPlatesDate.tg_id == tg_id,
+                                                          models.UserPlatesDate.date == today,
+                                                          ))
+        today_plates_list = today_plates_list_query.scalars().all()
     
     except Exception as x:
         print(x)
         return web.HTTPBadGateway()
     finally:
         if session1.is_active:
-            session1.close()
+            await session1.close()
     
     if today_plates_list:
         plate_ids = [int(element.plate_id) for element in today_plates_list]
@@ -480,13 +493,16 @@ async def get_today_plates(request):
         session2 = db.Session()
         try:
             result_list = await utils.get_nutrient_for_plates_by_ids(session2, plate_ids, in_json=True)
-            all_today_has_eaten_plates = session2.query(models.HasEaten).filter(
+            all_today_has_eaten_plates_query = await session2.execute(select(models.HasEaten).where(
                 models.HasEaten.date_time >= today,
                 models.HasEaten.date_time < today + timedelta(days=1),
                 models.HasEaten.tg_id == tg_id
-            ).all()
+            ))
+            all_today_has_eaten_plates = all_today_has_eaten_plates_query.scalars().all()
             
-            all_favorites = session2.query(models.Favorites).filter(models.Favorites.tg_id == tg_id).all()
+            all_favorites_query = await session2.execute(
+                select(models.Favorites).where(models.Favorites.tg_id == tg_id))
+            all_favorites = all_favorites_query.scalars().all()
             
             await utils.set_plate_type(result_list, today_plates_list)
             await utils.restore_duplicate_plate_if_exists(result_list, plate_ids)
@@ -510,7 +526,7 @@ async def get_today_plates(request):
             return web.HTTPBadGateway()
         finally:
             if session2.is_active:
-                session2.close()
+                await session2.close()
     
     else:
         return web.json_response([])
@@ -519,7 +535,9 @@ async def get_today_plates(request):
 async def get_ingredient_ids_names_properties_list(request):
     session = db.Session()
     try:
-        all_ingredients = session.query(models.Ingredient).all()
+        all_ingredients_query = await session.execute(select(models.Ingredient))
+        all_ingredients = all_ingredients_query.scalars().all()
+        
         data = [{
             'ingredient_id': ingredient.ingredient_id,
             'ingredient_name': ingredient.ingredient_name,
@@ -537,7 +555,7 @@ async def get_ingredient_ids_names_properties_list(request):
         return web.HTTPBadGateway()
     finally:
         if session.is_active:
-            session.close()
+            await session.close()
 
 
 async def get_meal_ids_names_properties_list(request):
@@ -554,7 +572,9 @@ async def get_meal_ids_names_properties_list(request):
     )
     try:
         # Execute the query
-        result = session.execute(sql_query).fetchall()
+        result_query = await session.execute(sql_query)
+        result = result_query.scalars().all()
+        
         result_list = list()
         for row in result:
             result_list.append({
@@ -571,7 +591,7 @@ async def get_meal_ids_names_properties_list(request):
         return web.HTTPBadGateway()
     finally:
         if session.is_active:
-            session.close()
+            await session.close()
 
 
 async def get_all_plates_to_choose(request):
@@ -583,11 +603,14 @@ async def get_all_plates_to_choose(request):
     try:
         print('before db')
         today = date.today()
-        chosen_plate = session.query(models.UserPlatesDate).filter(models.UserPlatesDate.tg_id == tg_id,
-                                                                   models.UserPlatesDate.plate_type == plate_type,
-                                                                   models.UserPlatesDate.date == today).first()
+        chosen_plate_query = await session.execute(
+            select(models.UserPlatesDate).where(models.UserPlatesDate.tg_id == tg_id,
+                                                models.UserPlatesDate.plate_type == plate_type,
+                                                models.UserPlatesDate.date == today))
+        chosen_plate = chosen_plate_query.scalar_one_or_none()
         
-        all_favorites = session.query(models.Favorites).filter(models.Favorites.tg_id == tg_id).all()
+        all_favorites_query = await session.execute(select(models.Favorites).filter(models.Favorites.tg_id == tg_id))
+        all_favorites = all_favorites_query.scalars().all()
         
         print('inside')
         result_list = await utils.get_nutrient_for_plates_by_ids(session, in_json=True)
@@ -608,7 +631,7 @@ async def get_all_plates_to_choose(request):
         return web.HTTPBadGateway()
     finally:
         if session.is_active:
-            session.close()
+            await session.close()
 
 
 async def has_eaten_plate(request):
@@ -627,24 +650,28 @@ async def has_eaten_plate(request):
     session = db.Session()
     try:
         today = date.today()
-        eaten_plate = session.query(models.HasEaten).filter(
+        eaten_plate_query = await session.execute(select(models.HasEaten).where(
             models.HasEaten.date == today,
             models.HasEaten.tg_id == tg_id,
             models.HasEaten.plate_type == plate_type
-        ).first()
+        ))
+        eaten_plate = eaten_plate_query.scalar_one_or_none()
         
-        user_streak_obj = session.query(models.UserStreak).filter(models.UserStreak.tg_id == tg_id).first()
+        user_streak_obj = await session.get(models.UserStreak, tg_id)
         
         if eaten_plate is None:
             new_has_eaten = models.HasEaten(tg_id=tg_id, plate_id=plate_id,
                                             calories=calories, proteins=proteins,
                                             fats=fats, carbohydrates=carbohydrates, plate_type=plate_type)
             session.add(new_has_eaten)
-            session.commit()
+            await session.commit()
             completed_all_tasks = False
             try:
-                all_today_has_eaten = session.query(models.HasEaten).filter(models.HasEaten.tg_id == tg_id,
-                                                                            models.HasEaten.date == today).all()
+                all_today_has_eaten_query = await session.execute(
+                    select(models.HasEaten).where(models.HasEaten.tg_id == tg_id,
+                                                  models.HasEaten.date == today))
+                all_today_has_eaten = all_today_has_eaten_query.scalars().all()
+                
                 if all_today_has_eaten:
                     if len(all_today_has_eaten) >= 3:
                         
@@ -656,12 +683,12 @@ async def has_eaten_plate(request):
                         if updated_earlier_than_today_or_created_today:
                             user_streak_obj.streak += 1
                             
-                            user_obj = session.query(models.User).filter(models.User.tg_id == tg_id).first()
+                            user_obj = await session.get(models.User, tg_id)
                             user_obj.balance += 10
                             
                             current_balance = user_obj.balance
                             
-                            session.commit()
+                            await session.commit()
                             completed_all_tasks = True
             
             except Exception as x:
@@ -676,8 +703,8 @@ async def has_eaten_plate(request):
             return web.json_response(response_dict)
         
         else:
-            session.delete(eaten_plate)
-            session.commit()
+            await session.delete(eaten_plate)
+            await session.commit()
             
             return web.json_response({'success': True, 'is_green': True, 'completed_all_tasks': False})
     
@@ -687,7 +714,7 @@ async def has_eaten_plate(request):
     
     finally:
         if session.is_active:
-            session.close()
+            await session.close()
 
 
 async def add_to_favorites(request):
@@ -700,23 +727,29 @@ async def add_to_favorites(request):
     try:
         new_favorite = models.Favorites(tg_id=tg_id, plate_id=plate_id)
         session.add(new_favorite)
-        session.commit()
+        await session.commit()
         
         return web.json_response({'success': True, 'is_black': False})
     
     except Exception as x:
         try:
             session.rollback()
-            favorite_to_delete = session.query(models.Favorites).filter(models.Favorites.tg_id == tg_id,
-                                                                        models.Favorites.plate_id == plate_id).first()
-            session.delete(favorite_to_delete)
-            session.commit()
+            favorite_to_delete_query = await session.execute(
+                select(models.Favorites).where(models.Favorites.tg_id == tg_id,
+                                                models.Favorites.plate_id == plate_id))
+            favorite_to_delete = favorite_to_delete_query.scalar_one_or_none()
+            await session.delete(favorite_to_delete)
+            await session.commit()
             
             return web.json_response({'success': True, 'is_black': True})
         
         except Exception as x:
             print(x)
             return web.json_response({'success': False})
+    
+    finally:
+        if session.is_active:
+            await session.close()
 
 
 # async def remove_from_favorites(request):
@@ -784,22 +817,25 @@ async def has_chosen_plate(request):
     try:
         new_user_plate_date = models.UserPlatesDate(tg_id=tg_id, plate_type=plate_type, plate_id=plate_id)
         session.add(new_user_plate_date)
-        session.commit()
+        await session.commit()
     
     except IntegrityError:
         new_session = db.Session()
         try:
-            obj_to_edit = new_session.query(models.UserPlatesDate).filter(models.UserPlatesDate.tg_id == tg_id,
-                                                                          models.UserPlatesDate.plate_type == plate_type,
-                                                                          models.UserPlatesDate.date == date.today()).first()
+            obj_to_edit_query = await new_session.execute(select(models.UserPlatesDate).where(
+                models.UserPlatesDate.tg_id == tg_id,
+                models.UserPlatesDate.plate_type == plate_type,
+                models.UserPlatesDate.date == date.today()))
+            obj_to_edit = obj_to_edit_query.scalar_one_or_none()
+            
             obj_to_edit.plate_id = plate_id
-            new_session.commit()
+            await new_session.commit()
         except Exception as x:
             print(x)
             return web.HTTPBadGateway()
         finally:
             if session.is_active:
-                session.close()
+                await session.close()
         return web.json_response({'success': True})
     
     except Exception as x:
@@ -808,7 +844,7 @@ async def has_chosen_plate(request):
         return web.HTTPBadGateway()
     finally:
         if session.is_active:
-            session.close()
+            await session.close()
     
     return web.json_response({'success': True})
 
@@ -822,11 +858,13 @@ async def get_all_favorites(request):
     try:
         print('before db')
         today = date.today()
-        chosen_plate = session.query(models.UserPlatesDate).filter(models.UserPlatesDate.tg_id == tg_id,
+        chosen_plate_query = await session.execute(select(models.UserPlatesDate).where(models.UserPlatesDate.tg_id == tg_id,
                                                                    models.UserPlatesDate.plate_type == plate_type,
-                                                                   models.UserPlatesDate.date == today).first()
+                                                                   models.UserPlatesDate.date == today))
+        chosen_plate = chosen_plate_query.scalar_one_or_none()
         
-        all_favorites = session.query(models.Favorites).filter(models.Favorites.tg_id == tg_id).all()
+        all_favorites_query = await session.execute(select(models.Favorites).filter(models.Favorites.tg_id == tg_id))
+        all_favorites = all_favorites_query.scalars().all()
         print(all_favorites)
         favorites_plate_ids = [int(element.plate_id) for element in all_favorites]
         
@@ -855,7 +893,7 @@ async def get_all_favorites(request):
         return web.HTTPBadGateway()
     finally:
         if session.is_active:
-            session.close()
+            await session.close()
 
 
 async def get_recipe(request):
@@ -879,7 +917,7 @@ async def get_recipe(request):
     
     finally:
         if session.is_active:
-            session.close()
+            await session.close()
 
 
 async def ask_question(request):
@@ -908,12 +946,15 @@ async def submit_plate_review(request):
                                               mark=mark)
         
         session.add(new_plate_review)
-        session.commit()
+        await session.commit()
         return web.json_response({'success': True})
     
     except Exception as x:
         logger.exception(x)
         return web.HTTPBadGateway()
+    finally:
+        if session.is_active:
+            await session.close()
 
 
 async def get_has_eaten_without_plates_post(request):
@@ -952,7 +993,7 @@ async def statistics_post(request):
     session = db.Session()
     try:
         all_body_measures_query = await session.execute(select(models.BodyMeasure).where
-            (models.BodyMeasure.tg_id == tg_id).order_by(
+        (models.BodyMeasure.tg_id == tg_id).order_by(
             models.BodyMeasure.date)
         )
         

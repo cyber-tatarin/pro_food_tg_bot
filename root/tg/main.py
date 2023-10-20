@@ -201,14 +201,14 @@ async def get_gender(callback_query: CallbackQuery,
                 weight=weight
             )
             session.add(new_measure)
-            session.commit()
+            await session.commit()
         except Exception as x:
             print(x)
             await callback_query.message.answer(texts.db_error_message)
             return
         finally:
             if session.is_active:
-                session.close()
+                await session.close()
         
         await callback_query.message.answer(f'{calories}, {proteins}, {fats}, {carbohydrates}, {vegetables}, '
                                             f'{plate_diameter}')
@@ -375,7 +375,7 @@ async def get_hips_volume(message: types.Message, state: FSMContext):
                                                           underchest_voume=underchest_voume, waist_volume=waist_volume,
                                                           belly_volume=belly_volume, hips_volume=hips_volume)
                 session.add(new_body_measure_obj)
-                session.commit()
+                await session.commit()
             
             except Exception as x:
                 logger.exception(x)
@@ -383,7 +383,7 @@ async def get_hips_volume(message: types.Message, state: FSMContext):
                                      reply_markup=keyboards.get_ikb_to_start_getting_body_measures())
             finally:
                 if session.is_active:
-                    session.close()
+                    await session.close()
         
         await message.answer('Отличо! Мы успешно занесли Ваши данные в базу. Вы можете посмотреть свою '
                              'понедельную статистику в профиле')

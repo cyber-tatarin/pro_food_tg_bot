@@ -78,7 +78,8 @@ async def get_nutrient_for_plates_by_ids(session, plate_ids=None, in_json=False)
     """)
     
     # Execute the query
-    result = session.execute(sql_query).fetchall()
+    result_query = await session.execute(sql_query)
+    result = result_query.fetchall()
     
     print(result)
     
@@ -206,10 +207,12 @@ async def get_recipe_values(session, plate_id):
     """)
     
     # Execute the query
-    result = session.execute(sql_query).fetchall()
+    result_query = await session.execute(sql_query)
+    result = result_query.fetchall()
     
     meals = list()
     result_dict = dict()
+    print(result)
     
     if result:
         result_dict['plate_name'] = result[0].plate_name
