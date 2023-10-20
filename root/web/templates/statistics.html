@@ -24,44 +24,114 @@
     <main class="main">
       <div class="container">
         <p class="stat">Статистика</p>
+        <a href="../main" class="eat__button eat__buttons eat__buttons-single"
+          >На главную</a
+        >
         <div class="graphic-flex">
           <div class="graphic graphic1">
             <p class="stat-title">Вес (кг)</p>
             <div class="canvas-container">
+              <div class="canvas-flex">
+                <div class="canvas-item">
+                  <p class="canvas-title">Мин:</p>
+                  <p class="canvas-value weightChart-min-value">60 кг</p>
+                </div>
+                <div class="canvas-item">
+                  <p class="canvas-title">Макс:</p>
+                  <p class="canvas-value weightChart-max-value">60 кг</p>
+                </div>
+              </div>
               <canvas id="weightChart"></canvas>
             </div>
           </div>
           <div class="graphic graphic2">
             <p class="stat-title">Обхват груди (см)</p>
             <div class="canvas-container">
+              <div class="canvas-flex">
+                <div class="canvas-item">
+                  <p class="canvas-title">Мин:</p>
+                  <p class="canvas-value chestVolumeChart-min-value">60 кг</p>
+                </div>
+                <div class="canvas-item">
+                  <p class="canvas-title">Макс:</p>
+                  <p class="canvas-value chestVolumeChart-max-value">60 кг</p>
+                </div>
+              </div>
               <canvas id="chestVolumeChart"></canvas>
             </div>
           </div>
           <div class="graphic graphic3">
             <p class="stat-title">Обхват под грудью (см)</p>
             <div class="canvas-container">
+              <div class="canvas-flex">
+                <div class="canvas-item">
+                  <p class="canvas-title">Мин:</p>
+                  <p class="canvas-value underchestVolumeChart-min-value">
+                    60 кг
+                  </p>
+                </div>
+                <div class="canvas-item">
+                  <p class="canvas-title">Макс:</p>
+                  <p class="canvas-value underchestVolumeChart-max-value">
+                    60 кг
+                  </p>
+                </div>
+              </div>
               <canvas id="underchestVolumeChart"></canvas>
             </div>
           </div>
           <div class="graphic graphic4">
             <p class="stat-title">Обхват бедер (см)</p>
             <div class="canvas-container">
+              <div class="canvas-flex">
+                <div class="canvas-item">
+                  <p class="canvas-title">Мин:</p>
+                  <p class="canvas-value hipsVolumeChart-min-value">60 кг</p>
+                </div>
+                <div class="canvas-item">
+                  <p class="canvas-title">Макс:</p>
+                  <p class="canvas-value hipsVolumeChart-max-value">60 кг</p>
+                </div>
+              </div>
               <canvas id="hipsVolumeChart"></canvas>
             </div>
           </div>
           <div class="graphic graphic5">
             <p class="stat-title">Обхват живота (см)</p>
             <div class="canvas-container">
+              <div class="canvas-flex">
+                <div class="canvas-item">
+                  <p class="canvas-title">Мин:</p>
+                  <p class="canvas-value bellyVolumeChart-min-value">60 кг</p>
+                </div>
+                <div class="canvas-item">
+                  <p class="canvas-title">Макс:</p>
+                  <p class="canvas-value bellyVolumeChart-max-value">60 кг</p>
+                </div>
+              </div>
               <canvas id="bellyVolumeChart"></canvas>
             </div>
           </div>
           <div class="graphic graphic6">
             <p class="stat-title">Обхват талии (см)</p>
             <div class="canvas-container">
+              <div class="canvas-flex">
+                <div class="canvas-item">
+                  <p class="canvas-title">Мин:</p>
+                  <p class="canvas-value waistVolumeChart-min-value">60 кг</p>
+                </div>
+                <div class="canvas-item">
+                  <p class="canvas-title">Макс:</p>
+                  <p class="canvas-value waistVolumeChart-max-value">60 кг</p>
+                </div>
+              </div>
               <canvas id="waistVolumeChart"></canvas>
             </div>
           </div>
         </div>
+        <p class="empty-list empty-list_hidden">
+          Пока что Вы ничего не добавили в избранное
+        </p>
       </div>
     </main>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
