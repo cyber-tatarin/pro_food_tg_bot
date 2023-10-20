@@ -432,9 +432,37 @@ body {
 }
 
 .canvas-container {
-  padding: 16px;
+  padding: 16px 20px 10px 16px;
   border-radius: 20px;
   border: 2px dashed #eee;
+}
+
+.canvas-flex {
+  margin-bottom: 4px;
+  margin-left: 26px;
+  display: flex;
+  gap: 16px;
+}
+
+.canvas-item {
+  display: flex;
+  gap: 4px;
+}
+
+.canvas-title {
+  color: #303030;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: normal;
+}
+
+.canvas-value {
+  color: #303030;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
 }
 
 .plate {
@@ -457,7 +485,7 @@ body {
 
 .stat {
   margin-left: 8px;
-  margin-bottom: 16px;
+  margin-bottom: 12px;
 }
 
 .plate__size_value,

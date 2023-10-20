@@ -37,6 +37,10 @@ async function setStatistics() {
       registerChart("waistVolumeChart", response.hips_volume_list, "см");
       // hideLoading();
     } else {
+      document
+        .querySelector(".empty-list")
+        .classList.remove("empty-list_hidden");
+      document.querySelector(".graphic-flex").style.display = "none";
       console.log("Пустой JSON");
     }
   } catch (err) {
@@ -109,46 +113,6 @@ const chartAreaBorder = {
   },
 };
 
-const horizontalLinePlugin = {
-  id: "horizontalLine",
-  afterDraw: (chart) => {
-    const ctx = chart.ctx;
-    ctx.font = "12px Montserrat";
-    const datasets = chart.data.datasets;
-    let minY = Number.POSITIVE_INFINITY;
-    let maxY = Number.NEGATIVE_INFINITY;
-
-    datasets.forEach((dataset) => {
-      dataset.data.forEach((value) => {
-        if (value) {
-          minY = Math.min(minY, value);
-          maxY = Math.max(maxY, value);
-        }
-      });
-    });
-
-    const yMin = chart.scales.y.getPixelForValue(minY);
-    const yMax = chart.scales.y.getPixelForValue(maxY);
-    const chartArea = chart.chartArea;
-
-    ctx.save();
-    ctx.strokeStyle = "rgb(0,0,0,0.2)";
-    ctx.lineWidth = 1;
-    ctx.fillStyle = "#ababab";
-    ctx.beginPath();
-    ctx.moveTo(chartArea.left, yMax);
-    ctx.lineTo(chartArea.right, yMax);
-    ctx.stroke();
-    ctx.fillText(maxY, chartArea.left + 20, yMax - 10);
-    ctx.beginPath();
-    ctx.moveTo(chartArea.left, yMin);
-    ctx.lineTo(chartArea.right, yMin);
-    ctx.stroke();
-    ctx.fillText(minY, chartArea.left + 20, yMin - 10);
-    ctx.restore();
-  },
-};
-
 function createConfig(dates, values, min, max, measure) {
   return {
     type: "line",
@@ -203,7 +167,12 @@ function createConfig(dates, values, min, max, measure) {
           grid: { display: false },
         },
         x: {
-          ticks: { display: true, color: "#303030" },
+          offset: true, // Добавляет отступ к концам шкалы
+          // max: 100,
+          ticks: {
+            display: true,
+            color: "#303030",
+          },
           grid: { display: false },
         },
       },
@@ -227,20 +196,47 @@ function registerChart(element, list, measure) {
 
   const minValue = Math.min(...values);
   const maxValue = Math.max(...values);
+  document.querySelector(`.${element}-min-value`).textContent = minValue;
+  document.querySelector(`.${element}-max-value`).textContent = maxValue;
   const ctx = document.getElementById(element).getContext("2d");
   const myChart = new Chart(
     ctx,
     createConfig(dates, allValues, minValue, maxValue, measure)
   );
   Chart.defaults.font.family = "Montserrat";
-  Chart.register(horizontalLinePlugin);
+  Chart.defaults.font.weight = "normal"; // или 'bold', 'light', и т.д.
+
+  // Chart.register(horizontalLinePlugin);
 }
 
 const test = {
   weight_list: [
     { date: "02.01.2023", value: 60 },
-    { date: "03.01.2023", value: 50 },
-    { date: "05.01.2023", value: 70 },
+    // { date: "03.01.2023", value: 50 },
+    // { date: "05.01.2023", value: 70 },
+    // { date: "02.01.2023", value: 60 },
+    // { date: "03.01.2023", value: 50 },
+    // { date: "05.01.2023", value: 70 },
+    // { date: "02.01.2023", value: 60 },
+    // { date: "03.01.2023", value: 50 },
+    // { date: "05.01.2023", value: 70 },
+    // { date: "02.01.2023", value: 60 },
+    // { date: "03.01.2023", value: 50 },
+    // { date: "05.01.2023", value: 70 },
+    // { date: "02.01.2023", value: 60 },
+    // { date: "03.01.2023", value: 50 },
+    // { date: "05.01.2023", value: 70 },
+    // { date: "05.01.2023", value: 70 },
+    // { date: "05.01.2023", value: 70 },
+    // { date: "05.01.2023", value: 70 },
+    // { date: "05.01.2023", value: 70 },
+    // { date: "05.01.2023", value: 70 },
+    // { date: "05.01.2023", value: 70 },
+    // { date: "05.01.2023", value: 70 },
+    // { date: "05.01.2023", value: 70 },
+    // { date: "05.01.2023", value: 70 },
+    // { date: "05.01.2023", value: 70 },
+    // { date: "05.01.2023", value: 70 },
   ],
   chest_volume_list: [
     { date: "02.01.2023", value: 60 },
