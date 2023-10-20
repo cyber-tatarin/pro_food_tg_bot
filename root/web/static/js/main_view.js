@@ -79,6 +79,7 @@ async function setUserParameters() {
   genderTextEaten = gender === "Мужской" ? "Я съел" : "Я съела";
   genderTextNotEaten = gender === "Мужской" ? "Я не съел" : "Я не съела";
   document.querySelector(".i_have_eaten").textContent = genderTextEaten;
+  document.querySelector(".coin__amount").textContent = userParameters.balance;
   document.querySelector(
     ".weight-value"
   ).textContent = `${userParameters.weight} кг`;
