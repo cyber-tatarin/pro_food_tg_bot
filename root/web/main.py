@@ -330,7 +330,7 @@ async def get_user_parameters(request):
         
         return web.json_response(res_data)
     except Exception as x:
-        logger.exception()
+        logger.exception(x)
         return web.HTTPBadGateway()
     finally:
         if session.is_active:
