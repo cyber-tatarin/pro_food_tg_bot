@@ -80,7 +80,7 @@ async def add_ingredient_post(request):
         gsheet_thread.start()
     
     except Exception as x:
-        print(x)
+        logger.exception(x)
         return web.json_response({'success': False,
                                   'error_message': 'Вы ввели данные некорректно, проверьте пожалуйста'})
     finally:
@@ -96,13 +96,9 @@ async def add_meal_get(request):
 
 
 async def add_meal_post(request):
-    print('Got data')
     data = await request.json()
     tg_id = data.get('tg_id')
     await utils.is_admin_by_id(tg_id)
-    
-    print(data)
-    print('Parsed data')
     
     name = data.get('name')
     recipe = data.get('recipe')
@@ -112,7 +108,6 @@ async def add_meal_post(request):
     recipe_difficulty = data.get('recipe_difficulty')
     
     session1 = db.Session()
-    print('Created session')
     try:
         new_meal = models.Meal(
             meal_name=name,
@@ -121,29 +116,25 @@ async def add_meal_post(request):
             recipe_difficulty=recipe_difficulty,
             recipe_active_time=recipe_active_time
         )
-        print("Created new_meal:", new_meal)
         session1.add(new_meal)
         await session1.commit()
         
         await session1.refresh(new_meal)
         new_meal_id = new_meal.meal_id
-        print("Obtained new_meal_id:", new_meal_id)
     
     except Exception as x:
-        print('First exception:', x)
+        logger.exception(x)
         return web.json_response({'success': False,
                                   'error_message': 'Вы ввели данные некорректно, проверьте пожалуйста'})
     finally:
         if session1.is_active:
             await session1.close()
-    print('After 1st block')
     
     session2 = db.Session()
     
     try:
         ids_list = list()
         for i in range(1, (len(data) - 5) // 2 + 1):
-            print(i, 'i')
             ingredient_id = data.get(f'ingredient_id{i}')
             ids_list.append(ingredient_id)
         
@@ -154,11 +145,8 @@ async def add_meal_post(request):
         list_to_insert_into_gsheets = []
         
         for i in range(1, (len(data) - 5) // 2 + 1):
-            print(i, 'i')
             ingredient_id = data.get(f'ingredient_id{i}')
             ingredient_amount = data.get(f'ingredient_amount{i}')
-            
-            print(ingredient_id, f'ingredient{1}')
             
             ingredient = await session2.get(models.Ingredient, ingredient_id)
             
@@ -188,7 +176,7 @@ async def add_meal_post(request):
             await session2.delete(meal_to_delete)
             await session2.commit()
         except Exception as x:
-            print(x)
+            logger.exception(x)
         
         if str(x) not in ['Вы выбрали 1 ингредиент несколько раз. Проверьте, пожалуйста']:
             return web.json_response({'success': False,
@@ -209,47 +197,38 @@ async def add_plate_get(request):
 
 
 async def add_plate_post(request):
-    print('Got data')
     data = await request.json()
     tg_id = data.get('tg_id')
     await utils.is_admin_by_id(tg_id)
-    
-    print(data)
-    print('Parsed data')
     
     name = data.get('name')
     plate_type = data.get('plate_type')
     
     session1 = db.Session()
-    print('Created session')
     try:
         new_plate = models.Plate(
             plate_name=name,
             plate_type=plate_type
         )
-        print("Created new_meal:", new_plate)
         session1.add(new_plate)
         await session1.commit()
         
         await session1.refresh(new_plate)
         new_plate_id = new_plate.plate_id
-        print("Obtain ed new_meal_id:", new_plate_id)
     
     except Exception as x:
-        print('First exception:', x)
+        logger.exception(x)
         return web.json_response({'success': False,
                                   'error_message': 'Вы ввели данные некорректно, проверьте пожалуйста'})
     finally:
         if session1.is_active:
             await session1.close()
-    print('After 1st block')
     
     session2 = db.Session()
     try:
         percentages_list = list()
         ids_list = list()
         for i in range(1, (len(data) - 2) // 2 + 1):
-            print(i, 'i')
             meal_id = data.get(f'meal_id{i}')
             meal_percentage = data.get(f'meal_percentage{i}')
             percentages_list.append(int(meal_percentage))
@@ -351,7 +330,7 @@ async def get_user_parameters(request):
         
         return web.json_response(res_data)
     except Exception as x:
-        print(x)
+        logger.exception()
         return web.HTTPBadGateway()
     finally:
         if session.is_active:
@@ -481,7 +460,7 @@ async def get_today_plates(request):
         today_plates_list = today_plates_list_query.scalars().all()
     
     except Exception as x:
-        print(x)
+        logger.exception(x)
         return web.HTTPBadGateway()
     finally:
         if session1.is_active:
@@ -522,7 +501,7 @@ async def get_today_plates(request):
             # return web.json_response([])
         
         except Exception as x:
-            print(x)
+            logger.exception(x)
             return web.HTTPBadGateway()
         finally:
             if session2.is_active:
@@ -601,7 +580,6 @@ async def get_all_plates_to_choose(request):
     
     session = db.Session()
     try:
-        print('before db')
         today = date.today()
         chosen_plate_query = await session.execute(
             select(models.UserPlatesDate).where(models.UserPlatesDate.tg_id == tg_id,
@@ -611,8 +589,7 @@ async def get_all_plates_to_choose(request):
         
         all_favorites_query = await session.execute(select(models.Favorites).filter(models.Favorites.tg_id == tg_id))
         all_favorites = all_favorites_query.scalars().all()
-        
-        print('inside')
+
         result_list = await utils.get_nutrient_for_plates_by_ids(session, in_json=True)
         await utils.set_in_favorites_true_for_plates_in_result_list(result_list, all_favorites)
         await utils.put_chosen_plate_to_0_index_if_exists(result_list, chosen_plate)
@@ -627,7 +604,7 @@ async def get_all_plates_to_choose(request):
             return web.HTTPBadGateway()
     
     except Exception as x:
-        print(x)
+        logger.exception(x)
         return web.HTTPBadGateway()
     finally:
         if session.is_active:
@@ -709,7 +686,7 @@ async def has_eaten_plate(request):
             return web.json_response({'success': True, 'is_green': True, 'completed_all_tasks': False})
     
     except Exception as x:
-        print(x)
+        logger.exception(x)
         return web.json_response({'success': False})
     
     finally:
@@ -744,7 +721,7 @@ async def add_to_favorites(request):
             return web.json_response({'success': True, 'is_black': True})
         
         except Exception as x:
-            print(x)
+            logger.exception(x)
             return web.json_response({'success': False})
     
     finally:
@@ -831,7 +808,7 @@ async def has_chosen_plate(request):
             obj_to_edit.plate_id = plate_id
             await new_session.commit()
         except Exception as x:
-            print(x)
+            logger.exception(x)
             return web.HTTPBadGateway()
         finally:
             if session.is_active:
@@ -840,7 +817,6 @@ async def has_chosen_plate(request):
     
     except Exception as x:
         logger.exception(x)
-        print(x)
         return web.HTTPBadGateway()
     finally:
         if session.is_active:
@@ -856,7 +832,6 @@ async def get_all_favorites(request):
     
     session = db.Session()
     try:
-        print('before db')
         today = date.today()
         chosen_plate_query = await session.execute(select(models.UserPlatesDate).where(models.UserPlatesDate.tg_id == tg_id,
                                                                    models.UserPlatesDate.plate_type == plate_type,
@@ -865,10 +840,8 @@ async def get_all_favorites(request):
         
         all_favorites_query = await session.execute(select(models.Favorites).filter(models.Favorites.tg_id == tg_id))
         all_favorites = all_favorites_query.scalars().all()
-        print(all_favorites)
         favorites_plate_ids = [int(element.plate_id) for element in all_favorites]
-        
-        print('inside')
+
         result_list = await utils.get_nutrient_for_plates_by_ids(session, in_json=True, plate_ids=favorites_plate_ids)
         await utils.set_in_favorites_true_for_plates_in_result_list(result_list, all_favorites)
         
@@ -898,10 +871,8 @@ async def get_all_favorites(request):
 
 async def get_recipe(request):
     data = await request.json()
-    print('inside')
     
     plate_id = data.get('plate_id')
-    print('after sara')
     
     session = db.Session()
     try:

@@ -162,7 +162,6 @@ async def get_gender(callback_query: CallbackQuery,
                      callback_data: callback_data_models.ChooseGenderCallback,
                      state: FSMContext):
     data = await state.get_data()
-    print(data)
     try:
         birth_date = data['birth_date']
         weight = data['weight']
@@ -203,7 +202,7 @@ async def get_gender(callback_query: CallbackQuery,
             session.add(new_measure)
             await session.commit()
         except Exception as x:
-            print(x)
+            logger.exception(x)
             await callback_query.message.answer(texts.db_error_message)
             return
         finally:
@@ -218,7 +217,6 @@ async def get_gender(callback_query: CallbackQuery,
         await callback_query.message.edit_reply_markup(reply_markup=None)
     
     except KeyError as x:
-        print(x)
         await callback_query.message.answer('Извините, мы потеряли Ваши данные. Введите их еще раз, пожалуйста. '
                                             'Это не займет больше 30 секунд',
                                             reply_markup=keyboards.get_ikb_to_get_user_start_data())
@@ -301,9 +299,7 @@ async def start_getting_body_measures_cb(callback_query: types.CallbackQuery, st
 
 @dp.message(GetMeasuresState.get_weight)
 async def get_weight(message: types.Message, state: FSMContext):
-    print('in get weight')
     if utils.is_valid_weight(message.text):
-        print('in if')
         await message.answer('Введите, пожалуйста, Ваш объем груди в см в формате "90"')
         await state.set_state(GetMeasuresState.get_chest_volume)
         await state.update_data(weight=message.text)

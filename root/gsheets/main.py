@@ -10,8 +10,6 @@ from root.logger.config import logger
 logger = logger
 key_json = os.path.abspath(os.path.join('root', 'gsheets', 'gsheets_key.json'))
 
-print(key_json)
-
 
 def find_row_number(user_id, worksheet):
     try:
