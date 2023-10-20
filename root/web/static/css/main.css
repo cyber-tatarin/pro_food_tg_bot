@@ -441,6 +441,7 @@ body {
   margin-bottom: 4px;
   margin-left: 26px;
   display: flex;
+  justify-content: center;
   gap: 16px;
 }
 
