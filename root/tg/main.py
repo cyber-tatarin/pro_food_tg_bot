@@ -407,14 +407,12 @@ async def set_have_eaten_without_plates(message: types.Message, state: FSMContex
             have_eaten_in_text = utils.speech_to_text(file_path)
             if os.path.exists(file_path):
                 os.remove(file_path)
-            
-            await state.clear()
-            
         except Exception as x:
             have_eaten_in_text = 'None'
             logger.exception(x)
             
     await message.answer(have_eaten_in_text)
+    await state.clear()
 
 
 # -------------------------------------------------------------------------------------------------
@@ -462,6 +460,18 @@ async def get_has_eaten_without_plates(user_id):
 
 async def what_else_to_eat(user_id):
     await bot.send_message(user_id, 'Ничего!')
+    
+
+async def send_breakfast_notification(user_id):
+    await bot.send_message(user_id, 'Доброе утро, пора составлять рацион и завтракать!')
+    
+
+async def send_lunch_notification(user_id):
+    await bot.send_message(user_id, 'Добрый день, время обеда!')
+    
+
+async def send_dinner_notification(user_id):
+    await bot.send_message(user_id, 'Добрый вечер, не забудьте поужинать и отметить!')
 
 
 async def send_message_to_users_manually(user_ids_list: list, message):
