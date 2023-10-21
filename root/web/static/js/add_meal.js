@@ -16,7 +16,6 @@ const renderSelect = (response, data) => {
 
         response.forEach((item) => {
           if (item.ingredient_name === event.detail.choice.label) {
-            console.log("measure", item.measure);
             el
               .closest(".dish__item")
               .querySelector(
@@ -30,7 +29,6 @@ const renderSelect = (response, data) => {
       },
       false
     );
-    console.log(data);
     choices.setChoices(data, "value", "label", false);
   });
 };
@@ -51,7 +49,6 @@ function hideLoading() {
 }
 
 window.onload = () => {
-  console.log("successfully");
   isImagesLoaded = true;
   if (isFunctionsLoaded) {
     hideLoading();
@@ -59,7 +56,6 @@ window.onload = () => {
 };
 
 getData().finally(() => {
-  console.log("finally");
   isFunctionsLoaded = true;
   if (isImagesLoaded) {
     hideLoading();
@@ -95,7 +91,6 @@ buttonAdd.addEventListener("click", (event) => {
 const buttonRemove = document.querySelector(".dish__remove");
 buttonRemove.addEventListener("click", (event) => {
   event.preventDefault();
-  console.log(buttonRemove.parentElement.previousSibling);
   buttonRemove.parentElement.previousSibling.remove();
   const items = document.querySelectorAll(".dish__item");
   if (items.length < 2) {
@@ -136,27 +131,21 @@ document
         stepInputs.forEach((step) => {
           if (step.checked) {
             if (step.id === "close") {
-              console.log("close");
               let tg = window.Telegram.WebApp;
               tg.close();
             } else if (step.id === "add-ingredient") {
               window.location.href = "../add_ingredient";
-              console.log("add-ingredient");
             } else if (step.id === "add-dish") {
               window.location.href = "../add_meal";
-              console.log("add-dish");
             } else {
               window.location.href = "../add_plate";
-              console.log("else");
             }
           }
         });
-        console.log("fetched successfully!");
         document.querySelector(".error").classList.remove("error_active");
       } else {
         document.querySelector(".error").classList.add("error_active");
         document.querySelector(".error").textContent = response.error_message;
-        console.log(response);
       }
     } catch (err) {
       console.log(err);
@@ -197,7 +186,6 @@ function calculateAmountFromInputs(data, input) {
 }
 
 function setLocalEnergy(input, data) {
-  console.log(input, data);
   const inputValue = input.value;
   const dishAmountElement = input.nextElementSibling;
 
@@ -225,7 +213,6 @@ function setTotalEnergy() {
     totalEnergy.fats += +amount[2];
     totalEnergy.carbohydrates += +amount[3];
   });
-  console.log(totalEnergy);
   const totalCalories = document.querySelector(".dish__calories");
   totalCalories.textContent = `Общее КБЖУ блюда: ${totalEnergy.calories}  /  ${totalEnergy.proteins}  /  ${totalEnergy.fats}  /  ${totalEnergy.carbohydrates}`;
 }

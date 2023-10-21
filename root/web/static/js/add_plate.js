@@ -30,7 +30,6 @@ function hideLoading() {
 }
 
 window.onload = () => {
-  console.log("successfully");
   isImagesLoaded = true;
   if (isFunctionsLoaded) {
     hideLoading();
@@ -38,7 +37,6 @@ window.onload = () => {
 };
 
 getData().finally(() => {
-  console.log("finally");
   isFunctionsLoaded = true;
   if (isImagesLoaded) {
     hideLoading();
@@ -56,9 +54,7 @@ const renderSelect = (response, data) => {
       "choice",
       function (event) {
         response.forEach((item) => {
-          // console.log(item);
           if (item.meal_name === event.detail.choice.label) {
-            console.log("measure", item.meal_name);
             setTimeout(() => {
               setTotalEnergy(response);
             }, 0);
@@ -128,14 +124,12 @@ buttonAdd.addEventListener("click", async (event) => {
               </div>
             </div>`
   );
-  console.log(choicesCounter);
   renderSelect(response, testChoices);
 });
 
 const buttonRemove = document.querySelector(".dish__remove");
 buttonRemove.addEventListener("click", (event) => {
   event.preventDefault();
-  // console.log(buttonRemove.parentElement.previousSibling);
   buttonRemove.parentElement.previousSibling.remove();
   const items = document.querySelectorAll(".dish__item");
   if (items.length < 2) {
@@ -198,29 +192,23 @@ document
       });
       const response = await request.json();
       if (response.success === true) {
-        console.log("fetched successfully!");
         const stepInputs = document.querySelectorAll(".step_radio");
         stepInputs.forEach((step) => {
           if (step.checked) {
             if (step.id === "close") {
-              console.log("close");
               let tg = window.Telegram.WebApp;
               tg.close();
             } else if (step.id === "add-ingredient") {
               window.location.href = "../add_ingredient";
-              console.log("add-ingredient");
             } else if (step.id === "add-dish") {
               window.location.href = "../add_meal";
-              console.log("add-dish");
             } else {
               window.location.href = "../add_plate";
-              console.log("else");
             }
           }
         });
         document.querySelector(".error").classList.remove("error_active");
       } else {
-        console.log(response);
         document.querySelector(".error").classList.add("error_active");
         document.querySelector(".error").textContent = response.error_message;
       }
@@ -265,7 +253,6 @@ function setTotalEnergy(data) {
 
     data.forEach((el) => {
       if (el.meal_name === value) {
-        // console.log(el);
         totalEnergy.calories += +el.calories;
         totalEnergy.proteins += +el.proteins;
         totalEnergy.fats += +el.fats;
