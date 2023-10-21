@@ -54,7 +54,7 @@ class UserStates(StatesGroup):
 class GetMeasuresState(StatesGroup):
     get_weight = State()
     get_chest_volume = State()
-    get_underchest_voume = State()
+    get_underchest_volume = State()
     get_waist_volume = State()
     get_belly_volume = State()
     get_hips_volume = State()
@@ -311,18 +311,18 @@ async def get_weight(message: types.Message, state: FSMContext):
 async def get_chest_volume(message: types.Message, state: FSMContext):
     if message.text.isdecimal():
         await message.answer('Введите, пожалуйста, Ваш объем под грудью в см в формате "70"')
-        await state.set_state(GetMeasuresState.get_underchest_voume)
+        await state.set_state(GetMeasuresState.get_underchest_volume)
         await state.update_data(chest_volume=message.text)
     else:
         await message.answer('Вы ввели не число. Введите, пожалуйста, целое число')
 
 
-@dp.message(GetMeasuresState.get_underchest_voume)
+@dp.message(GetMeasuresState.get_underchest_volume)
 async def get_under_chest_volume(message: types.Message, state: FSMContext):
     if message.text.isdecimal():
         await message.answer('Введите, пожалуйста, Ваш объем талии в см в формате "75"')
         await state.set_state(GetMeasuresState.get_waist_volume)
-        await state.update_data(underchest_voume=message.text)
+        await state.update_data(underchest_volume=message.text)
     else:
         await message.answer('Вы ввели не число. Введите, пожалуйста, целое число')
 
@@ -354,7 +354,7 @@ async def get_hips_volume(message: types.Message, state: FSMContext):
         try:
             weight = data['weight']
             chest_volume = data['chest_volume']
-            underchest_voume = data['underchest_voume']
+            underchest_volume = data['underchest_volume']
             waist_volume = data['waist_volume']
             belly_volume = data['belly_volume']
             hips_volume = message.text
@@ -368,7 +368,7 @@ async def get_hips_volume(message: types.Message, state: FSMContext):
             try:
                 new_body_measure_obj = models.BodyMeasure(tg_id=message.from_user.id,
                                                           weight=weight, chest_volume=chest_volume,
-                                                          underchest_voume=underchest_voume, waist_volume=waist_volume,
+                                                          underchest_volume=underchest_volume, waist_volume=waist_volume,
                                                           belly_volume=belly_volume, hips_volume=hips_volume)
                 session.add(new_body_measure_obj)
                 await session.commit()
