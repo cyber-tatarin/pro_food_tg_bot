@@ -1032,6 +1032,16 @@ async def statistics_post(request):
     finally:
         if session.is_active:
             await session.close()
+            
+
+@aiohttp_jinja2.template('update_profile.html')
+async def update_profile_get(request):
+    return {}
+
+
+@aiohttp_jinja2.template('update_weight_aim.html')
+async def update_weight_aim_get(request):
+    return {}
 
 
 app = web.Application()
@@ -1050,7 +1060,9 @@ app.add_routes([
     web.get('/choose_lunch', choose_lunch),
     web.get('/choose_dinner', choose_dinner),
     web.get('/favorites', favorites),
-    web.get('/statistics', statistics_get)
+    web.get('/statistics', statistics_get),
+    web.get('/update_profile', update_profile_get),
+    web.get('/update_weight_aim', update_weight_aim_get)
 
 ])
 
