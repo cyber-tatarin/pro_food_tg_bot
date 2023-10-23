@@ -31,7 +31,6 @@ document
       data[key] = value;
     });
     data.tg_id = tg_id;
-    data.weight = Number(data.weight);
     try {
       const request = await fetch("../api/update_weight_aim_post", {
         method: "POST",

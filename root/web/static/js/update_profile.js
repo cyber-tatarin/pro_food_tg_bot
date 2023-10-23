@@ -31,7 +31,6 @@ document
       data[key] = value;
     });
     data.tg_id = tg_id;
-    data.height = Number(data.height);
     try {
       const request = await fetch("../api/update_profile_post", {
         method: "POST",
