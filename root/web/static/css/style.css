@@ -496,6 +496,16 @@ body {
   gap: 12px;
 }
 
+.fixed-button {
+  padding: 0px 24px;
+  width: 100%;
+  max-width: 1200px;
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
 .brain-animation {
   opacity: 1;
   transition: opacity 0.5s;
