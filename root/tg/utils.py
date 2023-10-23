@@ -32,10 +32,8 @@ def is_valid_birth_date(birth_date_as_str: str):
 
 def is_valid_weight(weight_as_str: str):
     # Define the number pattern regex
-    number_pattern = r'^\d+\.\d$'
-
-    # Use re.match to check if the string matches the pattern
-    if re.match(number_pattern, weight_as_str):
+    if weight_as_str.isdigit():
+        # Use re.match to check if the string matches the pattern
         if 35 < float(weight_as_str) < 150:
             return True
     return False
