@@ -1,5 +1,5 @@
 const tg = window.Telegram.WebApp;
-const tg_id = 459471362 || tg.initDataUnsafe.user.id;
+const tg_id = tg.initDataUnsafe.user.id;
 
 let isFunctionsLoaded = true;
 let isImagesLoaded = false;
@@ -9,7 +9,6 @@ function showLoading(param = true) {
   loader.classList.remove("loading_hidden");
   loader.style.display = "flex";
   if (param) {
-    console.log("hidden");
     document.body.style.overflow = "hidden";
   }
 }
@@ -41,7 +40,6 @@ async function setStatistics() {
         .querySelector(".empty-list")
         .classList.remove("empty-list_hidden");
       document.querySelector(".graphic-flex").style.display = "none";
-      console.log("Пустой JSON");
     }
   } catch (err) {
     console.log(err);
@@ -68,13 +66,11 @@ function hideLoading(param = true) {
     loader.style.display = "none";
   });
   if (param) {
-    console.log("visible");
     document.body.style.overflow = "visible";
   }
 }
 
 window.onload = () => {
-  console.log("successfully");
   isImagesLoaded = true;
   if (isFunctionsLoaded) {
     hideLoading();

@@ -1,5 +1,5 @@
 const tg = window.Telegram.WebApp;
-const tg_id = 459471362 || tg.initDataUnsafe.user.id;
+const tg_id = tg.initDataUnsafe.user.id;
 
 const elements = document.querySelectorAll(`.js-choice_type`);
 elements.forEach((el) => {
@@ -39,7 +39,6 @@ async function sendData(link) {
     body: JSON.stringify({ tg_id: tg_id, plate_type: "Обед" }),
   });
   const response = await request.json();
-  console.log(response);
   return response;
 }
 
@@ -55,13 +54,11 @@ async function getDiameter() {
     body: JSON.stringify({ tg_id: tg_id }),
   });
   const response = await request.json();
-  console.log(response);
   diameter = response.plate_diameter;
   return response.plate_diameter;
 }
 
 async function setPlateImage(className, plate, index) {
-  console.log("setPlateImage");
   let imagePath = "";
   if (plate.percentages[0] === "100") {
     imagePath = "../static/images/1-part.png";
@@ -363,7 +360,6 @@ let isImagesLoaded = false;
 setPlates().finally(() => {
   Promise.all(promises)
     .then(() => {
-      console.log("Все изображения загружены!");
       isFunctionsLoaded = true;
       if (isImagesLoaded) {
         hideLoading();
@@ -383,7 +379,6 @@ function showLoading(param = true) {
   loader.classList.remove("loading_hidden");
   loader.style.display = "flex";
   if (param) {
-    console.log("hidden");
     document.body.style.overflow = "hidden";
   }
 }
@@ -395,13 +390,11 @@ function hideLoading(param = true) {
     loader.style.display = "none";
   });
   if (param) {
-    console.log("visible");
     document.body.style.overflow = "visible";
   }
 }
 
 window.onload = () => {
-  console.log("successfully");
   isImagesLoaded = true;
   if (isFunctionsLoaded) {
     hideLoading();
@@ -446,7 +439,6 @@ async function sendPlate(data, link, el) {
     });
     const response = await request.json();
 
-    console.log(response);
     if (response.success === true) {
       window.location.href = "../choose_dinner";
     } else {

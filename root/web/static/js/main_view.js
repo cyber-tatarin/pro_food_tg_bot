@@ -1,5 +1,5 @@
 const tg = window.Telegram.WebApp;
-const tg_id = 459471362 || tg.initDataUnsafe.user.id;
+const tg_id = tg.initDataUnsafe.user.id;
 
 document.body.style.overflow = "hidden";
 
@@ -60,6 +60,14 @@ async function setPlateImage(className, plate, index) {
   return imgLoaded;
 }
 
+function formatNumber(num) {
+  if (Number.isInteger(num)) {
+    return num.toString();
+  } else {
+    return parseFloat(num.toFixed(2)).toString();
+  }
+}
+
 function setPlateStars(className, plate, index) {
   const cardStarsElement = document.querySelector(`.${className}${index + 1}`);
   const greenStarImage = '<img src="../static/images/green-star.svg" alt="" />';
@@ -80,13 +88,15 @@ async function setUserParameters() {
   genderTextNotEaten = gender === "Мужской" ? "Я не съел" : "Я не съела";
   document.querySelector(".i_have_eaten").textContent = genderTextEaten;
   document.querySelector(".coin__amount").textContent = userParameters.balance;
-  document.querySelector(
-    ".weight-value"
-  ).textContent = `${userParameters.weight} кг`;
-  document.querySelector(
-    ".height-value"
-  ).textContent = `${userParameters.height} см`;
-  document.querySelector(".age-value").textContent = userParameters.age;
+  document.querySelector(".weight-value").textContent = `${formatNumber(
+    userParameters.weight
+  )} кг`;
+  document.querySelector(".height-value").textContent = `${formatNumber(
+    userParameters.height
+  )} см`;
+  document.querySelector(".age-value").textContent = formatNumber(
+    userParameters.age
+  );
 
   document.querySelectorAll(".plate-diameter-value").forEach((el) => {
     el.textContent = `${userParameters.plate_diameter} см `;
@@ -95,13 +105,13 @@ async function setUserParameters() {
     ".weight-aim-value"
   ).textContent = `${userParameters.weight_aim} кг `;
   if (userParameters.weight_gap >= 0) {
-    document.querySelector(
-      ".weight-gap-value"
-    ).textContent = `(+${userParameters.weight_gap} кг)`;
+    document.querySelector(".weight-gap-value").textContent = `(+${formatNumber(
+      userParameters.weight_gap
+    )} кг)`;
   } else {
-    document.querySelector(
-      ".weight-gap-value"
-    ).textContent = `(${userParameters.weight_gap} кг)`;
+    document.querySelector(".weight-gap-value").textContent = `(${formatNumber(
+      userParameters.weight_gap
+    )} кг)`;
   }
 }
 
@@ -312,7 +322,6 @@ let isFunctionsLoaded = false;
 let isImagesLoaded = false;
 
 function handleCompletion(message) {
-  console.log(message);
   isFunctionsLoaded = true;
   if (isImagesLoaded) {
     hideLoading();
@@ -343,7 +352,6 @@ function showLoading(param = true) {
   loader.classList.remove("loading_hidden");
   loader.style.display = "flex";
   if (param) {
-    console.log("hidden");
     document.body.style.overflow = "hidden";
   }
 }
@@ -355,13 +363,11 @@ function hideLoading(param = true) {
     loader.style.display = "none";
   });
   if (param) {
-    console.log("visible");
     document.body.style.overflow = "visible";
   }
 }
 
 window.onload = () => {
-  console.log("successfully");
   isImagesLoaded = true;
   if (isFunctionsLoaded) {
     hideLoading();
@@ -516,12 +522,8 @@ async function sendPlate(data, link, el) {
           : Math.floor(
               (data.carbohydrates * 100) / nutrientStreak.day_carbohydrates
             ));
-
       const width = +eatenCaloriesEl.textContent;
-      console.log(width);
-
       const progressBarStyle = progressForeground.style;
-
       progressBarStyle.width = width > 100 ? "100%" : `${width * 0.8}%`;
       progressBarStyle.borderTopRightRadius =
         progressBarStyle.borderBottomRightRadius = width > 100 ? "3px" : "0px";

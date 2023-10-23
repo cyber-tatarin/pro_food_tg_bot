@@ -1,6 +1,6 @@
 let choicesCounter = 1;
 let tg = window.Telegram.WebApp;
-const tg_id = 459471362 || tg.initDataUnsafe.user.id;
+const tg_id = tg.initDataUnsafe.user.id;
 
 const elements = document.querySelectorAll(`.js-choice_type`);
 elements.forEach((el) => {
@@ -27,13 +27,10 @@ const renderSelect = (response, data) => {
     el.addEventListener(
       "choice",
       function (event) {
-        console.log("label", event.detail.choice.label);
-        console.log("value", event.detail.choice.value);
         el.parentElement.style.color = "#303030";
       },
       false
     );
-    console.log(data);
     choices.setChoices(data, "value", "label", false);
   });
 };
@@ -51,7 +48,6 @@ function hideLoading() {
 }
 
 window.onload = () => {
-  console.log("successfully");
   isImagesLoaded = true;
   if (isFunctionsLoaded) {
     hideLoading();
@@ -59,7 +55,6 @@ window.onload = () => {
 };
 
 getData().finally(() => {
-  console.log("finally");
   isFunctionsLoaded = true;
   if (isImagesLoaded) {
     hideLoading();
@@ -86,7 +81,6 @@ document
       }
     }
 
-    console.log(selectedCheckboxValue);
     const formData = new FormData(event.target);
     const data = {};
     let selectedCheckbox;
@@ -107,25 +101,19 @@ document
         body: JSON.stringify(data),
       });
       const response = await request.json();
-      console.log(response);
       if (response.success === true) {
-        console.log("redirect");
         const stepInputs = document.querySelectorAll(".step_radio");
         stepInputs.forEach((step) => {
           if (step.checked) {
             if (step.id === "close") {
-              console.log("close");
               let tg = window.Telegram.WebApp;
               tg.close();
             } else if (step.id === "add-ingredient") {
               window.location.href = "../add_ingredient";
-              console.log("add-ingredient");
             } else if (step.id === "add-dish") {
               window.location.href = "../add_meal";
-              console.log("add-dish");
             } else {
               window.location.href = "../add_plate";
-              console.log("else");
             }
           }
         });
@@ -133,7 +121,6 @@ document
       } else {
         document.querySelector(".error").classList.add("error_active");
         document.querySelector(".error").textContent = response.error_message;
-        console.log(response);
       }
     } catch (err) {
       console.log(err);
@@ -149,13 +136,11 @@ async function getData() {
       },
     });
     response = await request.json();
-    console.log("response", response, choicesCounter);
 
     testChoices = response.map((item) => ({
       value: item.measure,
       label: "Мера",
     }));
-    console.log(testChoices);
     renderSelect(response, testChoices);
 
     return response;
