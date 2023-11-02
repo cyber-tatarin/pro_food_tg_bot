@@ -653,6 +653,7 @@ async def has_eaten_plate(request):
                     if len(all_today_has_eaten) >= 3:
                         
                         updated_earlier_than_today_or_created_today = True
+                        await session.refresh(user_streak_obj)
                         last_updated = user_streak_obj.last_updated
                         if last_updated is not None:
                             updated_earlier_than_today_or_created_today = user_streak_obj.last_updated < today
