@@ -105,14 +105,14 @@ def get_nutrients_from_calories(calories):
 
 
 def determine_plate_size(calories, gender):
-    if gender == 'Женщина':
+    if gender == 'Женский':
         if calories <= 1400:
             return 21
         # elif calories <= 1800:
         #     return '23см'
         else:
             return 23
-    elif gender == 'Мужчина':
+    elif gender == 'Мужской':
         if calories <= 1700:
             return 23
         # elif calories <= 2000:
