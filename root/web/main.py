@@ -385,13 +385,16 @@ async def get_current_streak(request):
             await session.close()
     
     day_word = await utils.get_day_word_according_to_number(current_streak)
+    coin_reward_base = 23 + 23 * current_streak if current_task_number < 3 else 23 + 23 * (current_streak-1)
+    tommorow_coin_reward = coin_reward_base + 23
+    tomorrow_coin_word = await utils.get_coin_word_according_to_number(tommorow_coin_reward)
     
     data = {
         'current_streak_text': f'{current_streak} {day_word} подряд',
         'current_task_number': current_task_number,
-        'coin_reward': 20,
+        'coin_reward': coin_reward_base,
         'task_text': 'Так держать! С каждым днём ты получаешь все больше монет и становишься ближе к своей цели!',
-        'tomorrow_text': 'Завтра ты получишь 20 коинов',
+        'tomorrow_text': f'Завтра ты получишь {tommorow_coin_reward} {tomorrow_coin_word}',
     }
     
     return web.json_response(data)
