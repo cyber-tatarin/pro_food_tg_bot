@@ -570,6 +570,7 @@ async def get_meal_ids_names_properties_list(request):
         
         return web.json_response(result_list)
     except Exception as x:
+        logger.exception(x)
         return web.HTTPBadGateway()
     finally:
         if session.is_active:
