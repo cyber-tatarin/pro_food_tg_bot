@@ -243,7 +243,7 @@ async def get_recipe_values(session, plate_id, tg_id):
                 ingredients.append({
                     'ingredient_name': ingredient_name,
                     'ingredient_measure': ingredient_measure,
-                    'ingredient_amount': ingredient_amount * multiplier
+                    'ingredient_amount': float(ingredient_amount) * multiplier
                 })
             
             meals.append({
