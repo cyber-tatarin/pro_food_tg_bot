@@ -1,5 +1,6 @@
 import os
 from datetime import datetime
+import math
 
 from aiohttp import web
 from sqlalchemy import text
@@ -109,10 +110,10 @@ async def get_nutrient_for_plates_by_ids(session, tg_id, plate_ids=None, in_json
                     'recipe_difficulty': int(row.recipe_difficulty),
                     'meals': row.meal_names.split(', '),
                     'percentages': row.percentage.split(', '),
-                    'calories': int(row.calories) * multiplier,
-                    'proteins': int(row.proteins) * multiplier,
-                    'fats': int(row.fats) * multiplier,
-                    'carbohydrates': int(row.carbohydrates) * multiplier,
+                    'calories': round(float(row.calories) * multiplier, 1),
+                    'proteins': round(float(row.proteins) * multiplier, 1),
+                    'fats': round(float(row.fats) * multiplier, 1),
+                    'carbohydrates': round(float(row.carbohydrates) * multiplier, 1),
                     'in_favorites': False
                 })
         
@@ -243,7 +244,7 @@ async def get_recipe_values(session, plate_id, tg_id):
                 ingredients.append({
                     'ingredient_name': ingredient_name,
                     'ingredient_measure': ingredient_measure,
-                    'ingredient_amount': float(ingredient_amount) * multiplier
+                    'ingredient_amount': round(float(ingredient_amount) * multiplier, 1)
                 })
             
             meals.append({
