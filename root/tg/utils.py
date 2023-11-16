@@ -2,6 +2,7 @@
 import os
 from datetime import datetime
 import assemblyai as aai
+from openai import OpenAI
 
 from root.db import setup as db, models
 from sqlalchemy.exc import IntegrityError
@@ -9,7 +10,11 @@ from root.logger.config import logger
 from root.gsheets import main as gsh
 import asyncio
 import re
+from dotenv import load_dotenv, find_dotenv
 # from . import keyboards
+
+load_dotenv(find_dotenv())
+openai_client = OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
         
             
 def is_valid_phone_number(phone_number):
@@ -141,9 +146,53 @@ config = aai.TranscriptionConfig(language_code="ru")
 transcriber = aai.Transcriber(config=config)
 
 
-def speech_to_text(audiofile_path):
+async def speech_to_text(audiofile_path):
     transcript = transcriber.transcribe(audiofile_path)
     return transcript.text
+
+
+async def ai_analysis(text):
+    try:
+        completion = openai_client.chat.completions.create(
+            model="gpt-3.5-turbo-0613",
+            messages=[
+                {"role": "user", "content": f"{text}"}
+            ],
+            functions=[
+                {
+                    "name": "nutrients",
+                    "description": "Get nutrients from text informantion about meal",
+                    "parameters": {
+                        "type": "object",
+                        "properties": {
+                            "calories": {
+                                "type": "integer",
+                                "description": "Total amount of calories"
+                            },
+                            "proteins": {
+                                "type": "integer",
+                                "description": "Total amount of proteins in gramms"
+                            },
+                            "fats": {
+                                "type": "integer",
+                                "description": "Total amount of fats in gramms"
+                            },
+                            "carbohydrates": {
+                                "type": "string",
+                                "description": "Total amount of carbohydrates in gramms"
+                            },
+                        },
+                        "required": ["calories", "proteins", "fats", "carbohydrates"]
+                    }
+                }
+            ]
+        )
+        return completion.choices[0]
+    except Exception as x:
+        logger.exception(x)
+        return 'fuck'
+        
+
     
 
 
