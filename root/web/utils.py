@@ -3,9 +3,17 @@ from datetime import datetime
 
 from aiohttp import web
 from sqlalchemy import text
+
+from root.db import models
 from root.logger.config import logger
 
 from root.tg.main import admin_ids
+
+multiplier_by_plate_diameter = {
+    21: 1,
+    23: 1.2,
+    25: 1.4
+}
 
 
 async def is_admin_post(request):
@@ -37,7 +45,7 @@ percentage_db_func_dict = {
 }
 
 
-async def get_nutrient_for_plates_by_ids(session, plate_ids=None, in_json=False) -> list:
+async def get_nutrient_for_plates_by_ids(session, tg_id, plate_ids=None, in_json=False) -> list:
     if plate_ids is not None:
         if len(plate_ids) == 0:
             return []
@@ -80,6 +88,9 @@ async def get_nutrient_for_plates_by_ids(session, plate_ids=None, in_json=False)
     # Execute the query
     result_query = await session.execute(sql_query)
     result = result_query.fetchall()
+
+    user = await session.get(models.Ingredient, tg_id)
+    multiplier = multiplier_by_plate_diameter[user.plate_diameter]
     
     print(result)
     
@@ -98,10 +109,10 @@ async def get_nutrient_for_plates_by_ids(session, plate_ids=None, in_json=False)
                     'recipe_difficulty': int(row.recipe_difficulty),
                     'meals': row.meal_names.split(', '),
                     'percentages': row.percentage.split(', '),
-                    'calories': int(row.calories),
-                    'proteins': int(row.proteins),
-                    'fats': int(row.fats),
-                    'carbohydrates': int(row.carbohydrates),
+                    'calories': int(row.calories) * multiplier,
+                    'proteins': int(row.proteins) * multiplier,
+                    'fats': int(row.fats) * multiplier,
+                    'carbohydrates': int(row.carbohydrates) * multiplier,
                     'in_favorites': False
                 })
         
@@ -189,7 +200,7 @@ get_recipe_db_func_dict = {
 }
 
 
-async def get_recipe_values(session, plate_id):
+async def get_recipe_values(session, plate_id, tg_id):
     sql_query = text(f"""
     select meal_id, recipe, recipe_time, recipe_active_time, plate_name, meal_name,
     {get_recipe_db_func_dict[os.getenv('DB_ENGINE')]}
@@ -205,6 +216,9 @@ async def get_recipe_values(session, plate_id):
     
     group by meal_id, recipe, recipe_time, recipe_active_time, plate_name, meal_name;
     """)
+    
+    user = await session.get(models.Ingredient, tg_id)
+    multiplier = multiplier_by_plate_diameter[user.plate_diameter]
     
     # Execute the query
     result_query = await session.execute(sql_query)
@@ -229,7 +243,7 @@ async def get_recipe_values(session, plate_id):
                 ingredients.append({
                     'ingredient_name': ingredient_name,
                     'ingredient_measure': ingredient_measure,
-                    'ingredient_amount': ingredient_amount
+                    'ingredient_amount': ingredient_amount * multiplier
                 })
             
             meals.append({

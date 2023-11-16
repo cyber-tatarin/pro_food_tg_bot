@@ -471,7 +471,7 @@ async def get_today_plates(request):
         
         session2 = db.Session()
         try:
-            result_list = await utils.get_nutrient_for_plates_by_ids(session2, plate_ids, in_json=True)
+            result_list = await utils.get_nutrient_for_plates_by_ids(session2, plate_ids, tg_id, in_json=True)
             all_today_has_eaten_plates_query = await session2.execute(select(models.HasEaten).where(
                 models.HasEaten.date_time >= today,
                 models.HasEaten.date_time < today + timedelta(days=1),
@@ -590,7 +590,7 @@ async def get_all_plates_to_choose(request):
         all_favorites_query = await session.execute(select(models.Favorites).filter(models.Favorites.tg_id == tg_id))
         all_favorites = all_favorites_query.scalars().all()
 
-        result_list = await utils.get_nutrient_for_plates_by_ids(session, in_json=True)
+        result_list = await utils.get_nutrient_for_plates_by_ids(session, tg_id, in_json=True)
         await utils.set_in_favorites_true_for_plates_in_result_list(result_list, all_favorites)
         await utils.put_chosen_plate_to_0_index_if_exists(result_list, chosen_plate)
         
@@ -843,7 +843,7 @@ async def get_all_favorites(request):
         all_favorites = all_favorites_query.scalars().all()
         favorites_plate_ids = [int(element.plate_id) for element in all_favorites]
 
-        result_list = await utils.get_nutrient_for_plates_by_ids(session, in_json=True, plate_ids=favorites_plate_ids)
+        result_list = await utils.get_nutrient_for_plates_by_ids(session, tg_id, in_json=True, plate_ids=favorites_plate_ids)
         await utils.set_in_favorites_true_for_plates_in_result_list(result_list, all_favorites)
         
         if chosen_plate is not None:
@@ -874,10 +874,11 @@ async def get_recipe(request):
     data = await request.json()
     
     plate_id = data.get('plate_id')
+    tg_id = data.get('tg_id')
     
     session = db.Session()
     try:
-        result_dict = await utils.get_recipe_values(session, plate_id)
+        result_dict = await utils.get_recipe_values(session, plate_id, tg_id)
         if result_dict:
             return web.json_response(result_dict)
         else:
