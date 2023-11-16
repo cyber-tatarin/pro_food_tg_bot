@@ -217,7 +217,7 @@ async def get_recipe_values(session, plate_id, tg_id):
     group by meal_id, recipe, recipe_time, recipe_active_time, plate_name, meal_name;
     """)
     
-    user = await session.get(models.Ingredient, tg_id)
+    user = await session.get(models.User, tg_id)
     multiplier = multiplier_by_plate_diameter[user.plate_diameter]
     
     # Execute the query
