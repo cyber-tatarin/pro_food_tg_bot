@@ -128,7 +128,7 @@ async function setUserStreak() {
   ).textContent = `${userStreak.tomorrow_text}`;
   document.querySelector(
     ".strick-coins"
-  ).textContent = `${userStreak.coin_reward}  ЖИРкоинов`;
+  ).textContent = `${userStreak.coin_reward}`;
 
   const maxTasks = 3;
   const currentTaskNumber = userStreak.current_task_number;

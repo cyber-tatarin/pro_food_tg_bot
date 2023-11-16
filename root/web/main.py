@@ -487,7 +487,7 @@ async def get_today_plates(request):
         
         session2 = db.Session()
         try:
-            result_list = await utils.get_nutrient_for_plates_by_ids(session2, plate_ids, tg_id, in_json=True)
+            result_list = await utils.get_nutrient_for_plates_by_ids(session2, tg_id, plate_ids, in_json=True)
             all_today_has_eaten_plates_query = await session2.execute(select(models.HasEaten).where(
                 models.HasEaten.date_time >= today,
                 models.HasEaten.date_time < today + timedelta(days=1),
