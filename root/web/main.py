@@ -556,6 +556,7 @@ async def get_meal_ids_names_properties_list(request):
         # Execute the query
         result_query = await session.execute(sql_query)
         result = result_query.scalars().all()
+        logger.info(result)
         
         result_list = list()
         for row in result:
