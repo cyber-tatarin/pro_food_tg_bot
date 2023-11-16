@@ -209,8 +209,9 @@ async def get_gender(callback_query: CallbackQuery,
             if session.is_active:
                 await session.close()
         
-        await callback_query.message.answer(f'{calories}, {proteins}, {fats}, {carbohydrates}, {vegetables}, '
-                                            f'{plate_diameter}')
+        await callback_query.message.answer(f'Отлично! Мы успешно занесли все твои данные в базу. '
+                                            f'Теперь нажми кнопку "Профиль" в левом нижнем углу, чтобы начать '
+                                            f'пользоваться приложением!')
         await state.clear()
         
         await callback_query.answer()
