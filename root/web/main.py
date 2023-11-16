@@ -660,6 +660,7 @@ async def has_eaten_plate(request):
             session.add(new_has_eaten)
             await session.commit()
             completed_all_tasks = False
+            today_reward = 23
             try:
                 all_today_has_eaten_query = await session.execute(
                     select(models.HasEaten).where(models.HasEaten.tg_id == tg_id,
@@ -676,10 +677,12 @@ async def has_eaten_plate(request):
                             updated_earlier_than_today_or_created_today = user_streak_obj.last_updated < today
                         
                         if updated_earlier_than_today_or_created_today:
-                            user_streak_obj.streak += 1
                             
                             user_obj = await session.get(models.User, tg_id)
-                            user_obj.balance += 10
+                            today_reward = 23 + float(user_streak_obj.streak) * 23
+                            user_obj.balance += today_reward
+                            
+                            user_streak_obj.streak += 1
                             
                             current_balance = user_obj.balance
                             
@@ -691,9 +694,9 @@ async def has_eaten_plate(request):
             
             response_dict = {'success': True, 'is_green': False, 'completed_all_tasks': completed_all_tasks}
             if completed_all_tasks:
-                response_dict['bold_text'] = 'Так держать ты получил 10 ЖИРкоинов'
+                response_dict['bold_text'] = f'Так держать ты получил {today_reward} {utils.get_coin_word_according_to_number(today_reward)}'
                 coin_word = await utils.get_coin_word_according_to_number(current_balance)
-                response_dict['thin_text'] = f'Теперь у Вас на балансе {current_balance} {coin_word}'
+                response_dict['thin_text'] = f'Теперь у тебя на балансе {current_balance} {coin_word}'
             
             return web.json_response(response_dict)
         
