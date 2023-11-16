@@ -89,7 +89,7 @@ async def get_nutrient_for_plates_by_ids(session, tg_id, plate_ids=None, in_json
     result_query = await session.execute(sql_query)
     result = result_query.fetchall()
 
-    user = await session.get(models.Ingredient, tg_id)
+    user = await session.get(models.User, tg_id)
     multiplier = multiplier_by_plate_diameter[user.plate_diameter]
     
     print(result)
