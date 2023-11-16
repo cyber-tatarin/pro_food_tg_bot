@@ -417,8 +417,8 @@ async def set_have_eaten_without_plates(message: types.Message, state: FSMContex
         logger.info(ai_response)
         
         await message.answer(str(ai_response))
-        
-    await message.answer('- -')
+    else:
+        await message.answer('Произошла ошибка, извините. Попробуйте еще раз')
     await state.clear()
 
 

@@ -190,7 +190,7 @@ async def ai_analysis(text):
         return completion.choices[0]
     except Exception as x:
         logger.exception(x)
-        return 'fuck'
+        return 'Ошибка на стороне OpenAI, извините'
         
 
     
