@@ -236,7 +236,7 @@ async function setPlates() {
     </div>
     <p class="total-time">Общее время приготовления</p>
     <p class="total-time_value">${plate.recipe_time} минут</p>
-    <p class="active-time">Активное время приготовления</p>
+    <p class="active-time">Время "у плиты"</p>
     <p class="active-time_value">${plate.recipe_active_time} минут</p>
     <div class="card__buttons">
       <button class="card__button__recepi card__button__recepi${
@@ -600,7 +600,7 @@ async function setRecepi(data) {
     </p>
     <div class="popup__time">
       <div class="popup__time-flex">
-        <p class="popup__time-current">Активное время (минут)</p>
+        <p class="popup__time-current">Время "у плиты" (минут)</p>
         <p class="popup__time-current__value">${meal.recipe_active_time}</p>
       </div>
       <div class="popup__time-flex">
