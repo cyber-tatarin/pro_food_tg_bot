@@ -1,6 +1,5 @@
 import os
 from datetime import datetime
-import math
 
 from aiohttp import web
 from sqlalchemy import text

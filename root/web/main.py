@@ -28,6 +28,17 @@ env = jinja2.Environment(
     keep_trailing_newline=True
 )
 
+streak_tasks = {
+    1: 'Выполни сегодня все задания, чтобы получить награду в ЖИРкоинах, '
+       'за которые ты можешь купить косультацию Татьяны. 1 консультация стоит 10 000 ЖИРкоинов. Ты их легко накопишь, '
+       'если будешь заходить 30 дней подряд и выполнять все задания.\n\n'
+       'Первое задание — зайти сегодня в приложение — уже выполнено!\n\n'
+       'Второе задание — составить рацион на сегодня из 3 приемов пищи. Листай ниже и нажимай на кнопку '
+       '"Составить рацион на сегодня"',
+    2: 'Ура! Второе задание выполнено! Задание №3 — съесть все 3 приема пищи и отметить это в приложении.',
+    3: 'Сегодня все задания выполнены. Возвращайся завтра!'
+}
+
 
 #
 # @aiohttp_jinja2.template('profile_view.html')
@@ -386,14 +397,16 @@ async def get_current_streak(request):
     
     day_word = await utils.get_day_word_according_to_number(current_streak)
     coin_reward_base = 23 + 23 * current_streak if current_task_number < 3 else 23 + 23 * (current_streak-1)
+    coin_reward_word = await utils.get_coin_word_according_to_number(coin_reward_base)
+    
     tommorow_coin_reward = coin_reward_base + 23
     tomorrow_coin_word = await utils.get_coin_word_according_to_number(tommorow_coin_reward)
     
     data = {
         'current_streak_text': f'{current_streak} {day_word} подряд',
         'current_task_number': current_task_number,
-        'coin_reward': coin_reward_base,
-        'task_text': 'Так держать! С каждым днём ты получаешь все больше монет и становишься ближе к своей цели!',
+        'coin_reward': f'{coin_reward_base} {coin_reward_word}',
+        'task_text': streak_tasks[current_task_number],
         'tomorrow_text': f'Завтра ты получишь {tommorow_coin_reward} {tomorrow_coin_word}',
     }
     
