@@ -1,5 +1,5 @@
 let choicesCounter = 1;
-let tg = window.Telegram.WebApp;
+const tg = window.Telegram.WebApp;
 const tg_id = tg.initDataUnsafe.user.id;
 
 let isFunctionsLoaded = false;
