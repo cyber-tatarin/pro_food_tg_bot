@@ -396,6 +396,34 @@ body {
   border: 1.2px solid #303030;
 }
 
+.two__eat__buttons {
+  width: 100%;
+  display: flex;
+  gap: 8px;
+}
+
+.eat__buttons-single {
+  display: block;
+  width: 100%;
+}
+
+.eat__button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 70px;
+  padding: 0 28px;
+  border-radius: 20px;
+  border: 1.5px dashed #303030;
+  color: #303030;
+  text-align: center;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: normal;
+}
+
 .ingredient__info {
   margin-bottom: 12px;
 }

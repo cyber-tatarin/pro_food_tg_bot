@@ -120,9 +120,12 @@ async function setUserStreak() {
   document.querySelector(
     ".strick__time"
   ).textContent = `${userStreak.current_streak_text}`;
-  document.querySelector(
-    ".notion__p-motivation"
-  ).textContent = `${userStreak.task_text}`;
+  const userStreakTaskText = userStreak.task_text.replace(/\n/g, "<br>");
+  // document.querySelector(
+  //   ".notion__p-motivation"
+  // ).textContent = `${userStreak.task_text}`;
+  document.querySelector(".notion__p-motivation").innerHTML =
+    userStreakTaskText;
   document.querySelector(
     ".notion__p-completed"
   ).textContent = `${userStreak.tomorrow_text}`;

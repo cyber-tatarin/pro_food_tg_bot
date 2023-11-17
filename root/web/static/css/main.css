@@ -1095,11 +1095,11 @@ body {
   border: 2px solid #303030;
 }
 
-canvas {
+/* canvas {
   // aspect-ratio: 16/9 !important;
  // width: 100% !important;
   //	height: 100% !important;
-}
+} */
 
 .meal-type,
 .stat-title {
