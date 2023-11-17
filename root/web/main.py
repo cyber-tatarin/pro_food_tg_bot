@@ -1105,6 +1105,7 @@ async def update_profile_post(request):
                 user.height = height
                 user.birth_date = birth_date_strp
                 await session.commit()
+                return web.json_response({'success': True})
             else:
                 return web.json_response({'success': False, 'error_message': 'Дата рождения введена некорректно. '
                                                                              'Проверь, чтобы формат соответствовал '
