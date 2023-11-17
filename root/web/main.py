@@ -15,9 +15,10 @@ from root.db import setup as db
 from root.db import models
 from root.logger.config import logger
 from root.tg.main import admin_ids, get_user_question_type, get_has_eaten_without_plates, what_else_to_eat
-from root.tg.utils import get_age_from_birth_date
+from root.tg.utils import get_age_from_birth_date, is_valid_weight, is_valid_birth_date, is_valid_height
 from root.gsheets import main as gsh
 from . import utils
+from root.tg.texts import db_error_message
 
 load_dotenv(find_dotenv())
 
@@ -1066,6 +1067,56 @@ async def update_weight_aim_get(request):
     return {}
 
 
+async def update_weight_aim_post(request):
+    data = await request.json()
+    weight_aim = data.get('weight_aim')
+    tg_id = data.get('tg_id')
+    session = db.Session()
+    try:
+        user = await session.get(models.User, tg_id)
+        if await is_valid_weight(str(weight_aim)):
+            user.weight_aim = weight_aim
+            await session.commit()
+            return web.json_response({'success': True})
+        else:
+            return web.json_response({'success': False, 'error_message': 'Цель по весу введена некорректно. '
+                                                                         'Проверьте, чтобы это было целое число '
+                                                                         'либо число в формате 80.4'})
+    except Exception as x:
+        logger.exception(x)
+        return web.json_response({'success': False, 'error_message': db_error_message})
+    finally:
+        await session.close()
+        
+
+async def update_profile_post(request):
+    data = await request.json()
+    height = data.get('height')
+    birth_date = data.get('date')
+    
+    tg_id = data.get('tg_id')
+    session = db.Session()
+    try:
+        user = await session.get(models.User, tg_id)
+        if await is_valid_height(str(height)):
+            if await is_valid_birth_date(str(birth_date)):
+                user.height = height
+                user.birth_date = birth_date
+                await session.commit()
+            else:
+                return web.json_response({'success': False, 'error_message': 'Дата рождения введена некорректно. '
+                                                                             'Проверь, чтобы формат соответствовал '
+                                                                             '"31.12.1999"'})
+        else:
+            return web.json_response({'success': False, 'error_message': 'Рост введён некорректно. '
+                                                                         'Проверь, чтобы это было целое число'})
+    except Exception as x:
+        logger.exception(x)
+        return web.json_response({'success': False, 'error_message': db_error_message})
+    finally:
+        await session.close()
+
+
 app = web.Application()
 
 app.router.add_static('/static/', path='root/web/static', name='static')
@@ -1108,7 +1159,9 @@ app.add_routes([
     web.post('/api/submit_plate_review', submit_plate_review),
     web.post('/api/get_has_eaten_without_plates_post', get_has_eaten_without_plates_post),
     web.post('/api/what_else_to_eat_post', what_else_to_eat_post),
-    web.post('/api/statistics', statistics_post)
+    web.post('/api/statistics', statistics_post),
+    web.post('/api/update_profile_post', update_profile_post),
+    web.post('/api/update_weight_aim_post', update_weight_aim_post)
     # web.post('/api/remove_from_favorites', remove_from_favorites),
 
 ])
