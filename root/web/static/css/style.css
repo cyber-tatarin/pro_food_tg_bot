@@ -257,7 +257,34 @@ body {
   background: #05ff00;
 }
 
+.flatpickr-calendar {
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+}
+
+.flatpickr-months .flatpickr-month {
+  background: #05ff00 !important;
+}
+
+.flatpickr-day.selected {
+  background: #05ff00 !important;
+  border: none !important;
+}
+
+/* .flatpickr-calendar.arrowTop:before {
+  display: none !important;
+} */
+
 .input_grey::placeholder {
+  color: #b7b7b7;
+  font-size: 11px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
+}
+
+.calendar_grey {
   color: #b7b7b7;
   font-size: 11px;
   font-style: normal;

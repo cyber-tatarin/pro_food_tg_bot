@@ -15,6 +15,10 @@
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/choices.js@9.0.1/public/assets/styles/choices.min.css"
     />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css"
+    />
     <link rel="stylesheet" href="/static/css/style.css" />
   </head>
   <body>
@@ -23,7 +27,7 @@
     </div>
     <main class="main">
       <div class="container">
-        <form method="post" enctype="multipart/form-data">
+        <form id="form" method="post" enctype="multipart/form-data">
           <p class="message">Обновить профиль</p>
           <div class="two__eat__buttons" style="margin-bottom: 16px">
             <a href="../main" class="eat__button">На главную</a>
@@ -40,8 +44,15 @@
             />
           </div>
           <p class="dish__title">Введите дату</p>
-          <div class="input__relative">
-            <input name="date" class="input input_grey" type="date" required />
+          <div style="margin-bottom: 16px" class="input__relative">
+            <div
+              id="dateButton"
+              class="input input_grey calendar_grey"
+              type="button"
+            >
+              Выберите дату
+            </div>
+            <input type="hidden" name="date" id="hiddenDateInput" required />
           </div>
           <div class="error">
             Вы ввели данные некорректно, проверьте пожалуйста
@@ -54,6 +65,7 @@
     </main>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/choices.js@9.0.1/public/assets/scripts/choices.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="/static/js/update_profile.js"></script>
   </body>
 </html>
