@@ -1074,7 +1074,7 @@ async def update_weight_aim_post(request):
     session = db.Session()
     try:
         user = await session.get(models.User, tg_id)
-        if await is_valid_weight(str(weight_aim)):
+        if is_valid_weight(str(weight_aim)):
             user.weight_aim = weight_aim
             await session.commit()
             return web.json_response({'success': True})
@@ -1093,13 +1093,14 @@ async def update_profile_post(request):
     data = await request.json()
     height = data.get('height')
     birth_date = data.get('date')
+    logger.info(date)
     
     tg_id = data.get('tg_id')
     session = db.Session()
     try:
         user = await session.get(models.User, tg_id)
-        if await is_valid_height(str(height)):
-            if await is_valid_birth_date(str(birth_date)):
+        if is_valid_height(str(height)):
+            if is_valid_birth_date(str(birth_date)):
                 user.height = height
                 user.birth_date = birth_date
                 await session.commit()
