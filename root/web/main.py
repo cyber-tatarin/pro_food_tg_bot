@@ -1100,6 +1100,7 @@ async def update_profile_post(request):
     try:
         user = await session.get(models.User, tg_id)
         if is_valid_height(str(height)):
+            datetime.strftime(birth_date, '%d.%m.%Y')
             if is_valid_birth_date(str(birth_date)):
                 user.height = height
                 user.birth_date = birth_date
