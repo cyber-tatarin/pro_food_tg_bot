@@ -155,7 +155,7 @@ async def speech_to_text(audiofile_path):
 async def ai_analysis(text):
     try:
         completion = await openai_client.chat.completions.create(
-            model="gpt-4-0613",
+            model=os.getenv('GPT_MODEL'),
             messages=[
                 {"role": "user", "content": f"{text}"}
             ],

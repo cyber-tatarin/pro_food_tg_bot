@@ -418,10 +418,10 @@ async def set_have_eaten_without_plates(message: types.Message, state: FSMContex
         ai_response = await utils.ai_analysis(have_eaten_in_text)
         if ai_response is not None:
             try:
-                calories = ai_response['calories']
-                proteins = ai_response['proteins']
-                fats = ai_response['fats']
-                carbohydrates = ai_response['carbohydrates']
+                calories = int(ai_response['calories'])
+                proteins = int(ai_response['proteins'])
+                fats = int(ai_response['fats'])
+                carbohydrates = int(ai_response['carbohydrates'])
                 
                 session = db.Session()
                 try:
