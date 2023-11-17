@@ -1093,17 +1093,17 @@ async def update_profile_post(request):
     data = await request.json()
     height = data.get('height')
     birth_date = data.get('date')
-    logger.info(date)
     
     tg_id = data.get('tg_id')
     session = db.Session()
     try:
         user = await session.get(models.User, tg_id)
         if is_valid_height(str(height)):
-            datetime.strftime(birth_date, '%d.%m.%Y')
+            birth_date_strp = datetime.strptime(birth_date, '%Y-%m-%d')
+            birth_date = datetime.strftime(birth_date_strp, '%d.%m.%Y')
             if is_valid_birth_date(str(birth_date)):
                 user.height = height
-                user.birth_date = birth_date
+                user.birth_date = birth_date_strp
                 await session.commit()
             else:
                 return web.json_response({'success': False, 'error_message': 'Дата рождения введена некорректно. '
