@@ -3,6 +3,7 @@ import uuid
 from datetime import datetime
 import os
 import re
+import math
 
 from aiogram.fsm.storage.base import StorageKey
 from dotenv import load_dotenv, find_dotenv
@@ -369,7 +370,8 @@ async def get_hips_volume(message: types.Message, state: FSMContext):
             try:
                 new_body_measure_obj = models.BodyMeasure(tg_id=message.from_user.id,
                                                           weight=weight, chest_volume=chest_volume,
-                                                          underchest_volume=underchest_volume, waist_volume=waist_volume,
+                                                          underchest_volume=underchest_volume,
+                                                          waist_volume=waist_volume,
                                                           belly_volume=belly_volume, hips_volume=hips_volume)
                 session.add(new_body_measure_obj)
                 await session.commit()
@@ -411,16 +413,41 @@ async def set_have_eaten_without_plates(message: types.Message, state: FSMContex
         except Exception as x:
             have_eaten_in_text = None
             logger.exception(x)
-            
+    
     if have_eaten_in_text is not None:
         ai_response = await utils.ai_analysis(have_eaten_in_text)
-        logger.info(have_eaten_in_text)
-        logger.info(ai_response)
-        
-        await message.answer(str(ai_response))
-    else:
-        await message.answer('Произошла ошибка, извините. Попробуйте еще раз')
-    await state.clear()
+        if ai_response is not None:
+            try:
+                calories = ai_response['calories']
+                proteins = ai_response['proteins']
+                fats = ai_response['fats']
+                carbohydrates = ai_response['carbohydrates']
+                
+                session = db.Session()
+                try:
+                    user = await session.get(models.User, message.from_user.id)
+                    new_has_eaten = models.HasEaten(calories=calories, proteins=proteins,
+                                                    fats=fats, carbohydrates=carbohydrates)
+                    session.add(new_has_eaten)
+                    await session.commit()
+                except Exception as x:
+                    logger.exception(x)
+                    await message.answer(texts.db_error_message)
+                    return
+                finally:
+                    await session.close()
+            
+                await message.answer(f'Это примерно:\n\n{math.ceil(calories / user.day_calories)} % от дневной нормы ккал\n'
+                                     f'{math.ceil(proteins / user.day_proteins)} % от дневной нормы белка\n'
+                                     f'{math.ceil(fats / user.day_fats)} % от дневной нормы жиров\n'
+                                     f'{math.ceil(carbohydrates / user.day_carbohydrates)} % от дневной нормы углеводов')
+                await state.clear()
+                return
+            
+            except KeyError:
+                pass
+
+    await message.answer('Произошла ошибка, извините. Попробуйте отправить сообщение еще раз')
 
 
 # -------------------------------------------------------------------------------------------------
@@ -468,15 +495,15 @@ async def get_has_eaten_without_plates(user_id):
 
 async def what_else_to_eat(user_id):
     await bot.send_message(user_id, 'Ничего!')
-    
+
 
 async def send_breakfast_notification(user_id):
     await bot.send_message(user_id, 'Доброе утро, пора составлять рацион и завтракать!')
-    
+
 
 async def send_lunch_notification(user_id):
     await bot.send_message(user_id, 'Добрый день, время обеда!')
-    
+
 
 async def send_dinner_notification(user_id):
     await bot.send_message(user_id, 'Добрый вечер, не забудьте поужинать и отметить!')

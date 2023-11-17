@@ -1,8 +1,9 @@
 # в этом файле лежат все функции, не связанные с приемом сообщений и запросов от пользователей
+import json
 import os
 from datetime import datetime
 import assemblyai as aai
-from openai import OpenAI
+from openai import OpenAI, AsyncOpenAI
 
 from root.db import setup as db, models
 from sqlalchemy.exc import IntegrityError
@@ -14,7 +15,7 @@ from dotenv import load_dotenv, find_dotenv
 # from . import keyboards
 
 load_dotenv(find_dotenv())
-openai_client = OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
+openai_client = AsyncOpenAI(api_key=os.getenv('OPENAI_API_KEY'))
         
             
 def is_valid_phone_number(phone_number):
@@ -153,15 +154,18 @@ async def speech_to_text(audiofile_path):
 
 async def ai_analysis(text):
     try:
-        completion = openai_client.chat.completions.create(
-            model="gpt-3.5-turbo-0613",
+        completion = await openai_client.chat.completions.create(
+            model="gpt-4-0613",
             messages=[
                 {"role": "user", "content": f"{text}"}
             ],
             functions=[
                 {
                     "name": "nutrients",
-                    "description": "Get nutrients from text informantion about meal",
+                    "description": "Я отправил то, что я съел. Я не могу дать тебе больше информации, "
+                                   "только то, что написал. Не проси дополнительную информацию. "
+                                   "Ответь, сколько в том, что я съел, "
+                                   "калорий, белков, жиров, углеводов. Для каждого поля результат - одно число",
                     "parameters": {
                         "type": "object",
                         "properties": {
@@ -178,7 +182,7 @@ async def ai_analysis(text):
                                 "description": "Total amount of fats in gramms"
                             },
                             "carbohydrates": {
-                                "type": "string",
+                                "type": "integer",
                                 "description": "Total amount of carbohydrates in gramms"
                             },
                         },
@@ -187,10 +191,15 @@ async def ai_analysis(text):
                 }
             ]
         )
-        return completion.choices[0]
+        try:
+            json_response = json.loads(completion.choices[0].message.content)
+            return json_response
+        except Exception as x:
+            print(x)
+            return None
     except Exception as x:
-        logger.exception(x)
-        return 'Ошибка на стороне OpenAI, извините'
+        print(x)
+        return None
         
 
     
