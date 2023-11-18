@@ -1,6 +1,6 @@
 let choicesCounter = 1;
 const tg = window.Telegram.WebApp;
-const tg_id = 459471362; // Заменено на конкретный ID для демонстрации
+const tg_id = tg.initDataUnsafe.user.id;
 
 let isFunctionsLoaded = false;
 let isImagesLoaded = false;
@@ -16,37 +16,26 @@ function hideLoading() {
 
 window.onload = () => {
   hideLoading();
-
-  // Инициализация Flatpickr
-  var dateButton = document.getElementById("dateButton");
-  var hiddenDateInput = document.getElementById("hiddenDateInput");
-
-  flatpickr(dateButton, {
-    dateFormat: "d.m.Y",
-    onChange: function (selectedDates, dateStr) {
-      document.querySelector("#dateButton").classList.remove("calendar_grey");
-      document.querySelector(".error").classList.remove("error_active");
-      hiddenDateInput.value = dateStr;
-      dateButton.textContent = selectedDates[0].toLocaleDateString("ru");
-    },
-  });
 };
 
 const form = document.getElementById("form");
 
 form.addEventListener("submit", async function (event) {
   event.preventDefault();
-  if (!hiddenDateInput.value) {
-    document.querySelector(".error").classList.add("error_active");
-    document.querySelector(".error").textContent = "Пожалуйста, введите дату";
-    return;
-  }
-
   console.log("submit");
+
   const formData = new FormData(event.target);
   const data = {};
+
+  // Изменение формата даты перед добавлением в объект данных
   formData.forEach((value, key) => {
-    data[key] = value;
+    if (key === "date" && value) {
+      // Проверяем, что это поле с датой и оно не пустое
+      const splitDate = value.split("-"); // yyyy-mm-dd
+      data[key] = `${splitDate[2]}-${splitDate[1]}-${splitDate[0]}`; // dd-mm-yyyy
+    } else {
+      data[key] = value;
+    }
   });
   data.tg_id = tg_id;
 
