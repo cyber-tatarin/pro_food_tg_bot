@@ -695,7 +695,8 @@ async def has_eaten_plate(request):
             
             response_dict = {'success': True, 'is_green': False, 'completed_all_tasks': completed_all_tasks}
             if completed_all_tasks:
-                response_dict['bold_text'] = f'Так держать ты получил {today_reward} {utils.get_coin_word_according_to_number(today_reward)}'
+                reward_word = await utils.get_coin_word_according_to_number(today_reward)
+                response_dict['bold_text'] = f'Так держать ты получил {today_reward} {reward_word}'
                 coin_word = await utils.get_coin_word_according_to_number(current_balance)
                 response_dict['thin_text'] = f'Теперь у тебя на балансе {current_balance} {coin_word}'
             
