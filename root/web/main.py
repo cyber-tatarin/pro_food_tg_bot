@@ -1097,11 +1097,11 @@ async def update_profile_post(request):
     tg_id = data.get('tg_id')
     session = db.Session()
     try:
-        user = await session.get(models.User, tg_id)
         if is_valid_height(str(height)):
-            birth_date_strp = datetime.strptime(birth_date, '%Y-%m-%d')
+            birth_date_strp = datetime.strptime(birth_date, '%d-%m-%Y')
             birth_date = datetime.strftime(birth_date_strp, '%d.%m.%Y')
             if is_valid_birth_date(str(birth_date)):
+                user = await session.get(models.User, tg_id)
                 user.height = height
                 user.birth_date = birth_date_strp
                 await session.commit()
