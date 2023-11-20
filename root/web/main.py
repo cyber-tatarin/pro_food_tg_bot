@@ -1,26 +1,26 @@
-import json
 import os
 import threading
 from datetime import datetime, date, timedelta
 
-import aiohttp
 from aiohttp import web
 import jinja2
 import aiohttp_jinja2
-from sqlalchemy import func, select, text, desc
+from sqlalchemy import func, select, text
 from dotenv import load_dotenv, find_dotenv
 from sqlalchemy.exc import IntegrityError
 
 from root.db import setup as db
 from root.db import models
 from root.logger.config import logger
-from root.tg.main import admin_ids, get_user_question_type, get_has_eaten_without_plates, what_else_to_eat
+from root.tg.main import get_user_question_type, get_has_eaten_without_plates, what_else_to_eat
 from root.tg.utils import get_age_from_birth_date, is_valid_weight, is_valid_birth_date, is_valid_height
 from root.gsheets import main as gsh
 from . import utils
 from root.tg.texts import db_error_message
 
+
 load_dotenv(find_dotenv())
+
 
 env = jinja2.Environment(
     loader=jinja2.FileSystemLoader(os.path.join('root', 'web', 'templates')),
@@ -30,8 +30,8 @@ env = jinja2.Environment(
 )
 
 streak_tasks = {
-    1: 'Выполни сегодня все задания, чтобы получить награду в ЖИРкоинах, '
-       'за которые Вы можете купить косультацию Татьяны. 1 консультация стоит 10 000 ЖИРкоинов. Вы их легко накопите, '
+    1: 'Выполни сегодня все задания, чтобы получить награду в FatCoin\'ах, '
+       'за которые Вы можете купить косультацию Татьяны. 1 консультация стоит 10 000 FatCoin\'ов. Вы их легко накопите, '
        'если будете заходить 30 дней подряд и выполнять все задания.\n\n'
        'Первое задание — зайти сегодня в приложение — уже выполнено!\n\n'
        'Второе задание — составить рацион на сегодня из 3 приемов пищи. Листайте ниже и нажимайте на кнопку '
@@ -39,14 +39,6 @@ streak_tasks = {
     2: 'Ура! Второе задание выполнено! Задание №3 — съесть все 3 приема пищи и отметить это в приложении.',
     3: 'Сегодня все задания выполнены. Возвращайтесь завтра!'
 }
-
-
-#
-# @aiohttp_jinja2.template('profile_view.html')
-# async def profile_view(request):
-#     user_id = request.match_info.get('user_id')
-#
-#     pass
 
 
 @aiohttp_jinja2.template('add_ingredient.html')
@@ -290,24 +282,6 @@ async def add_plate_post(request):
             return web.json_response({'success': False,
                                       'error_message': str(x)})
     
-    # session3 = db.Session()
-    # try:
-    #     result = await utils.get_nutrient_for_plates_by_ids(session3, [new_plate_id])
-    #     plate_obj = session3.query(models.Plate).filter(models.Plate.plate_id == new_plate_id).first()
-    #
-    #     plate_obj.calories = result[0].calories
-    #     plate_obj.proteins = result[0].proteins
-    #     plate_obj.fats = result[0].fats
-    #     plate_obj.carbohydrates = result[0].carbohydrates
-    #
-    #     session3.commit()
-    #
-    # except Exception as x:
-    #     print(x)
-    #     return web.json_response({'success': False,
-    #                               'error_message': 'Блюда сохранены, но произошла ошибка при высчитывании информации '
-    #                                                'о питательных веществах. Пожалуйста, свяжитесь с разработчиком'})
-    
     return web.json_response({'success': True})
 
 
@@ -376,15 +350,6 @@ async def get_current_streak(request):
             if all_today_chosen_plates:
                 if len(all_today_chosen_plates) >= 3:
                     current_task_number += 1
-            
-            # all_today_has_eaten = session.query(models.HasEaten).filter(models.HasEaten.tg_id == tg_id,
-            #                                                             models.HasEaten.date == today).all()
-            # if all_today_has_eaten:
-            #     if len(all_today_has_eaten) >= 3:
-            #         current_task_number += 1
-            
-            # if current_task_number == 3:
-            #     pass
         else:
             current_task_number = 3
     
@@ -515,7 +480,6 @@ async def get_today_plates(request):
             result_list.sort(key=lambda obj: custom_order.get(obj['plate_type'], float('inf')))
             
             return web.json_response(result_list)
-            # return web.json_response([])
         
         except Exception as x:
             logger.exception(x)
@@ -750,42 +714,7 @@ async def add_to_favorites(request):
     finally:
         if session.is_active:
             await session.close()
-
-
-# async def remove_from_favorites(request):
-#     data = await request.json()
-#
-#     plate_id = data.get('plate_id')
-#     tg_id = data.get('tg_id')
-#
-#     session = db.Session()
-#     try:
-#         favorite_to_delete = session.query(models.Favorites).filter(models.Favorites.tg_id == tg_id,
-#                                                                     models.Favorites.plate_id == plate_id).first()
-#         session.delete(favorite_to_delete)
-#         session.commit()
-#
-#         return web.json_response({'success': True})
-#
-#     except Exception as x:
-#         print(x)
-#         return web.json_response({'success': False})
-
-
-# async def get_all_favorites(request):
-#     data = await request.json()
-#
-#     tg_id = data.get('tg_id')
-#
-#     session = db.Session()
-#     try:
-#         all_favorites = session.query(models.Favorites).filter(models.Favorites.tg_id == tg_id).all()
-#         return web.json_response({'success': True})
-#
-#     except Exception as x:
-#         print(x)
-#         return web.json_response({'success': False})
-
+            
 
 @aiohttp_jinja2.template('choose_breakfast.html')
 async def choose_breakfast(request):

@@ -1,5 +1,4 @@
 import os
-from datetime import datetime
 
 from aiohttp import web
 from sqlalchemy import text
@@ -276,11 +275,11 @@ async def get_day_word_according_to_number(number):
 async def get_coin_word_according_to_number(number):
     number_as_str = str(number)
     if number in ['11', '12', '13', '14']:
-        return 'ЖИРкоинов'
+        return "FatCoin'ов"
     elif number_as_str[-1] == '1':
-        return 'ЖИРкоин'
+        return 'FatCoin'
     elif number_as_str[-1] in ['2', '3', '4']:
-        return 'ЖИРкоина'
+        return "FatCoin'а"
     else:
-        return 'ЖИРкоинов'
+        return "FatCoin'ов"
 

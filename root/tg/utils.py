@@ -5,14 +5,9 @@ from datetime import datetime
 import assemblyai as aai
 from openai import OpenAI, AsyncOpenAI
 
-from root.db import setup as db, models
-from sqlalchemy.exc import IntegrityError
-from root.logger.config import logger
-from root.gsheets import main as gsh
-import asyncio
 import re
 from dotenv import load_dotenv, find_dotenv
-# from . import keyboards
+
 
 load_dotenv(find_dotenv())
 openai_client = AsyncOpenAI(api_key=os.getenv('OPENAI_API_KEY'))

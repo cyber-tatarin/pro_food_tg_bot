@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from sqlalchemy import Column, String, Boolean, Date, Integer, DateTime, ForeignKey, Float, Text, UniqueConstraint, \
-    Table, event
+    Table
 from sqlalchemy.orm import DeclarativeBase, relationship
 
 from dotenv import load_dotenv, find_dotenv

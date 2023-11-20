@@ -5,7 +5,6 @@ from aiogram.utils.keyboard import InlineKeyboardBuilder, KeyboardBuilder
 from aiogram.types.web_app_info import WebAppInfo
 
 from . import callback_data_models
-from root.logger.config import logger
 from dotenv import load_dotenv, find_dotenv
 
 

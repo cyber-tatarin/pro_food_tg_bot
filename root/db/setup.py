@@ -1,9 +1,8 @@
 import os
 
 from dotenv import load_dotenv, find_dotenv
-from sqlalchemy import create_engine, pool
+from sqlalchemy import pool
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
-from sqlalchemy.orm import sessionmaker
 from root.db import models
 from root.logger.config import logger
 

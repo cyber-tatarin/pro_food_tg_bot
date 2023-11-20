@@ -2,12 +2,10 @@ import asyncio
 import uuid
 from datetime import datetime
 import os
-import re
 import math
 
 from aiogram.fsm.storage.base import StorageKey
 from dotenv import load_dotenv, find_dotenv
-from sqlalchemy.exc import IntegrityError
 
 from aiogram import Bot, Dispatcher, types
 from aiogram.types import CallbackQuery

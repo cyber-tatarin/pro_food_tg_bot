@@ -1,6 +1,3 @@
-import re
-import time
-
 import schedule
 import asyncio
 from root.db import setup as db, models
@@ -109,5 +106,3 @@ async def run_schedule():
 
 # Run the asyncio event loop
 asyncio.run(run_schedule())
-# date_pattern = r'[0123]\d\.[01]\d\.2023'
-# print(re.match(date_pattern, '31.12.2023'))
