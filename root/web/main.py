@@ -696,7 +696,7 @@ async def has_eaten_plate(request):
             response_dict = {'success': True, 'is_green': False, 'completed_all_tasks': completed_all_tasks}
             if completed_all_tasks:
                 reward_word = await utils.get_coin_word_according_to_number(today_reward)
-                response_dict['bold_text'] = f'Так держать ты получил {today_reward} {reward_word}'
+                response_dict['bold_text'] = f'Так держать ты получил {today_reward} {reward_word }'
                 coin_word = await utils.get_coin_word_according_to_number(current_balance)
                 response_dict['thin_text'] = f'Теперь у тебя на балансе {current_balance} {coin_word}'
             
@@ -1119,6 +1119,38 @@ async def update_profile_post(request):
         return web.json_response({'success': False, 'error_message': db_error_message})
     finally:
         await session.close()
+        
+
+async def get_data_for_profile_update_post(request):
+    data = await request.json()
+    
+    tg_id = data.get('tg_id')
+    session = db.Session()
+    try:
+        user = await session.get(models.User, tg_id)
+        return web.json_response({'height': user.height, 'birth_date': user.birth_date})
+    except Exception as x:
+        logger.exception(x)
+        return web.HTTPBadGateway()
+    finally:
+        if session.is_active:
+            session.close()
+
+
+async def get_data_for_weight_aim_update_post(request):
+    data = await request.json()
+    
+    tg_id = data.get('tg_id')
+    session = db.Session()
+    try:
+        user = await session.get(models.User, tg_id)
+        return web.json_response({'weight_aim': user.weight_aim})
+    except Exception as x:
+        logger.exception(x)
+        return web.HTTPBadGateway()
+    finally:
+        if session.is_active:
+            session.close()
 
 
 app = web.Application()
@@ -1165,7 +1197,9 @@ app.add_routes([
     web.post('/api/what_else_to_eat_post', what_else_to_eat_post),
     web.post('/api/statistics', statistics_post),
     web.post('/api/update_profile_post', update_profile_post),
-    web.post('/api/update_weight_aim_post', update_weight_aim_post)
+    web.post('/api/update_weight_aim_post', update_weight_aim_post),
+    web.post('/api/get_data_for_profile_update_post', get_data_for_profile_update_post),
+    web.post('/api/get_data_for_weight_aim_update_post', get_data_for_weight_aim_update_post),
     # web.post('/api/remove_from_favorites', remove_from_favorites),
 
 ])
