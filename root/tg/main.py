@@ -424,10 +424,6 @@ async def set_have_eaten_without_plates(message: types.Message, state: FSMContex
                 session = db.Session()
                 try:
                     user = await session.get(models.User, message.from_user.id)
-                    new_has_eaten = models.HasEaten(calories=calories, proteins=proteins,
-                                                    fats=fats, carbohydrates=carbohydrates)
-                    session.add(new_has_eaten)
-                    await session.commit()
                 except Exception as x:
                     logger.exception(x)
                     await message.answer(texts.db_error_message)
