@@ -1,9 +1,7 @@
-let choicesCounter = 1;
 const tg = window.Telegram.WebApp;
 const tg_id = tg.initDataUnsafe.user.id;
 
 let isFunctionsLoaded = false;
-let isImagesLoaded = false;
 
 function hideLoading() {
   const loader = document.querySelector(".loading");
@@ -14,25 +12,45 @@ function hideLoading() {
   document.body.style.overflow = "visible";
 }
 
+async function getDate() {
+  const request = await fetch(`../api/get_data_for_profile_update_post`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ tg_id: tg_id }),
+  });
+  const response = await request.json();
+  document.querySelector("#height").value = response.height;
+  document.querySelector("#date").value = response.birth_date;
+  return response;
+}
+
+getDate().finally(() => {
+  isFunctionsLoaded = true;
+  if (isFunctionsLoaded) {
+    hideLoading();
+  }
+});
+
 window.onload = () => {
-  hideLoading();
+  if (isFunctionsLoaded) {
+    hideLoading();
+  }
 };
 
 const form = document.getElementById("form");
 
 form.addEventListener("submit", async function (event) {
   event.preventDefault();
-  console.log("submit");
 
   const formData = new FormData(event.target);
   const data = {};
 
-  // Изменение формата даты перед добавлением в объект данных
   formData.forEach((value, key) => {
     if (key === "date" && value) {
-      // Проверяем, что это поле с датой и оно не пустое
-      const splitDate = value.split("-"); // yyyy-mm-dd
-      data[key] = `${splitDate[2]}-${splitDate[1]}-${splitDate[0]}`; // dd-mm-yyyy
+      const splitDate = value.split("-");
+      data[key] = `${splitDate[2]}-${splitDate[1]}-${splitDate[0]}`;
     } else {
       data[key] = value;
     }

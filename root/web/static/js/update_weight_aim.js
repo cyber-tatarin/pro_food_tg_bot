@@ -1,9 +1,7 @@
-let choicesCounter = 1;
-let tg = window.Telegram.WebApp;
+const tg = window.Telegram.WebApp;
 const tg_id = tg.initDataUnsafe.user.id;
 
 let isFunctionsLoaded = false;
-let isImagesLoaded = false;
 
 function hideLoading() {
   const loader = document.querySelector(".loading");
@@ -14,8 +12,30 @@ function hideLoading() {
   document.body.style.overflow = "visible";
 }
 
+async function getWeight() {
+  const request = await fetch(`../api/get_data_for_weight_aim_update_post`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ tg_id: tg_id }),
+  });
+  const response = await request.json();
+  document.querySelector("#weight_aim").value = response.weight_aim;
+  return response;
+}
+
+getWeight().finally(() => {
+  isFunctionsLoaded = true;
+  if (isFunctionsLoaded) {
+    hideLoading();
+  }
+});
+
 window.onload = () => {
-  hideLoading();
+  if (isFunctionsLoaded) {
+    hideLoading();
+  }
 };
 
 const form = document.getElementById("form");
