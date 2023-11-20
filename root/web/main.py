@@ -31,13 +31,13 @@ env = jinja2.Environment(
 
 streak_tasks = {
     1: 'Выполни сегодня все задания, чтобы получить награду в ЖИРкоинах, '
-       'за которые ты можешь купить косультацию Татьяны. 1 консультация стоит 10 000 ЖИРкоинов. Ты их легко накопишь, '
-       'если будешь заходить 30 дней подряд и выполнять все задания.\n\n'
+       'за которые Вы можете купить косультацию Татьяны. 1 консультация стоит 10 000 ЖИРкоинов. Вы их легко накопите, '
+       'если будете заходить 30 дней подряд и выполнять все задания.\n\n'
        'Первое задание — зайти сегодня в приложение — уже выполнено!\n\n'
-       'Второе задание — составить рацион на сегодня из 3 приемов пищи. Листай ниже и нажимай на кнопку '
+       'Второе задание — составить рацион на сегодня из 3 приемов пищи. Листайте ниже и нажимайте на кнопку '
        '"Составить рацион на сегодня"',
     2: 'Ура! Второе задание выполнено! Задание №3 — съесть все 3 приема пищи и отметить это в приложении.',
-    3: 'Сегодня все задания выполнены. Возвращайся завтра!'
+    3: 'Сегодня все задания выполнены. Возвращайтесь завтра!'
 }
 
 
@@ -408,7 +408,7 @@ async def get_current_streak(request):
         'current_task_number': current_task_number,
         'coin_reward': f'{coin_reward_base} {coin_reward_word}',
         'task_text': streak_tasks[current_task_number],
-        'tomorrow_text': f'Завтра ты получишь {tommorow_coin_reward} {tomorrow_coin_word}',
+        'tomorrow_text': f'Завтра Вы получите {tommorow_coin_reward} {tomorrow_coin_word}',
     }
     
     return web.json_response(data)
@@ -696,9 +696,9 @@ async def has_eaten_plate(request):
             response_dict = {'success': True, 'is_green': False, 'completed_all_tasks': completed_all_tasks}
             if completed_all_tasks:
                 reward_word = await utils.get_coin_word_according_to_number(today_reward)
-                response_dict['bold_text'] = f'Так держать ты получил {today_reward} {reward_word}'
+                response_dict['bold_text'] = f'Так держать Вы получили {today_reward} {reward_word}'
                 coin_word = await utils.get_coin_word_according_to_number(current_balance)
-                response_dict['thin_text'] = f'Теперь у тебя на балансе {current_balance} {coin_word}'
+                response_dict['thin_text'] = f'Теперь у Вас на балансе {current_balance} {coin_word}'
             
             return web.json_response(response_dict)
         
@@ -1109,11 +1109,11 @@ async def update_profile_post(request):
                 return web.json_response({'success': True})
             else:
                 return web.json_response({'success': False, 'error_message': 'Дата рождения введена некорректно. '
-                                                                             'Проверь, чтобы формат соответствовал '
+                                                                             'Проверьте, чтобы формат соответствовал '
                                                                              '"31.12.1999"'})
         else:
             return web.json_response({'success': False, 'error_message': 'Рост введён некорректно. '
-                                                                         'Проверь, чтобы это было целое число'})
+                                                                         'Проверьте, чтобы это было целое число'})
     except Exception as x:
         logger.exception(x)
         return web.json_response({'success': False, 'error_message': db_error_message})
