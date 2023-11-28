@@ -216,9 +216,11 @@ async function setPlates() {
         "beforeend",
         `<div class="card card${index + 1}" name="${plate.plate_id}">
     <div class="card__type">${plate.plate_type}</div>
-    <div class="card__calories">Б: ${plate.proteins} / Ж: ${plate.fats} / У: ${
-          plate.carbohydrates
-        } / ${plate.calories} ккал</div>
+    <div style="display: none" class="card__calories">Б: ${
+      plate.proteins
+    } / Ж: ${plate.fats} / У: ${plate.carbohydrates} / ${
+          plate.calories
+        } ккал</div>
     <div class="card__meal">“${plate.plate_name}”</div>
     <div class="card__visual card__visual${index + 1}">
       <div class="card__plate_frames"></div>

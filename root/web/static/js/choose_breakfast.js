@@ -109,7 +109,7 @@ async function setPlates() {
       "beforeend",
       `<div class="card card${index + 1}" name="${plate.plate_id}">
     <div class="card__type">Рекомендуем</div>
-    <div class="card__calories">Б: ${plate.proteins} / Ж: ${plate.fats} / У: ${
+    <div style="display: none" class="card__calories">Б: ${plate.proteins} / Ж: ${plate.fats} / У: ${
         plate.carbohydrates
       } / ${plate.calories} ккал</div>
     <div class="card__meal">“${plate.plate_name}”</div>
@@ -206,7 +206,7 @@ async function setPlates() {
       `<div class="card card-mini card-mini${index + 1}" name="${
         plate.plate_id
       }">
-    <div class="card__calories">Б: ${plate.proteins} / Ж: ${plate.fats} / У: ${
+    <div style="display: none" class="card__calories">Б: ${plate.proteins} / Ж: ${plate.fats} / У: ${
         plate.carbohydrates
       } / ${plate.calories} ккал</div>
     <div class="card__meal card__meal-mini">“${plate.plate_name}”</div>
@@ -291,7 +291,7 @@ async function setPlates() {
       "afterbegin",
       `<div class="card" name="${plates.chosen_plate.plate_id}">
     <div class="card__type">Выбрано</div>
-    <div class="card__calories">Б: ${plates.chosen_plate.proteins} / Ж: ${plates.chosen_plate.fats} / У: ${plates.chosen_plate.carbohydrates} / ${plates.chosen_plate.calories} ккал</div>
+    <div style="display: none" class="card__calories">Б: ${plates.chosen_plate.proteins} / Ж: ${plates.chosen_plate.fats} / У: ${plates.chosen_plate.carbohydrates} / ${plates.chosen_plate.calories} ккал</div>
     <div class="card__meal">“${plates.chosen_plate.plate_name}”</div>
     <div class="card__visual card__visual-chosen card__visual-chosen1">
       <div class="card__plate_frames"></div>
