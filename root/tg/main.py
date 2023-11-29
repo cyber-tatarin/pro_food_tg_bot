@@ -489,7 +489,7 @@ async def get_has_eaten_without_plates(user_id):
 
 
 async def what_else_to_eat(user_id):
-    await bot.send_message(user_id, 'Ничего!')
+    await bot.copy_message(chat_id=user_id, from_chat_id=ADMIN_ID, message_id=1039)
 
 
 async def send_breakfast_notification(user_id):
