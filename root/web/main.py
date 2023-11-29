@@ -1057,7 +1057,8 @@ async def get_data_for_profile_update_post(request):
     session = db.Session()
     try:
         user = await session.get(models.User, tg_id)
-        return web.json_response({'height': user.height, 'birth_date': user.birth_date})
+        date_as_str = datetime.strftime(user.birth_date, '%d-%m-%Y')
+        return web.json_response({'height': user.height, 'birth_date': date_as_str})
     except Exception as x:
         logger.exception(x)
         return web.HTTPBadGateway()
