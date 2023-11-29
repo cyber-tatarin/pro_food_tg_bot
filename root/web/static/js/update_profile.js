@@ -12,6 +12,15 @@ function hideLoading() {
   document.body.style.overflow = "visible";
 }
 
+function showLoading(param = true) {
+  const loader = document.querySelector(".loading");
+  loader.classList.remove("loading_hidden");
+  loader.style.display = "flex";
+  if (param) {
+    document.body.style.overflow = "hidden";
+  }
+}
+
 async function getDate() {
   const request = await fetch(`../api/get_data_for_profile_update_post`, {
     method: "POST",
@@ -37,6 +46,10 @@ window.onload = () => {
   if (isFunctionsLoaded) {
     hideLoading();
   }
+  const button = document.querySelector(".change_link");
+  button.addEventListener("click", () => {
+    showLoading();
+  });
 };
 
 const form = document.getElementById("form");
