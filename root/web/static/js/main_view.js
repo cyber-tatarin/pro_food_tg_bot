@@ -333,23 +333,16 @@ function handleCompletion(message) {
   }
 }
 
-Promise.all([
-  setUserParameters(),
-  setUserStreak(),
-  setNutrientParameters(),
-  setPlates(),
-])
+setUserParameters()
+  .then(() => {
+    return Promise.all([setUserStreak(), setNutrientParameters(), setPlates()]);
+  })
+  .then(() => {
+    handleCompletion("Все изображения загружены!");
+  })
   .catch((error) => {
     console.error("Произошла ошибка при выполнении функций:", error);
-  })
-  .finally(() => {
-    Promise.all(promises)
-      .then(() => handleCompletion("Все изображения загружены!"))
-      .catch(() =>
-        handleCompletion(
-          "Ошибка при загрузке одного или нескольких изображений."
-        )
-      );
+    handleCompletion("Ошибка при загрузке одного или нескольких изображений.");
   });
 
 function showLoading(param = true) {
