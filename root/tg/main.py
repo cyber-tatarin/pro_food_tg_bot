@@ -406,11 +406,12 @@ async def set_have_eaten_without_plates(message: types.Message, state: FSMContex
         await bot.download(message.voice, file_path)
         try:
             have_eaten_in_text = await utils.speech_to_text(file_path)
-            if os.path.exists(file_path):
-                os.remove(file_path)
         except Exception as x:
             have_eaten_in_text = None
             logger.exception(x)
+        finally:
+            if os.path.exists(file_path):
+                os.remove(file_path)
     
     if have_eaten_in_text is not None:
         ai_response = await utils.ai_analysis(have_eaten_in_text)

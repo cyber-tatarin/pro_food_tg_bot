@@ -81,7 +81,8 @@ async def get_nutrient_for_plates_by_ids(session, tg_id, plate_ids=None, in_json
       order by percentage
     ) as q1
 
-    group by plate_name, plate_type, plate_id;
+    group by plate_name, plate_type, plate_id
+    order by percentage;
     """)
     
     # Execute the query
