@@ -4,6 +4,7 @@ import os
 from datetime import datetime
 import assemblyai as aai
 from openai import OpenAI, AsyncOpenAI
+from root.logger.config import logger
 
 import re
 from dotenv import load_dotenv, find_dotenv
@@ -186,14 +187,11 @@ async def ai_analysis(text):
                 }
             ]
         )
-        try:
-            json_response = json.loads(completion.choices[0].message.content)
-            return json_response
-        except Exception as x:
-            print(x)
-            return None
+        json_response = json.loads(completion.choices[0].message.content)
+        return json_response
+    
     except Exception as x:
-        print(x)
+        logger.exception(x)
         return None
         
 
