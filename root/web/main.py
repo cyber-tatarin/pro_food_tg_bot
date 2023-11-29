@@ -697,7 +697,7 @@ async def add_to_favorites(request):
     
     except Exception as x:
         try:
-            session.rollback()
+            await session.rollback()
             favorite_to_delete_query = await session.execute(
                 select(models.Favorites).where(models.Favorites.tg_id == tg_id,
                                                 models.Favorites.plate_id == plate_id))
