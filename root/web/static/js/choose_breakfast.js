@@ -1,5 +1,6 @@
 const tg = window.Telegram.WebApp;
-const tg_id = tg.initDataUnsafe.user.id;
+// const tg_id = tg.initDataUnsafe.user.id;
+const tg_id = 459471362;
 
 const elements = document.querySelectorAll(`.js-choice_type`);
 elements.forEach((el) => {
