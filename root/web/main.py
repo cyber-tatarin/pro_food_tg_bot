@@ -981,7 +981,8 @@ async def statistics_post(request):
             }
             
             return web.json_response(result_dict)
-    
+        else:
+            return web.HTTPBadGateway()
     except Exception as x:
         logger.exception(x)
         return web.HTTPBadGateway()
