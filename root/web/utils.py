@@ -283,4 +283,12 @@ async def get_coin_word_according_to_number(number):
         return "FatCoin'а"
     else:
         return "FatCoin'ов"
+    
+
+async def user_exists(session, tg_id):
+    user = await session.get(models.User, tg_id)
+    if user is not None:
+        return user
+    else:
+        raise Exception
 

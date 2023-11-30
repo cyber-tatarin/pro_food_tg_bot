@@ -296,7 +296,7 @@ async def get_user_parameters(request):
     
     session = db.Session()
     try:
-        user = await session.get(models.User, tg_id)
+        user = await utils.user_exists(session, tg_id)
         latest_body_measure_query = await session.execute(select(models.BodyMeasure).where(
             models.BodyMeasure.tg_id == tg_id
         ).order_by(models.BodyMeasure.date.desc()))
@@ -331,6 +331,7 @@ async def get_current_streak(request):
     session = db.Session()
     today = date.today()
     try:
+        await utils.user_exists(session, tg_id)
         user_streak_obj = await session.get(models.UserStreak, tg_id)
         if user_streak_obj is None:
             user_streak_obj = models.UserStreak(tg_id=tg_id, streak=0)
@@ -385,6 +386,7 @@ async def get_nutrient_parameters(request):
     
     session = db.Session()
     try:
+        await utils.user_exists(session, tg_id)
         today = date.today()
         user = await session.get(models.User, tg_id)
         
@@ -434,6 +436,7 @@ async def get_today_plates(request):
     
     session1 = db.Session()
     try:
+        await utils.user_exists(session1, tg_id)
         today = date.today()
         today_plates_list_query = await session1.execute(select(models.UserPlatesDate).where
                                                          (models.UserPlatesDate.tg_id == tg_id,
