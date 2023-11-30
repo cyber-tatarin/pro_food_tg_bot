@@ -15,7 +15,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.fsm.storage.redis import RedisStorage
 from aiogram.fsm.state import StatesGroup, State
 from aiogram import F
-from aiogram.types import FSInputFile
+from aiogram.types import URLInputFile
 
 from . import callback_data_models, utils, keyboards, texts
 from root.db import models
@@ -68,8 +68,7 @@ class GetMeasuresState(StatesGroup):
 
 @dp.message(Command('start'))
 async def start(message: types.Message):
-    videoguide_file = FSInputFile(path='video_2023-12-01_01-00-47.mpeg')
-    await bot.send_document(message.from_user.id, document=videoguide_file, caption=texts.start_video_caption)
+    
     await asyncio.sleep(10)
     await message.answer(texts.start_message, reply_markup=keyboards.get_ikb_to_get_user_start_data())
     
@@ -452,7 +451,7 @@ async def set_have_eaten_without_plates(message: types.Message, state: FSMContex
 
 # -------------------------------------------------------------------------------------------------
 
-@dp.message(F.from_user.id.in_(admin_ids), F.content_type.in_({types.ContentType.VOICE, types.ContentType.VIDEO_NOTE}))
+@dp.message(F.from_user.id.in_(admin_ids), F.content_type.in_({types.ContentType.VOICE, types.ContentType.VIDEO_NOTE, types.ContentType.VIDEO}))
 async def store_file_ids(message: types.Message):
     with open(os.path.join('root', 'tg', 'admin_media_records.txt'), 'a') as file:
         file.write(f'{message.from_user.id} : {message.message_id} {message.content_type} {datetime.now()}\n\n')
