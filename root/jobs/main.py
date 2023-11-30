@@ -94,8 +94,8 @@ schedule.every().day.at("23:55").do(set_user_streak_to_0_if_was_not_active_today
 schedule.every().saturday.at("19:00").do(get_body_measures_job)
 
 schedule.every().day.at("08:30").do(send_breakfast_notification_job)
-schedule.every().day.at("15:25").do(send_lunch_notification_job)
-schedule.every().day.at("22:00").do(send_dinner_notification)
+schedule.every().day.at("14:30").do(send_lunch_notification_job)
+schedule.every().day.at("19:30").do(send_dinner_notification_job)
 
 
 async def run_schedule():
