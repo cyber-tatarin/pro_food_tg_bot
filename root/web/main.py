@@ -925,66 +925,63 @@ async def statistics_post(request):
         )
         
         all_body_measures = all_body_measures_query.scalars().all()
-        if len(all_body_measures) > 1:
-            all_body_measures.pop(0)
-            
-            if all_body_measures:
-                weight_list = list()
-                chest_volume_list = list()
-                underchest_volume_list = list()
-                waist_volume_list = list()
-                belly_volume_list = list()
-                hips_volume_list = list()
-                
-                date_pattern = '%d.%m.%Y'
-                
-                for index, body_measure_obj in enumerate(all_body_measures[1:]):
-                    previous_body_measure_obj = all_body_measures[index]
-                    
-                    obj_date_as_str = datetime.strftime(previous_body_measure_obj.date, date_pattern)
-                    
-                    weight_list.append({'date': obj_date_as_str, 'value': previous_body_measure_obj.weight})
-                    chest_volume_list.append({'date': obj_date_as_str, 'value': previous_body_measure_obj.chest_volume})
-                    underchest_volume_list.append(
-                        {'date': obj_date_as_str, 'value': previous_body_measure_obj.underchest_volume})
-                    waist_volume_list.append({'date': obj_date_as_str, 'value': previous_body_measure_obj.waist_volume})
-                    belly_volume_list.append({'date': obj_date_as_str, 'value': previous_body_measure_obj.belly_volume})
-                    hips_volume_list.append({'date': obj_date_as_str, 'value': previous_body_measure_obj.hips_volume})
-                    
-                    measure_date = previous_body_measure_obj.date
-                    while (body_measure_obj.date - measure_date).days > 7:
-                        measure_date = measure_date + timedelta(days=7)
-                        measure_date_as_str = datetime.strftime(measure_date, date_pattern)
-                        
-                        weight_list.append({'date': measure_date_as_str, 'value': None})
-                        chest_volume_list.append({'date': measure_date_as_str, 'value': None})
-                        underchest_volume_list.append({'date': measure_date_as_str, 'value': None})
-                        waist_volume_list.append({'date': measure_date_as_str, 'value': None})
-                        belly_volume_list.append({'date': measure_date_as_str, 'value': None})
-                        hips_volume_list.append({'date': measure_date_as_str, 'value': None})
-                
-                last_obj_date = datetime.strftime(all_body_measures[-1].date, date_pattern)
-                
-                weight_list.append({'date': last_obj_date, 'value': all_body_measures[-1].weight})
-                chest_volume_list.append({'date': last_obj_date, 'value': all_body_measures[-1].chest_volume})
-                underchest_volume_list.append({'date': last_obj_date, 'value': all_body_measures[-1].underchest_volume})
-                waist_volume_list.append({'date': last_obj_date, 'value': all_body_measures[-1].waist_volume})
-                belly_volume_list.append({'date': last_obj_date, 'value': all_body_measures[-1].belly_volume})
-                hips_volume_list.append({'date': last_obj_date, 'value': all_body_measures[-1].hips_volume})
-                
-                result_dict = {
-                    'weight_list': weight_list,
-                    'chest_volume_list': chest_volume_list,
-                    'underchest_volume_list': underchest_volume_list,
-                    'waist_volume_list': waist_volume_list,
-                    'belly_volume_list': belly_volume_list,
-                    'hips_volume_list': hips_volume_list
-                }
-                
-                return web.json_response(result_dict)
-        else:
-            return web.HTTPBadGateway()
+        all_body_measures.pop(0)
         
+        if all_body_measures:
+            weight_list = list()
+            chest_volume_list = list()
+            underchest_volume_list = list()
+            waist_volume_list = list()
+            belly_volume_list = list()
+            hips_volume_list = list()
+            
+            date_pattern = '%d.%m.%Y'
+            
+            for index, body_measure_obj in enumerate(all_body_measures[1:]):
+                previous_body_measure_obj = all_body_measures[index]
+                
+                obj_date_as_str = datetime.strftime(previous_body_measure_obj.date, date_pattern)
+                
+                weight_list.append({'date': obj_date_as_str, 'value': previous_body_measure_obj.weight})
+                chest_volume_list.append({'date': obj_date_as_str, 'value': previous_body_measure_obj.chest_volume})
+                underchest_volume_list.append(
+                    {'date': obj_date_as_str, 'value': previous_body_measure_obj.underchest_volume})
+                waist_volume_list.append({'date': obj_date_as_str, 'value': previous_body_measure_obj.waist_volume})
+                belly_volume_list.append({'date': obj_date_as_str, 'value': previous_body_measure_obj.belly_volume})
+                hips_volume_list.append({'date': obj_date_as_str, 'value': previous_body_measure_obj.hips_volume})
+                
+                measure_date = previous_body_measure_obj.date
+                while (body_measure_obj.date - measure_date).days > 7:
+                    measure_date = measure_date + timedelta(days=7)
+                    measure_date_as_str = datetime.strftime(measure_date, date_pattern)
+                    
+                    weight_list.append({'date': measure_date_as_str, 'value': None})
+                    chest_volume_list.append({'date': measure_date_as_str, 'value': None})
+                    underchest_volume_list.append({'date': measure_date_as_str, 'value': None})
+                    waist_volume_list.append({'date': measure_date_as_str, 'value': None})
+                    belly_volume_list.append({'date': measure_date_as_str, 'value': None})
+                    hips_volume_list.append({'date': measure_date_as_str, 'value': None})
+            
+            last_obj_date = datetime.strftime(all_body_measures[-1].date, date_pattern)
+            
+            weight_list.append({'date': last_obj_date, 'value': all_body_measures[-1].weight})
+            chest_volume_list.append({'date': last_obj_date, 'value': all_body_measures[-1].chest_volume})
+            underchest_volume_list.append({'date': last_obj_date, 'value': all_body_measures[-1].underchest_volume})
+            waist_volume_list.append({'date': last_obj_date, 'value': all_body_measures[-1].waist_volume})
+            belly_volume_list.append({'date': last_obj_date, 'value': all_body_measures[-1].belly_volume})
+            hips_volume_list.append({'date': last_obj_date, 'value': all_body_measures[-1].hips_volume})
+            
+            result_dict = {
+                'weight_list': weight_list,
+                'chest_volume_list': chest_volume_list,
+                'underchest_volume_list': underchest_volume_list,
+                'waist_volume_list': waist_volume_list,
+                'belly_volume_list': belly_volume_list,
+                'hips_volume_list': hips_volume_list
+            }
+            
+            return web.json_response(result_dict)
+    
     except Exception as x:
         logger.exception(x)
         return web.HTTPBadGateway()
