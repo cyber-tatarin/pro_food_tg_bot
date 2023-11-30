@@ -15,6 +15,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.fsm.storage.redis import RedisStorage
 from aiogram.fsm.state import StatesGroup, State
 from aiogram import F
+from aiogram.types import FSInputFile
 
 from . import callback_data_models, utils, keyboards, texts
 from root.db import models
@@ -67,6 +68,9 @@ class GetMeasuresState(StatesGroup):
 
 @dp.message(Command('start'))
 async def start(message: types.Message):
+    videoguide_file = FSInputFile(path='/media/video_2023-12-01_01-00-47.mp4')
+    await bot.send_video(message.from_user.id, videoguide_file, caption=texts.start_video_caption)
+    await asyncio.sleep(10)
     await message.answer(texts.start_message, reply_markup=keyboards.get_ikb_to_get_user_start_data())
     
     event_loop = asyncio.get_event_loop()
