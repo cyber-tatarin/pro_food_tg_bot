@@ -414,7 +414,6 @@ async def set_have_eaten_without_plates(message: types.Message, state: FSMContex
                 os.remove(file_path)
     
     if have_eaten_in_text is not None:
-        logger.info('inside !!!!')
         ai_response = await utils.ai_analysis(have_eaten_in_text)
         if ai_response is not None:
             try:
