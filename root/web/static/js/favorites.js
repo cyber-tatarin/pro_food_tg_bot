@@ -282,6 +282,13 @@ window.onload = () => {
   if (isFunctionsLoaded) {
     hideLoading();
   }
+  const buttons = document.querySelectorAll(".change_link");
+
+  buttons.forEach((button) => {
+    button.addEventListener("click", function (e) {
+      showLoading();
+    });
+  });
 };
 
 async function sendPlate(data, link, el) {

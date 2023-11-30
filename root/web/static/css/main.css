@@ -984,13 +984,13 @@ body {
 }
 
 .card__plate {
-  max-height: 230px;
+  max-height: 170px;
 }
 
 .card__plate_size {
   min-width: 48px;
   display: flex;
-  margin-left: 4px;
+  margin-left: 8px;
   align-items: center;
   justify-content: center;
 }
@@ -1000,6 +1000,7 @@ body {
 }
 
 .plate__size-title {
+  margin-left: -8px;
   color: #303030;
   text-align: center;
   font-size: 14px;
@@ -1312,6 +1313,10 @@ body {
 
 .stat-title {
   font-size: 20px;
+}
+
+.plate__arrow img {
+  max-width: 75%;
 }
 
 @media (max-width: 530px) {
