@@ -11,7 +11,7 @@ logger = logger
 
 engine = create_async_engine(
         f'{os.getenv("DB_ENGINE")}{os.getenv("DB_ASYNC")}://{os.getenv("DB_USER")}:{os.getenv("DB_PASSWORD")}@{os.getenv("DB_HOST")}:{os.getenv("DB_PORT")}/{os.getenv("DB_NAME")}',
-        poolclass=pool.QueuePool, pool_size=10, max_overflow=20, pool_pre_ping=True)
+        poolclass=pool.QueuePool, pool_size=6, max_overflow=4, pool_pre_ping=True)
 
 Session = async_sessionmaker(
     bind=engine,

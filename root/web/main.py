@@ -1067,7 +1067,7 @@ async def get_data_for_profile_update_post(request):
         return web.HTTPBadGateway()
     finally:
         if session.is_active:
-            session.close()
+            await session.close()
 
 
 async def get_data_for_weight_aim_update_post(request):
@@ -1083,7 +1083,7 @@ async def get_data_for_weight_aim_update_post(request):
         return web.HTTPBadGateway()
     finally:
         if session.is_active:
-            session.close()
+            await session.close()
 
 
 app = web.Application()
