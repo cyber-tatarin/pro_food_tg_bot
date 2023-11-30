@@ -499,6 +499,7 @@ async function setRecepi(data) {
   ).textContent = `“${response.plate_name}”`;
 
   response.meals.forEach((meal, index) => {
+    const recipe = meal.recipe.replace(/\n/g, "<br>");
     document.querySelector(".popup__inner").insertAdjacentHTML(
       "beforeend",
       `<div class="popup__meal popup__meal${index + 1}">
@@ -510,7 +511,7 @@ async function setRecepi(data) {
     </div>
     <p class="popup__recepi">Рецепт:</p>
     <p class="popup__recepi__text">
-      ${meal.recipe}
+      ${recipe}
     </p>
     <div class="popup__time">
       <div class="popup__time-flex">

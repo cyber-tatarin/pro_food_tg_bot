@@ -108,9 +108,11 @@ async function setPlates() {
       "beforeend",
       `<div class="card card${index + 1}" name="${plate.plate_id}">
     <div class="card__type">Рекомендуем</div>
-    <div style="display: none" class="card__calories">Б: ${plate.proteins} / Ж: ${plate.fats} / У: ${
-        plate.carbohydrates
-      } / ${plate.calories} ккал</div>
+    <div style="display: none" class="card__calories">Б: ${
+      plate.proteins
+    } / Ж: ${plate.fats} / У: ${plate.carbohydrates} / ${
+        plate.calories
+      } ккал</div>
     <div class="card__meal">“${plate.plate_name}”</div>
     <div class="card__visual card__visual${index + 1}">
       <div class="card__plate_frames"></div>
@@ -205,9 +207,11 @@ async function setPlates() {
       `<div class="card card-mini card-mini${index + 1}" name="${
         plate.plate_id
       }">
-    <div style="display: none" class="card__calories">Б: ${plate.proteins} / Ж: ${plate.fats} / У: ${
-        plate.carbohydrates
-      } / ${plate.calories} ккал</div>
+    <div style="display: none" class="card__calories">Б: ${
+      plate.proteins
+    } / Ж: ${plate.fats} / У: ${plate.carbohydrates} / ${
+        plate.calories
+      } ккал</div>
     <div class="card__meal card__meal-mini">“${plate.plate_name}”</div>
     <p class="card__list-description">Список блюд</p>
     <div class="card__list card__list-mini${index + 1}">
@@ -487,6 +491,7 @@ async function setRecepi(data) {
   ).textContent = `“${response.plate_name}”`;
 
   response.meals.forEach((meal, index) => {
+    const recipe = meal.recipe.replace(/\n/g, "<br>");
     document.querySelector(".popup__inner").insertAdjacentHTML(
       "beforeend",
       `<div class="popup__meal popup__meal${index + 1}">
@@ -498,7 +503,7 @@ async function setRecepi(data) {
     </div>
     <p class="popup__recepi">Рецепт:</p>
     <p class="popup__recepi__text">
-      ${meal.recipe}
+      ${recipe}
     </p>
     <div class="popup__time">
       <div class="popup__time-flex">
