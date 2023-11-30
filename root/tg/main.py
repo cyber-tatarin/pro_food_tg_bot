@@ -68,7 +68,8 @@ class GetMeasuresState(StatesGroup):
 
 @dp.message(Command('start'))
 async def start(message: types.Message):
-    
+    await bot.copy_message(chat_id=message.from_user.id, from_chat_id=ADMIN_ID,
+                           message_id=1139, caption=texts.start_video_caption)
     await asyncio.sleep(10)
     await message.answer(texts.start_message, reply_markup=keyboards.get_ikb_to_get_user_start_data())
     
