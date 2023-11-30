@@ -91,9 +91,7 @@ async def get_nutrient_for_plates_by_ids(session, tg_id, plate_ids=None, in_json
 
     user = await session.get(models.User, tg_id)
     multiplier = multiplier_by_plate_diameter[user.plate_diameter]
-    
-    print(result)
-    
+
     if not in_json:
         return result
     
@@ -226,7 +224,6 @@ async def get_recipe_values(session, plate_id, tg_id):
     
     meals = list()
     result_dict = dict()
-    print(result)
     
     if result:
         result_dict['plate_name'] = result[0].plate_name
