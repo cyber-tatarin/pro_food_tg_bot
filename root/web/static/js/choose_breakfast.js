@@ -539,10 +539,7 @@ async function setRecepi(data) {
         }.</span> ${ingredient.ingredient_name}</p>
         <p class="popup__ingredients__amount">количество: ${
           ingredient.ingredient_amount
-        }</p>
-        <p class="popup__ingredients__measure">мера: ${
-          ingredient.ingredient_measure
-        }</p>
+        } в мере “${ingredient.ingredient_measure}”</p>
       </div>`
         );
     });
