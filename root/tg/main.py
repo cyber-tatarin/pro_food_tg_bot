@@ -15,7 +15,6 @@ from aiogram.fsm.context import FSMContext
 from aiogram.fsm.storage.redis import RedisStorage
 from aiogram.fsm.state import StatesGroup, State
 from aiogram import F
-from aiogram.types import URLInputFile
 
 from . import callback_data_models, utils, keyboards, texts
 from root.db import models
@@ -70,7 +69,7 @@ class GetMeasuresState(StatesGroup):
 async def start(message: types.Message):
     await bot.copy_message(chat_id=message.from_user.id, from_chat_id=ADMIN_ID,
                            message_id=1139, caption=texts.start_video_caption)
-    await asyncio.sleep(10)
+    await asyncio.sleep(15)
     await message.answer(texts.start_message, reply_markup=keyboards.get_ikb_to_get_user_start_data())
     
     event_loop = asyncio.get_event_loop()
